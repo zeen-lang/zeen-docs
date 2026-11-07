@@ -10,13 +10,20 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.41.7",
-    "@astrojs/vercel": "^11.0.11",
+    "@astrojs/starlight": "0.42.10",
+    "@astrojs/vercel": "11.0.20",
     "@vercel/analytics": "^2.0.1",
-    "astro": "^7.1.6",
-    "dracula": "^0.0.3",
-    "sharp": "^0.35.3",
+    "astro": "7.4.7",
+    "sharp": "^0.35.5",
     "shiki": "^4.4.3",
     "starlight-theme-rose-pine": "^0.2.0"
+  },
+  "overrides": {
+    "glob": "^14.0.4",
+    "minimatch": "^11.0.5",
+    "path-to-regexp": "^6.3.0",
+    "postcss-selector-parser": "^6.1.5",
+    "source-map-js": "^1.2.2",
+    "undici": "^8.12.4"
   }
 }
