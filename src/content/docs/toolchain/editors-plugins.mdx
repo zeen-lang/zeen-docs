@@ -7,7 +7,7 @@ import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
 
 ## Plugins
 <Card title="Visual Studio Code" icon="vscode">
-    Plugin repository: [zeen-vscode](https://github.com/mealet/zeen-vscode)
+    Plugin repository: [zeen-vscode](https://github.com/zeen-lang/zeen-vscode)
         
     <Steps>
     1. Make sure you have `zeen-lsp` installed (support starts from Zeen v0.2.0).
@@ -15,7 +15,7 @@ import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
     </Steps>
 </Card>
 <Card title="Neovim / Vim" icon="vim">
-    Plugin repository: [zeen-nvim](https://github.com/mealet/zeen-nvim)
+    Plugin repository: [zeen-nvim](https://github.com/zeen-lang/zeen-nvim)
     
     <Steps>
     1. Make sure you have `zeen-lsp` installed (support starts from Zeen v0.2.0).
@@ -23,13 +23,13 @@ import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
         **Lazy:**
         ```lua
         return {
-            "mealet/zeen-nvim"
+            "zeen-lang/zeen-nvim"
         }
         ```
         With settings:
         ```lua
         return {
-            "mealet/zeen-nvim",
+            "zeen-lang/zeen-nvim",
 
             opts = {
                 cmd = { "zeen-lsp" },
@@ -50,7 +50,7 @@ import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
         **Packer:**
         ```lua
         use({
-            "mealet/zeen-nvim",
+            "zeen-lang/zeen-nvim",
             config = function()
                 require("zeen-lsp").setup()
             end,
@@ -59,7 +59,7 @@ import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
 
         **Vim-plug:**
         ```vim
-        Plug 'mealet/zeen-nvim'
+        Plug 'zeen-lang/zeen-nvim'
         
         require("zeen-lsp").setup()
         ```
@@ -75,6 +75,6 @@ It ships as `zeen-lsp` binary in each release (starting from v0.2.0). <br/>
 
 <LinkCard
   title = "Zeen LSP"
-  href="https://github.com/mealet/zeen/tree/main/lsp"
+  href="https://github.com/zeen-lang/zeen/tree/main/lsp"
   description="Language server source code on GitHub"
 />
