@@ -17,7 +17,6 @@ const repo = `${org}/zeen`;
 
 	<div class="zn-footer__bottom">
 		<p class="zn-footer__brand">
-			<span class="zn-marker" aria-hidden="true">›</span>
 			<span>Zeen</span>
 			<a class="zn-footer__license" href={`${repo}/blob/main/LICENSE`}>Apache 2.0</a>
 		</p>
@@ -67,18 +66,12 @@ const repo = `${org}/zeen`;
 	.zn-footer__brand {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 16px;
 		margin: 0;
 		font-family: var(--zn-mono);
 		font-size: 12px;
 		line-height: 18px;
-		color: var(--sl-color-gray-2);
-	}
-
-	.zn-marker {
-		font-family: var(--zn-mono);
-		font-weight: 400;
-		color: var(--sl-color-accent-high);
+		color: var(--sl-color-gray-3);
 	}
 
 	.zn-footer__license {

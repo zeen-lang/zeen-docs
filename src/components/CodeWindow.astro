@@ -45,7 +45,12 @@ fn main() {
 const jsonCode = `use std.json;
 
 fn main() {
-  let value = JsonValue.parse(r#"{"name":"zeen","tags":[1,2]}"#).unwrap();
+  let value = JsonValue.parse(r#"
+    {
+      "name": "zeen",
+      "tags": [1, 2],
+    }
+  "#).unwrap();
 
   let name = value.get("name").unwrap();
   @println("name: {}", name.as_str().unwrap());
