@@ -7,7 +7,7 @@ Area `comptime` evaluates code during compilation and substitutes the result int
 
 ## Constants
 
-```zeen
+```zn
 comptime N = 16;
 comptime SquaredN = N * N;
 
@@ -18,7 +18,7 @@ fn main() {
 
 A plain name is enough inside code. Use a splice `$(NAME)` where only a literal works, for example inside a string or a type:
 
-```zeen
+```zn
 fn main() {
   @println("$(N) squared is $(SquaredN)");
 }
@@ -26,7 +26,7 @@ fn main() {
 
 ## Functions
 
-```zeen
+```zn
 comptime fn fact(n: comptime_int) comptime_int {
   if (n <= 1) { return 1; };
   return n * fact(n - 1);
@@ -52,7 +52,7 @@ A compile time function takes comptime parameters, returns a comptime value and 
 - **statement level** inside a runtime function
 - **expression level**, where the tail value is substituted.
 
-```zeen
+```zn
 fn main() {
   comptime {
     @println("evaluated during compilation");
@@ -65,7 +65,7 @@ fn main() {
 
 ## Structs
 
-```zeen
+```zn
 comptime struct Point {
   x: comptime_int,
   y: comptime_int,
@@ -98,7 +98,7 @@ provides compile time structs for the compiler to use reflection.
 
 `zeen_decl` lets a compile time function build declarations. `@emit` places them into scope:
 
-```zeen
+```zn
 comptime fn pair_of(struct_name: comptime_str, a: zeen_type, b: zeen_type) zeen_decl {
   @zeen_decl(
     struct $(struct_name) {
@@ -128,7 +128,7 @@ fn main() {
 | `@hasField(T, name)` | `bool` |
 | `@fieldType(T, name)` | field type |
 
-```zeen
+```zn
 struct User {
   pub id: i32,
   pub score: f64,
@@ -154,7 +154,7 @@ fn main() {
 `@print`, `@println`, `@format`, `@dbg`, `@panic` accept the same format syntax as at run time.
 `@sizeof(T)`, `@alignof(T)` in comptime area return `comptime_int`.
 
-```zeen
+```zn
 comptime Size = @sizeof(i64);
 comptime Align = @alignof(f64);
 

@@ -22,7 +22,7 @@ description: Format macros, specifiers and Display or Debug implementations.
 
 ## Display and Debug
 Structs opt in through `core.io` interfaces. The sink is any `StrWriter`, so the same code feeds stdout and `String`:
-```zeen
+```zn
 implement Display : Point {
   fn display[W: StrWriter](*const self, out: *W) void {
     out.write_str("point");

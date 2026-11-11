@@ -10,7 +10,7 @@ Variables may be left unassigned at initialization, but they cannot be used befo
 By default locals in Zeen are mutable, you can use the `const` modifier to disable mutability.
 
 ### Syntax:
-```zeen
+```zn
 // mutable
 let identifier: type;
 let identifier: type = value;
@@ -23,7 +23,7 @@ const identifier = value;
 ```
 
 Examples:
-```zeen
+```zn
 // Init without value
 let var: i32;
 
@@ -38,19 +38,19 @@ let var = 123;
 
 Top-level globals need explicit type and value. <br/>
 Syntax:
-```zeen
+```zn
 const NAME: type = value;
 let name: type = value;
 ```
 
 Example:
-```zeen
+```zn
 const MAX: i32 = 100;
 let counter: i32 = 0;
 ```
 
 A global may hold a function: a named function, an `fn` literal or a `Fn` / `FnOnce` returned by a call.
-```zeen
+```zn
 fn double(x: i32) i32 {
   return x * 2;
 }
@@ -62,7 +62,7 @@ let triple: fn(i32) i32 = fn(x: i32) i32 { x * 3 };
 ## Discard
 
 Use `_` to discard value without naming it with variable:
-```zeen
+```zn
 let _ = foo();
 ```
 
@@ -75,7 +75,7 @@ Pointers are also stack-allocated values, more explanation about pointers you'll
 ----
 
 Code:
-```zeen
+```zn
 fn main() {
     let a = 1234;
     let ptr = &a;

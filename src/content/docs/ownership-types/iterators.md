@@ -5,7 +5,7 @@ description: The for loop, iterable types and custom iterators.
 
 ## For
 Iteration goes through the `for` loop:
-```zeen
+```zn
 for (item : items) {
   @println("{}", item);
 }
@@ -23,13 +23,13 @@ Containers like `List` iterate through `.iter()`:
 
 ----
 
-```zeen
+```zn
 for (x : items.iter()) {}
 ```
 
 ## Custom Iterators
 A type iterates by implementing `Iterator`: `next` returns `Some(element)` or `None` when done.
-```zeen
+```zn
 struct Counter {
   cur: i32,
   end: i32,

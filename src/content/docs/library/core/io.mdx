@@ -14,13 +14,13 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn write_str(*self, value: []const char) void;
   ```
-  ```zeen
+  ```zn
   pub fn write_str_raw(*self, ptr: [*]const char, len: usize) void;
   ```
-  ```zeen
+  ```zn
   pub fn write_str_single(*self, value: char) void;
   ```
 </Card>
@@ -30,7 +30,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn display[T: StrWriter](*const self, out: *T) void;
   ```
 </Card>
@@ -40,7 +40,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn debug[T: StrWriter](*const self, out: *T) void;
   ```
 </Card>
@@ -52,12 +52,12 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
   **Methods:**
-  ```zeen
+  ```zn
   // No Methods
   ```
 
@@ -69,7 +69,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
 ## Extern Functions
 
-```zeen
+```zn
 // Compiler provided stdout writer function
 extern fn __zeen_stdout_write(ptr: [*]const char, len: usize) void;
 ```

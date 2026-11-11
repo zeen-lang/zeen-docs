@@ -9,7 +9,7 @@ A featured comptime engine landed in this release. The new `zeen-comptime` crate
 
 Simple constants and splicing:
 
-```zeen
+```zn
 comptime N = 16;
 comptime SquaredN = N * N;
 
@@ -21,7 +21,7 @@ fn main() {
 
 Compile time functions, recursion and results in type expressions:
 
-```zeen
+```zn
 comptime fn fact(n: comptime_int) comptime_int {
   if (n <= 1) { return 1; };
   return n * fact(n - 1);
@@ -39,7 +39,7 @@ fn main() {
 
 Compile time functions can return declarations. Here `pair_of` builds a struct and `@emit` places it into the declaration scope:
 
-```zeen
+```zn
 comptime fn pair_of(struct_name: comptime_str, a: zeen_type, b: zeen_type) zeen_decl {
   @zeen_decl(
     struct $(struct_name) {
@@ -61,7 +61,7 @@ fn main() {
 
 Comptime structs, blocks and reflection work as well:
 
-```zeen
+```zn
 comptime struct Point {
   x: comptime_int,
   y: comptime_int,

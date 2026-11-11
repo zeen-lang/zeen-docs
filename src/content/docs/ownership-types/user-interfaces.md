@@ -5,7 +5,7 @@ description: Declaring interfaces, implementing them for types and bounding gene
 
 ## Declaration
 An interface declares a behavior shared by many types. Any struct or enum can promise it:
-```zeen
+```zn
 interface Pet {
   pub fn name(*const self) String;
 }
@@ -13,7 +13,7 @@ interface Pet {
 
 ## Implement
 Types opt in with `implement` blocks and write the promised methods inside. There are no inherent impl blocks: free functions and methods live in struct bodies, interfaces only describe them.
-```zeen
+```zn
 use std.string;
 
 struct Cat {
@@ -29,7 +29,7 @@ implement Pet : Cat {
 
 ## Bounds
 Interfaces bound generics. A function over `T: Pet` accepts any type with that behavior and nothing else:
-```zeen
+```zn
 fn greet[T: Pet](pet: T) {
   @println("hi {}", pet.name());
 }
@@ -38,6 +38,6 @@ greet(Cat { .nickname = String.from("tom") });
 ```
 
 `implement` blocks can be generic and bounded too: `Box[T]` is `Copy` exactly when `T` is.
-```zeen
+```zn
 implement[T: Copy] Copy : Box[T] {}
 ```

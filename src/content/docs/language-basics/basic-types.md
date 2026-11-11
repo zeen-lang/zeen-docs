@@ -34,7 +34,7 @@ Default float literal type is `f64`.
 
 ## Typeof
 `typeof EXPR` takes the type of an expression without executing it. Combined with `@typename` it names the type:
-```zeen
+```zn
 let func: typeof hello = hello;
 @println("{}", @typename(typeof 123));
 ```
@@ -42,7 +42,7 @@ let func: typeof hello = hello;
 ## Casts
 Implicit casts happen right in expression. <br/>
 Explicit casts use `@as`:
-```zeen
+```zn
 let a = @as(u8, 123);
 ```
 

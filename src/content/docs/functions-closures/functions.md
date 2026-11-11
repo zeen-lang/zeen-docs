@@ -6,7 +6,7 @@ description: Function declarations, main rules, nested functions, pointers and g
 ## Declarations
 A function takes params and returns a value. Return type can be omitted for void. Functions are private by default, `pub` makes them visible outside the module. <br/>
 Syntax:
-```zeen
+```zn
 fn add(a: i32, b: i32) i32 {
   return a + b;
 }
@@ -17,7 +17,7 @@ pub fn greet() {
 ```
 
 A value can be returned through a trailing expression, without `return`:
-```zeen
+```zn
 fn double(a: i32) i32 {
   a * 2
 }
@@ -27,7 +27,7 @@ The entry point is `fn main()`.
 
 ## Main Function
 The main function takes no params, no generics, is not `extern` and cannot be `pub`. It can return `void` or any int: ints go to the exit code, other types return 0.
-```zeen
+```zn
 fn main() {
   @println("hi");
 }
@@ -39,7 +39,7 @@ fn main() i32 {
 
 ## Nested Functions
 Functions can be declared inside other functions and are called within that scope:
-```zeen
+```zn
 fn main() {
   fn helper(a: i32) i32 {
     a + 1
@@ -51,7 +51,7 @@ fn main() {
 
 ## Function Pointers
 Passing a function name without calling it gives a function pointer. It has the basic `fn` type, which is always `Copy`:
-```zeen
+```zn
 extern fn malloc(usize) *void;
 
 let allocator: fn(usize) *void = malloc;
@@ -59,7 +59,7 @@ let allocator: fn(usize) *void = malloc;
 
 ## Generic Functions
 Functions can have generic params, plain or with bounds, several at once, and can return generics:
-```zeen
+```zn
 fn first[T](items: []T) T {
   return items[0];
 }
@@ -79,7 +79,7 @@ fn swap[K, V](p: Pair[K, V]) Pair[V, K] {
 
 ## Never Functions
 A function returning `never` never gives control back to the caller. Each call is checked as unreachable in Debug, in Release a returning `never` function is UB:
-```zeen
+```zn
 extern fn exit(i32) never;
 
 fn main() {

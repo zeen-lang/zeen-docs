@@ -16,7 +16,7 @@ copied data loaded from memory.
 
 ### Examples
 Copy values example:
-```zeen
+```zn
 fn main() {
   let a: i32 = 123; // `i32` is a Copy type
   let b = a; // copied value from `a`, so it's still valid
@@ -28,7 +28,7 @@ fn main() {
 ----
 
 Move values example:
-```zeen
+```zn
 fn main() {
   let lang = String.from("Zeen"); // `String` is a move-only struct
   let next_lang = lang; // moved String instance to the `next_lang` variable
@@ -39,7 +39,7 @@ fn main() {
 ----
 
 Use after move example:
-```zeen
+```zn
 fn main() {
   let lang = String.from("Zeen"); // `String` is a move-only struct
   let next_lang = lang; // moved String instance to the `next_lang` variable
@@ -78,7 +78,7 @@ Table of compiler marked `Copy` types:
 ## Forced Copy
 `implement Copy` forces a type to be `Copy` regardless of its fields.
 This is a promise: the type must really be trivially copyable, the compiler trusts it.
-```zeen
+```zn
 implement Copy : StructName {}
 ```
 
@@ -87,7 +87,7 @@ A type with `Drop` cannot be `Copy`: pick one. Without an explicit `Drop`, field
 ## Payload Discard
 
 `.Variant(_)` moves the payload into a dead local and drops it immediately. For a non-copy payload that is a hard error (`zeen::mir::discard_drop_payload`), because the payload may own data. Use `&_` to borrow and discard, or `&name` to keep a pointer:
-```zeen
+```zn
 switch (value) {
   .number(_) => @println("dropped"),
   .pair(&coords) => @println("{} {}", coords.first, coords.second),

@@ -7,7 +7,7 @@ Extern declarations use external linkage: symbols resolve at link time by the sy
 
 ## Functions
 `extern fn` without a body declares an imported symbol. Calls use the C calling convention:
-```zeen
+```zn
 extern fn malloc(usize) *void;
 extern fn free(*void);
 
@@ -19,14 +19,14 @@ fn main() {
 ```
 
 `extern fn` with a body exports the symbol for native callers:
-```zeen
+```zn
 extern fn hello() {
   @println("hi from Zeen");
 }
 ```
 
 Varargs with `...`:
-```zeen
+```zn
 extern fn printf([*]const char, ...);
 ```
 
@@ -39,7 +39,7 @@ Struct arguments and returns follow the C ABI of the target:
 - extern call sites carry the `byval` attribute,
 - struct layout follows the target, not the host.
 
-```zeen
+```zn
 struct Vec2 {
   x: f32,
   y: f32,
@@ -54,13 +54,13 @@ fn main() {
 
 ## Variables
 `extern let` declares an imported global. Storage lives in native code, no value allowed:
-```zeen
+```zn
 extern let errno: i32;
 ```
 
 ## Link
 `extern link` appends native files after the compiled object in the link step:
-```zeen
+```zn
 extern link "helpers.c";
 ```
 

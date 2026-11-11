@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/log.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/log.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.log;
 >
 > fn main() {
@@ -28,7 +28,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub enum Level {
     Debug,
     Info,
@@ -45,31 +45,31 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn set_level(l: Level);
   ```
-  ```zeen
+  ```zn
   pub fn level() Level;
   ```
-  ```zeen
+  ```zn
   pub fn log(l: Level, msg: []const char);
   ```
-  ```zeen
+  ```zn
   pub fn debug(msg: []const char);
   ```
-  ```zeen
+  ```zn
   pub fn info(msg: []const char);
   ```
-  ```zeen
+  ```zn
   pub fn warn(msg: []const char);
   ```
-  ```zeen
+  ```zn
   pub fn error(msg: []const char);
   ```
 </Card>

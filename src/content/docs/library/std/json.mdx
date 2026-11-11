@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/json.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/json.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.json;
 >
 > fn main() {
@@ -29,7 +29,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub enum JsonErrorKind {
     UnexpectedChar,
     UnexpectedEnd,
@@ -46,7 +46,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub enum JsonValue {
     Null,
     Bool: bool,
@@ -57,59 +57,59 @@ import { Badge, Card } from '@astrojs/starlight/components';
   }
   ```
   **Fields:**
-  ```zeen
+  ```zn
   // Payloads per variant
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn parse(text: []const char) Result[JsonValue, JsonError];
   ```
-  ```zeen
+  ```zn
   pub fn stringify(*const self) String;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, key: []const char) Option[*const JsonValue];
   ```
-  ```zeen
+  ```zn
   pub fn at(*const self, index: usize) Option[*const JsonValue];
   ```
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_null(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_bool(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_num(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_str(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_array(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_object(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn as_bool(*const self) Option[bool];
   ```
-  ```zeen
+  ```zn
   pub fn as_num(*const self) Option[String];
   ```
-  ```zeen
+  ```zn
   pub fn as_i64(*const self) Option[i64];
   ```
-  ```zeen
+  ```zn
   pub fn as_f64(*const self) Option[f64];
   ```
-  ```zeen
+  ```zn
   pub fn as_str(*const self) Option[String];
   ```
-  ```zeen
+  ```zn
   pub fn write_into(*const self, out: *String);
   ```
 </Card>
@@ -121,7 +121,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub kind: JsonErrorKind,
   pub pos: usize,
   ```
@@ -133,31 +133,31 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   map: HashMap[String, JsonValue],
   keys: List[String],
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn insert(*self, key: String, value: JsonValue);
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, key: []const char) Option[*const JsonValue];
   ```
-  ```zeen
+  ```zn
   pub fn key_at(*const self, index: usize) *String;
   ```
-  ```zeen
+  ```zn
   pub fn get_at(*const self, index: usize) *const JsonValue;
   ```
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn write_into(*const self, out: *String);
   ```
 </Card>

@@ -11,7 +11,7 @@ There are 4 numerical systems supported by the compiler: decimal, hexadecimal, b
 Besides that language allows you to use `_` separator for big numbers (idea taken from Rust).
 
 Example:
-```zeen
+```zn
 /* 6 WAYS TO WRITE "1000" */
 
 1000 // decimal
@@ -27,18 +27,18 @@ Default integer literal type is `i32`.
 A literal takes its type from the context around it: an annotation, a call parameter or `@as`. The value must fit that type, otherwise the compiler reports `zeen::typechecker::int_literal_out_of_range`.
 
 Valid:
-```zeen
+```zn
 let a: i32 = 123;
 let b: i64 = 9223372036854775807;
 ```
 
 Does not fit `i32`:
-```zeen
+```zn
 let c: i32 = 9223372036854775807;
 ```
 
 A literal that does not fit `i64` at all is rejected by the lexer with `zeen::parser::invalid_literal`:
-```zeen
+```zn
 let d: i64 = 9300000000000000000;
 ```
 
@@ -46,7 +46,7 @@ let d: i64 = 9300000000000000000;
 Float (or floating point numbers) are the same with other languages.
 
 Example:
-```zeen
+```zn
 1.0 // default number
 1. // same number but shorter
 3.1415926535897932384626 // big number
@@ -57,7 +57,7 @@ Default float literal type is `f64`.
 ## Boolean Literals
 Boolean constants are keywords with specified type. <br/>
 Keywords to use:
-```zeen
+```zn
 true, false
 ```
 
@@ -66,7 +66,7 @@ Boolean literal type is `bool`.
 ## Char
 A _char_ is essentially an unsigned 1-byte integer that contains symbol representation inside. <br/>
 To define char use single quote:
-```zeen
+```zn
 'a', '\n'
 ```
 
@@ -75,7 +75,7 @@ Character literal type is `char`.
 ## Byte Char
 Byte character literal is similar as _char_, but it returns `u8` (unsigned 1 byte integer) type. <br/>
 Usage:
-```zeen
+```zn
 b'a', b'\n'
 ```
 
@@ -84,7 +84,7 @@ Strings in Zeen may seem familiar like in C programming language. <br/>
 Core mechanics are similar: string literal ends with '\0' terminator.
 
 To define string use double quotes:
-```zeen
+```zn
 "Hello, World!"
 "Привет, Мир!"
 "Xin Chào, Thế Giới!"
@@ -96,7 +96,7 @@ String literals use array type `[N + 1]char` (N chars + 1 for null terminator) a
 Raw strings are just another way to bake your string in source code and tell compiler where to stop. <br/>
 It starts with `r#"` and ends with `"#`, that allows user to use any other symbols in this literal.
 
-```zeen
+```zn
 r#"
 String literal,
 still string,
@@ -108,14 +108,14 @@ ends only now
 ## Array
 An array is a basic collection of ordered data in memory with a compile-time known size. <br/>
 To define array use brackets:
-```zeen
+```zn
 [1, 2, 3, 4]
 ```
 
 The array type is `[N]T` (example above is `[4]i32`)
 
 Fast init with repeated value:
-```zeen
+```zn
 [0; 1024]
 ```
 

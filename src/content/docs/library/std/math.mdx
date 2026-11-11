@@ -14,7 +14,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub comptime PI = 3.141592653589793
   ```
 </Card>
@@ -24,7 +24,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub comptime TAU = 6.283185307179586
   ```
 </Card>
@@ -34,7 +34,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub comptime E = 2.718281828459045
   ```
 </Card>
@@ -45,7 +45,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn min[T: Ord](a: T, b: T) T
   ```
 </Card>
@@ -55,7 +55,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn max[T: Ord](a: T, b: T) T
   ```
 </Card>
@@ -65,7 +65,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn clamp[T: Ord](value: T, lo: T, hi: T) T
   ```
 </Card>
@@ -75,7 +75,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn lerp(a: f64, b: f64, t: f64) f64
   ```
 </Card>
@@ -85,7 +85,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn lerpf(a: f32, b: f32, t: f32) f32
   ```
 </Card>
@@ -95,7 +95,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn gcd(a: i64, b: i64) i64
   ```
 </Card>
@@ -105,7 +105,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn lcm(a: i64, b: i64) i64
   ```
 </Card>
@@ -115,7 +115,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn is_nan(value: f64) bool
   ```
 </Card>
@@ -125,7 +125,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn is_nanf(value: f32) bool
   ```
 </Card>
@@ -135,7 +135,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn is_inf(value: f64) bool
   ```
 </Card>
@@ -145,488 +145,488 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub fn is_inff(value: f32) bool
   ```
 </Card>
 
 ## From `std.c.math`
 <Card title="fabs / fabsf">
-  ```zeen
+  ```zn
   pub extern fn fabs(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn fabsf(x: f32) f32
   ```
 </Card>
 
 <Card title="fmod / fmodf">
-  ```zeen
+  ```zn
   pub extern fn fmod(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn fmodf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="remainder / remainderf">
-  ```zeen
+  ```zn
   pub extern fn remainder(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn remainderf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="exp / expf">
-  ```zeen
+  ```zn
   pub extern fn exp(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn expf(x: f32) f32
   ```
 </Card>
 
 <Card title="exp2 / exp2f">
-  ```zeen
+  ```zn
   pub extern fn exp2(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn exp2f(x: f32) f32
   ```
 </Card>
 
 <Card title="expm1 / expm1f">
-  ```zeen
+  ```zn
   pub extern fn expm1(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn expm1f(x: f32) f32
   ```
 </Card>
 
 <Card title="log / logf">
-  ```zeen
+  ```zn
   pub extern fn log(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn logf(x: f32) f32
   ```
 </Card>
 
 <Card title="log10 / log10f">
-  ```zeen
+  ```zn
   pub extern fn log10(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn log10f(x: f32) f32
   ```
 </Card>
 
 <Card title="log2 / log2f">
-  ```zeen
+  ```zn
   pub extern fn log2(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn log2f(x: f32) f32
   ```
 </Card>
 
 <Card title="log1p / log1pf">
-  ```zeen
+  ```zn
   pub extern fn log1p(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn log1pf(x: f32) f32
   ```
 </Card>
 
 <Card title="pow / powf">
-  ```zeen
+  ```zn
   pub extern fn pow(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn powf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="sqrt / sqrtf">
-  ```zeen
+  ```zn
   pub extern fn sqrt(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn sqrtf(x: f32) f32
   ```
 </Card>
 
 <Card title="cbrt / cbrtf">
-  ```zeen
+  ```zn
   pub extern fn cbrt(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn cbrtf(x: f32) f32
   ```
 </Card>
 
 <Card title="hypot / hypotf">
-  ```zeen
+  ```zn
   pub extern fn hypot(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn hypotf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="sin / sinf">
-  ```zeen
+  ```zn
   pub extern fn sin(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn sinf(x: f32) f32
   ```
 </Card>
 
 <Card title="cos / cosf">
-  ```zeen
+  ```zn
   pub extern fn cos(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn cosf(x: f32) f32
   ```
 </Card>
 
 <Card title="tan / tanf">
-  ```zeen
+  ```zn
   pub extern fn tan(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn tanf(x: f32) f32
   ```
 </Card>
 
 <Card title="asin / asinf">
-  ```zeen
+  ```zn
   pub extern fn asin(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn asinf(x: f32) f32
   ```
 </Card>
 
 <Card title="acos / acosf">
-  ```zeen
+  ```zn
   pub extern fn acos(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn acosf(x: f32) f32
   ```
 </Card>
 
 <Card title="atan / atanf">
-  ```zeen
+  ```zn
   pub extern fn atan(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn atanf(x: f32) f32
   ```
 </Card>
 
 <Card title="atan2 / atan2f">
-  ```zeen
+  ```zn
   pub extern fn atan2(y: f64, x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn atan2f(y: f32, x: f32) f32
   ```
 </Card>
 
 <Card title="sinh / sinhf">
-  ```zeen
+  ```zn
   pub extern fn sinh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn sinhf(x: f32) f32
   ```
 </Card>
 
 <Card title="cosh / coshf">
-  ```zeen
+  ```zn
   pub extern fn cosh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn coshf(x: f32) f32
   ```
 </Card>
 
 <Card title="tanh / tanhf">
-  ```zeen
+  ```zn
   pub extern fn tanh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn tanhf(x: f32) f32
   ```
 </Card>
 
 <Card title="asinh / asinhf">
-  ```zeen
+  ```zn
   pub extern fn asinh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn asinhf(x: f32) f32
   ```
 </Card>
 
 <Card title="acosh / acoshf">
-  ```zeen
+  ```zn
   pub extern fn acosh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn acoshf(x: f32) f32
   ```
 </Card>
 
 <Card title="atanh / atanhf">
-  ```zeen
+  ```zn
   pub extern fn atanh(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn atanhf(x: f32) f32
   ```
 </Card>
 
 <Card title="erf / erff">
-  ```zeen
+  ```zn
   pub extern fn erf(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn erff(x: f32) f32
   ```
 </Card>
 
 <Card title="erfc / erfcf">
-  ```zeen
+  ```zn
   pub extern fn erfc(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn erfcf(x: f32) f32
   ```
 </Card>
 
 <Card title="tgamma / tgammaf">
-  ```zeen
+  ```zn
   pub extern fn tgamma(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn tgammaf(x: f32) f32
   ```
 </Card>
 
 <Card title="lgamma / lgammaf">
-  ```zeen
+  ```zn
   pub extern fn lgamma(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn lgammaf(x: f32) f32
   ```
 </Card>
 
 <Card title="ceil / ceilf">
-  ```zeen
+  ```zn
   pub extern fn ceil(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn ceilf(x: f32) f32
   ```
 </Card>
 
 <Card title="floor / floorf">
-  ```zeen
+  ```zn
   pub extern fn floor(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn floorf(x: f32) f32
   ```
 </Card>
 
 <Card title="round / roundf">
-  ```zeen
+  ```zn
   pub extern fn round(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn roundf(x: f32) f32
   ```
 </Card>
 
 <Card title="trunc / truncf">
-  ```zeen
+  ```zn
   pub extern fn trunc(x: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn truncf(x: f32) f32
   ```
 </Card>
 
 <Card title="lround / lroundf">
-  ```zeen
+  ```zn
   pub extern fn lround(x: f64) c_long
   ```
-  ```zeen
+  ```zn
   pub extern fn lroundf(x: f32) c_long
   ```
 </Card>
 
 <Card title="llround / llroundf">
-  ```zeen
+  ```zn
   pub extern fn llround(x: f64) c_longlong
   ```
-  ```zeen
+  ```zn
   pub extern fn llroundf(x: f32) c_longlong
   ```
 </Card>
 
 <Card title="lrint / lrintf">
-  ```zeen
+  ```zn
   pub extern fn lrint(x: f64) c_long
   ```
-  ```zeen
+  ```zn
   pub extern fn lrintf(x: f32) c_long
   ```
 </Card>
 
 <Card title="llrint / llrintf">
-  ```zeen
+  ```zn
   pub extern fn llrint(x: f64) c_longlong
   ```
-  ```zeen
+  ```zn
   pub extern fn llrintf(x: f32) c_longlong
   ```
 </Card>
 
 <Card title="ldexp / ldexpf">
-  ```zeen
+  ```zn
   pub extern fn ldexp(x: f64, exp: c_int) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn ldexpf(x: f32, exp: c_int) f32
   ```
 </Card>
 
 <Card title="frexp / frexpf">
-  ```zeen
+  ```zn
   pub extern fn frexp(x: f64, exp: *c_int) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn frexpf(x: f32, exp: *c_int) f32
   ```
 </Card>
 
 <Card title="modf / modff">
-  ```zeen
+  ```zn
   pub extern fn modf(x: f64, iptr: *f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn modff(x: f32, iptr: *f32) f32
   ```
 </Card>
 
 <Card title="scalbn / scalbnf">
-  ```zeen
+  ```zn
   pub extern fn scalbn(x: f64, n: c_int) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn scalbnf(x: f32, n: c_int) f32
   ```
 </Card>
 
 <Card title="scalbln / scalblnf">
-  ```zeen
+  ```zn
   pub extern fn scalbln(x: f64, n: c_long) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn scalblnf(x: f32, n: c_long) f32
   ```
 </Card>
 
 <Card title="copysign / copysignf">
-  ```zeen
+  ```zn
   pub extern fn copysign(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn copysignf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="isnan / isnanf">
-  ```zeen
+  ```zn
   pub extern fn isnan(x: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isnanf(x: f32) c_int
   ```
 </Card>
 
 <Card title="isinf / isinff">
-  ```zeen
+  ```zn
   pub extern fn isinf(x: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isinff(x: f32) c_int
   ```
 </Card>
 
 <Card title="isfinite / isfinitef">
-  ```zeen
+  ```zn
   pub extern fn isfinite(x: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isfinitef(x: f32) c_int
   ```
 </Card>
 
 <Card title="isgreater / isgreaterequal / isless / islessequal / islessgreater / isunordered">
-  ```zeen
+  ```zn
   pub extern fn isgreater(x: f64, y: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isgreaterequal(x: f64, y: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isless(x: f64, y: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn islessequal(x: f64, y: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn islessgreater(x: f64, y: f64) c_int
   ```
-  ```zeen
+  ```zn
   pub extern fn isunordered(x: f64, y: f64) c_int
   ```
 </Card>
 
 <Card title="nextafter / nextafterf">
-  ```zeen
+  ```zn
   pub extern fn nextafter(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn nextafterf(x: f32, y: f32) f32
   ```
 </Card>
 
 <Card title="nexttoward / nexttowardf">
-  ```zeen
+  ```zn
   pub extern fn nexttoward(x: f64, y: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn nexttowardf(x: f32, y: f64) f32
   ```
 </Card>
 
 <Card title="fma / fmaf">
-  ```zeen
+  ```zn
   pub extern fn fma(x: f64, y: f64, z: f64) f64
   ```
-  ```zeen
+  ```zn
   pub extern fn fmaf(x: f32, y: f32, z: f32) f32
   ```
 </Card>

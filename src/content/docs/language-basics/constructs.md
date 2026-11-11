@@ -11,12 +11,12 @@ They might be familiar for you from other languages.
 ### Calls
 Calls can be function calls, method calls or macro calls, and a call can be an expression that returns a value. <br/>
 Syntax:
-```zeen
+```zn
 callee(args)
 ```
 
 Possible callees:
-```zeen
+```zn
 // function call
 foo("hello");
 
@@ -37,7 +37,7 @@ func(123);
 ### Blocks
 Blocks can be a small execution context inside a statement, or an expression with a return value.<br/>
 Syntax:
-```zeen
+```zn
 {
   statements
 }
@@ -45,7 +45,7 @@ Syntax:
 
 :::note[Remember that]
 To return value from **block** use only **trailing expression return**:
-```zeen
+```zn
 let a = {
   // code before return
   123
@@ -61,7 +61,7 @@ Conditional constructions are the statements that let you pick a branch based on
 
 ### `If` / `If-Else`
 Syntax:
-```zeen
+```zn
 if (condition) expression
 if (condition) { statements }
 
@@ -71,7 +71,7 @@ if (condition) { statements } else { statements }
 
 The `if` construction is an **expression**, which means you can use it to assign a variable conditionally,
 or chain it to get the `else if` variation:
-```zeen
+```zn
 let a = 5;
 let conditional = if (a == 5) 123 else 321;
 
@@ -86,7 +86,7 @@ if (conditional == 123) {
 
 ### `Switch`
 Example:
-```zeen
+```zn
 fn main() {
   let value = 123;
 
@@ -109,13 +109,13 @@ Loops are constructions that repeat a block of statements while a condition hold
 
 ### `While`
 Syntax:
-```zeen
+```zn
 while (condition) expression
 while (condition) { statements }
 ```
 
 Example:
-```zeen
+```zn
 fn main() {
   let i = 0;
 
@@ -131,13 +131,13 @@ fn main() {
 
 ### `For`
 Syntax:
-```zeen
+```zn
 for (varname : iterator) expression
 for (varname : iterator) { statements }
 ```
 
 Supported iterators types:
-```zeen
+```zn
 // integer signed types
 i8 i16 i32 i64 isize
 
@@ -154,7 +154,7 @@ u8 u16 u32 u64 usize
 ```
 
 Example:
-```zeen
+```zn
 for (i : 10) {
   @println("{}", i);
 }
@@ -165,13 +165,13 @@ for (i : 10) {
 ### `return`
 Returns provided expression value for current function. <br/>
 Syntax:
-```zeen
+```zn
 return; // empty/void return
 return expression; // expression return
 ```
 
 Example:
-```zeen
+```zn
 fn foo() i32 {
   return 123 + 321 * 2;
 }
@@ -180,12 +180,12 @@ fn foo() i32 {
 ### `break`
 Breaks current loop execution and returns to the branch after the loop. <br/>
 Syntax:
-```zeen
+```zn
 break;
 ```
 
 Example:
-```zeen
+```zn
 for (i : 10) {
   if (i == 6)
     break;
@@ -195,6 +195,6 @@ for (i : 10) {
 ### `continue`
 Skips current loop iteration and returns to the loop condition. <br/>
 Syntax:
-```zeen
+```zn
 continue;
 ```

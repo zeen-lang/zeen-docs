@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/process.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/process.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.process;
 >
 > fn main() {
@@ -20,7 +20,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 > }
 > ```
 >
-> ```zeen
+> ```zn
 > use std.process;
 >
 > fn main() {
@@ -36,7 +36,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   pub enum Stdio {
     Piped,
     Inherit,
@@ -52,25 +52,25 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn args_count() i32;
   ```
-  ```zeen
+  ```zn
   pub fn args() List[String];
   ```
-  ```zeen
+  ```zn
   pub fn args_iter() ArgsIter;
   ```
-  ```zeen
+  ```zn
   pub fn exit(code: i32) never;
   ```
-  ```zeen
+  ```zn
   pub fn cwd() Result[String, IoError];
   ```
 </Card>
@@ -81,11 +81,11 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   index: i32,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
 
@@ -99,18 +99,18 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub exit_code: i32,
   pub term_signal: i32,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn success(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn code(*const self) Option[i32];
   ```
-  ```zeen
+  ```zn
   pub fn signal(*const self) Option[i32];
   ```
 </Card>
@@ -121,7 +121,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub status: ExitStatus,
   pub stdout: String,
   pub stderr: String,
@@ -134,12 +134,12 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub fd: c_int,
   pub handle: *void,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn read_to_string(*self, out: *String) Result[usize, IoError];
   ```
 
@@ -153,12 +153,12 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub fd: c_int,
   pub handle: *void,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn write_all(*self, buf: []const char) Result[void, IoError];
   ```
 
@@ -172,7 +172,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub pid: i32,
   pub handle: *void,
   pub in_fd: c_int,
@@ -183,25 +183,25 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub win_err: *void,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn id(*const self) i32;
   ```
-  ```zeen
+  ```zn
   pub fn take_stdin(*self) Option[PipeWriter];
   ```
-  ```zeen
+  ```zn
   pub fn take_stdout(*self) Option[PipeReader];
   ```
-  ```zeen
+  ```zn
   pub fn take_stderr(*self) Option[PipeReader];
   ```
-  ```zeen
+  ```zn
   pub fn wait(*self) Result[ExitStatus, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn try_wait(*self) Result[Option[ExitStatus], IoError];
   ```
-  ```zeen
+  ```zn
   pub fn kill(*self) Result[void, IoError];
   ```
 
@@ -215,7 +215,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub program: String,
   pub argv: List[String],
   pub envs: List[CommandEnv],
@@ -227,45 +227,45 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub stderr_mode: Stdio,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(program: []const char) Self;
   ```
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn arg(self, value: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn args(self, values: *const List[String]) Self;
   ```
-  ```zeen
+  ```zn
   pub fn env(self, key: []const char, value: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn env_remove(self, key: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn env_clear(self) Self;
   ```
-  ```zeen
+  ```zn
   pub fn current_dir(self, dir: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn stdin(self, mode: Stdio) Self;
   ```
-  ```zeen
+  ```zn
   pub fn stdout(self, mode: Stdio) Self;
   ```
-  ```zeen
+  ```zn
   pub fn stderr(self, mode: Stdio) Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn spawn(*const self) Result[Child, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn status(*const self) Result[ExitStatus, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn output(*self) Result[Output, IoError];
   ```
 </Card>

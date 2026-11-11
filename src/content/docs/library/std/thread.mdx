@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/thread.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/thread.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.thread;
 > use std.sync;
 >
@@ -50,16 +50,16 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn spawn[T](f: FnOnce() T) JoinHandle[T];
   ```
-  ```zeen
+  ```zn
   pub fn yield_now();
   ```
 </Card>
@@ -70,13 +70,13 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   native: NativeThread,
   slot: *T,
   done: bool,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn join(self) T;
   ```
 

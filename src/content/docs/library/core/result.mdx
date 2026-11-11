@@ -15,58 +15,58 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Variants:**
-  ```zeen
+  ```zn
   Ok: T,
   Err: E,
   ```
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn is_ok(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_err(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap(self) T;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap_err(self) E;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap_or(self, default: T) T;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap_or_else(self, f: FnOnce() T) T;
   ```
-  ```zeen
+  ```zn
   pub fn expect(self, msg: []const char) T;
   ```
-  ```zeen
+  ```zn
   pub fn expect_err(self, msg: []const char) E;
   ```
-  ```zeen
+  ```zn
   pub fn ok(self) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn err(self) Option[E];
   ```
-  ```zeen
+  ```zn
   pub fn map[U](self, f: FnOnce(T) U) Result[U, E];
   ```
-  ```zeen
+  ```zn
   pub fn map_or[U](self, f: FnOnce(T) U, default: U) Result[U, E];
   ```
-  ```zeen
+  ```zn
   pub fn map_err[F](self, f: FnOnce(E) F) Result[T, F];
   ```
-  ```zeen
+  ```zn
   pub fn and_then[U](self, f: FnOnce(T) Result[U, E]) Result[U, E];
   ```
-  ```zeen
+  ```zn
   pub fn inspect(self, f: FnOnce(*T) void) Self;
   ```
-  ```zeen
+  ```zn
   pub fn inspect_err(self, f: FnOnce(*E) void) Self;
   ```
 

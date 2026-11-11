@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/string.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/string.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.string;
 > 
 > fn main() {
@@ -28,137 +28,137 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: [*]char,
   _len: usize,
   _capacity: usize,
   ```
   ----
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
-  ```zeen
+  ```zn
   pub fn with_capacity(capacity: usize) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from(value: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_cstr(value: [*]const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_raw_parts(ptr: *void, len: usize, capacity: usize) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_list(value: *const List[char]) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn capacity(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_empty(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, index: usize) Option[char];
   ```
-  ```zeen
+  ```zn
   pub fn get_ptr(*const self, index: usize) Option[*char];
   ```
-  ```zeen
+  ```zn
   pub fn contains(*const self, value: char) bool;
   ```
-  ```zeen
+  ```zn
   pub fn contains_str(*const self, value: []const char) bool;
   ```
-  ```zeen
+  ```zn
   pub fn contains_cstr(*const self, value: [*]const char) bool;
   ```
-  ```zeen
+  ```zn
   pub fn find(*const self, value: char) Option[usize];
   ```
-  ```zeen
+  ```zn
   pub fn find_str(*const self, value: []const char) Option[usize];
   ```
-  ```zeen
+  ```zn
   pub fn find_cstr(*const self, value: [*]const char) Option[usize];
   ```
-  ```zeen
+  ```zn
   pub fn to_list(*const self) List[char];
   ```
-  ```zeen
+  ```zn
   pub fn trim(*const self) []const char;
   ```
-  ```zeen
+  ```zn
   pub fn trim_start(*const self) []const char;
   ```
-  ```zeen
+  ```zn
   pub fn trim_end(*const self) []const char;
   ```
-  ```zeen
+  ```zn
   pub fn split(*const self, delim: char) List[String];
   ```
 
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn push(*self, value: char);
   ```
-  ```zeen
+  ```zn
   pub fn push_str(*self, value: []const char);
   ```
-  ```zeen
+  ```zn
   pub fn push_string(*self, value: *Self);
   ```
-  ```zeen
+  ```zn
   pub fn pop(*self) Option[char];
   ```
-  ```zeen
+  ```zn
   pub fn remove(*self, index: usize) Option[char];
   ```
-  ```zeen
+  ```zn
   pub fn set(*self, index: usize, value: char) Option[char];
   ```
-  ```zeen
+  ```zn
   pub fn to_uppercase(*self);
   ```
-  ```zeen
+  ```zn
   pub fn to_lowercase(*self);
   ```
-  ```zeen
+  ```zn
   pub fn replace(*self, from: [*]const char, to: [*]const char);
   ```
-  ```zeen
+  ```zn
   pub fn reverse(*self);
   ```
-  ```zeen
+  ```zn
   pub fn clear(*self);
   ```
-  ```zeen
+  ```zn
   pub fn truncate(*self, new_len: usize);
   ```
 
   **Parsing:**
-  ```zeen
+  ```zn
   pub fn parse_i32(*const self) Option[i32];
   ```
-  ```zeen
+  ```zn
   pub fn parse_i64(*const self) Option[i64];
   ```
-  ```zeen
+  ```zn
   pub fn parse_u32(*const self) Option[u32];
   ```
-  ```zeen
+  ```zn
   pub fn parse_u64(*const self) Option[u64];
   ```
-  ```zeen
+  ```zn
   pub fn parse_f32(*const self) Option[f32];
   ```
-  ```zeen
+  ```zn
   pub fn parse_f64(*const self) Option[f64];
   ```
 

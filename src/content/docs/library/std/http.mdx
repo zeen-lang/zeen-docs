@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/http.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/http.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.http;
 > 
 > fn main() {
@@ -35,7 +35,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   Get,
   Post,
   Put,
@@ -54,19 +54,19 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   listener: TcpListener,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn bind(addr: *const SocketAddr) Result[Self, IoError];
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn accept(*const self) Result[TcpStream, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn read_request(stream: *TcpStream) Result[Request, IoError];
   ```
 </Card>
@@ -77,7 +77,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub name: String,
   pub value: String,
   ```
@@ -89,14 +89,14 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   inner: List[Header],
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn push(*self, name: String, value: String);
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, name: []const char) Option[String];
   ```
 </Card>
@@ -107,14 +107,14 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub method: Method,
   pub path: String,
   pub headers: Headers,
   pub body: String,
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn header(*const self, name: []const char) Option[String];
   ```
 </Card>
@@ -125,218 +125,218 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   status: u16,
   body: String,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(status: u16, body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn empty(status: u16) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn status_code(*const self) u16;
   ```
 
   **Setters:**
-  ```zeen
+  ```zn
   pub fn set_status_code(*self, code: u16);
   ```
 
   **Named Constructors:**
-  ```zeen
+  ```zn
   pub fn ok(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn not_found() Self;
   ```
-  ```zeen
+  ```zn
   pub fn continue_() Self;
   ```
-  ```zeen
+  ```zn
   pub fn switching_protocols() Self;
   ```
-  ```zeen
+  ```zn
   pub fn processing() Self;
   ```
-  ```zeen
+  ```zn
   pub fn early_hints() Self;
   ```
-  ```zeen
+  ```zn
   pub fn created(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn accepted(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn non_authoritative_information(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn no_content() Self;
   ```
-  ```zeen
+  ```zn
   pub fn reset_content() Self;
   ```
-  ```zeen
+  ```zn
   pub fn partial_content(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn multi_status(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn already_reported(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn im_used(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn multiple_choices(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn moved_permanently(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn found(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn see_other(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn not_modified() Self;
   ```
-  ```zeen
+  ```zn
   pub fn use_proxy(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn temporary_redirect(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn permanent_redirect(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn bad_request(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn unauthorized(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn payment_required(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn forbidden(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn method_not_allowed(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn not_acceptable(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn proxy_authentication_required(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn request_timeout(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn conflict(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn gone(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn length_required(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn precondition_failed(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn payload_too_large(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn uri_too_long(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn unsupported_media_type(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn range_not_satisfiable(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn expectation_failed(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn im_a_teapot(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn misdirected_request(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn unprocessable_content(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn locked(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn failed_dependency(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn too_early(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn upgrade_required(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn precondition_required(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn too_many_requests(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn request_header_fields_too_large(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn unavailable_for_legal_reasons(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn internal_server_error(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn not_implemented(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn bad_gateway(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn service_unavailable(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn gateway_timeout(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn http_version_not_supported(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn variant_also_negotiates(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn insufficient_storage(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn loop_detected(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn not_extended(body: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn network_authentication_required(body: []const char) Self;
   ```
 
   **Send:**
-  ```zeen
+  ```zn
   pub fn send(*self, stream: *TcpStream) Result[void, IoError];
   ```
 </Card>

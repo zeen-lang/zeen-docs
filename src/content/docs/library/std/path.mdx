@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/path.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/path.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.path;
 >
 > fn main() {
@@ -29,28 +29,28 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn is_absolute(path: []const char) bool;
   ```
-  ```zeen
+  ```zn
   pub fn basename(path: *[]const char) []const char;
   ```
-  ```zeen
+  ```zn
   pub fn dirname(path: *[]const char) []const char;
   ```
-  ```zeen
+  ```zn
   pub fn extension(path: *[]const char) Option[[]const char];
   ```
-  ```zeen
+  ```zn
   pub fn join(a: []const char, b: []const char) String;
   ```
-  ```zeen
+  ```zn
   pub fn normalize(path: []const char) String;
   ```
 </Card>

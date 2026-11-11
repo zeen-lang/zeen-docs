@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/sync.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/sync.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.sync;
 >
 > fn main() {
@@ -31,23 +31,23 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   os: OsMutex,
   data: T,
   open: bool,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(value: T) Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn lock(*self) MutexGuard[T];
   ```
-  ```zeen
+  ```zn
   pub fn try_lock(*self) Option[MutexGuard[T]];
   ```
-  ```zeen
+  ```zn
   pub fn into_inner(self) T;
   ```
 
@@ -61,7 +61,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   lock: *OsMutex,
   got: *T,
   ```
@@ -75,29 +75,29 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   os: OsRwLock,
   data: T,
   open: bool,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(value: T) Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn read(*self) RwReadGuard[T];
   ```
-  ```zeen
+  ```zn
   pub fn try_read(*self) Option[RwReadGuard[T]];
   ```
-  ```zeen
+  ```zn
   pub fn write(*self) RwWriteGuard[T];
   ```
-  ```zeen
+  ```zn
   pub fn try_write(*self) Option[RwWriteGuard[T]];
   ```
-  ```zeen
+  ```zn
   pub fn into_inner(self) T;
   ```
 
@@ -111,7 +111,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   lock: *OsRwLock,
   got: *T,
   ```
@@ -125,7 +125,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   lock: *OsRwLock,
   got: *T,
   ```
@@ -139,25 +139,25 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: *T,
   count: *i64,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(value: T) Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn use_count(*const self) i64;
   ```
-  ```zeen
+  ```zn
   pub fn is_unique(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self) *const T;
   ```
-  ```zeen
+  ```zn
   pub fn get_mut(*self) *T;
   ```
 

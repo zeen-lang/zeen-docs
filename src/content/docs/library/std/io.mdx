@@ -15,19 +15,19 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn read_line(buf: *String) bool;
   ```
-  ```zeen
+  ```zn
   pub fn read_to_string(buf: *String) bool;
   ```
-  ```zeen
+  ```zn
   pub fn read_exact(buf: *String, n: usize) bool;
   ```
 </Card>
@@ -38,19 +38,19 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn write(value: []const char) void;
   ```
-  ```zeen
+  ```zn
   pub fn write_string(value: *String) void;
   ```
-  ```zeen
+  ```zn
   pub fn flush() void;
   ```
 </Card>
@@ -61,16 +61,16 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn write(value: []const char) void;
   ```
-  ```zeen
+  ```zn
   pub fn flush() void;
   ```
 </Card>
@@ -81,29 +81,29 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   _kind: IoErrorKind,
   _message: String,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(kind: IoErrorKind, message: []const char) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_errno(code: c_int) Self;
   ```
-  ```zeen
+  ```zn
   pub fn last_os_error() Self;
   ```
-  ```zeen
+  ```zn
   pub fn win_error(code: WinDWORD) IoError;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn kind(*const self) IoErrorKind;
   ```
-  ```zeen
+  ```zn
   pub fn message(self) String;
   ```
 </Card>
@@ -114,7 +114,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  ```zeen
+  ```zn
   NotFound,
   PermissionDenied,
   AlreadyExists,

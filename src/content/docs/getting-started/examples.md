@@ -3,10 +3,21 @@ title: Examples
 description: Small code examples
 ---
 
-## Hello World
+## Result and Switch
 ```zn
+fn divide(a: i32, b: i32) Result[i32, String] {
+  if (b == 0) {
+    return Result.Err(String.from("Division by zero"));
+  };
+
+  Result.Ok(a / b)
+}
+
 fn main() {
-  @println("Hello, World!");
+  switch (divide(7, 0)) {
+    .Ok(v) => @println("Result: {}", v),
+    .Err(e) => @println("Error: {}", e),
+  };
 }
 ```
 
@@ -85,24 +96,6 @@ fn main() {
   @println("{} {} {}", *pointer, *(pointer + 1), *(pointer + 2));
 
   free_me(pointer);
-}
-```
-
-## Result and Switch
-```zn
-fn divide(a: i32, b: i32) Result[i32, String] {
-  if (b == 0) {
-    return Result.Err(String.from("Division by zero"));
-  };
-
-  Result.Ok(a / b)
-}
-
-fn main() {
-  switch (divide(7, 0)) {
-    .Ok(v) => @println("Result: {}", v),
-    .Err(e) => @println("Error: {}", e),
-  };
 }
 ```
 

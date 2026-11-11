@@ -5,7 +5,7 @@ description: Anonymous functions, capture semantics and fat Fn and FnOnce types.
 
 ## Literals
 A closure is an anonymous function that captures values from its scope:
-```zeen
+```zn
 let n = 5;
 let add = fn(x: i32) i32 { return x + n; };
 
@@ -17,7 +17,7 @@ A closure without captures is a basic `fn` pointer and is `Copy`.
 ## Fat Types
 A capturing closure has a fat type: `Fn` or `FnOnce`. Both are move-only: captures live in a heap block that travels with the value and is dropped with it. Calls dispatch through the stored pointer, an `Fn` value can be called many times, `FnOnce` at most once. Both types are plain structs with static layout (`{ ptr, env }`) and `Drop`.
 
-```zeen
+```zn
 fn apply(f: Fn(i32) i32, x: i32) i32 {
   return f(x);
 }
@@ -36,7 +36,7 @@ let r = apply(fn(x: i32) i32 { return x * m; }, 2);
 
 ## Generics
 Functions over fat params monomorphize per call site:
-```zeen
+```zn
 fn apply[T](val: T, f: FnOnce(T) T) T {
   f(val)
 }
@@ -48,7 +48,7 @@ fn main() {
 ```
 
 A closure may capture a generic parameter when the parameter is `Copy`. The capture is monomorphized with the enclosing function:
-```zeen
+```zn
 fn twice[T: Copy](value: T) T {
   let grab = fn() T { value };
   return grab();
@@ -65,7 +65,7 @@ A zero capture closure inside a generic function binds the enclosing generics as
 
 ## Globals
 Global initializers accept function values: a named function, an anonymous `fn` literal or a `Fn` / `FnOnce` returned by a call. The compiler routes them through a synthesized init function.
-```zeen
+```zn
 let scale: fn(i32) i32 = fn(x: i32) i32 { x * 2 };
 
 fn make(n: i32) FnOnce() i32 {

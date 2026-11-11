@@ -15,44 +15,44 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   buckets: List[List[SetEntry[T]]],
   _len: usize,
   _capacity: usize,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
-  ```zeen
+  ```zn
   pub fn with_capacity(cap: usize) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn capacity(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_empty(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn contains(*const self, value: *const T) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, value: *const T) Option[*const T];
   ```
 
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn insert(*self, value: T) bool;
   ```
-  ```zeen
+  ```zn
   pub fn remove(*self, value: *const T) bool;
   ```
-  ```zeen
+  ```zn
   pub fn clear(*self);
   ```
 
@@ -66,7 +66,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub hash: u64,
   pub key: T,
   ```

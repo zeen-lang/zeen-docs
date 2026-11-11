@@ -6,7 +6,7 @@ description: Fixed arrays, views with slices, ranges and many pointers.
 ## Arrays
 Fixed-size collection, size known at compile time. Elements access with `a[i]`, indexing starts at 0. <br/>
 Syntax:
-```zeen
+```zn
 [1, 2, 3, 4]
 [0; 1024]
 ```
@@ -16,7 +16,7 @@ The array type is `[N]T` (`[0; 1024]` is `[1024]i32`).
 If elements are not `Copy`, the array is move-only.
 
 Example:
-```zeen
+```zn
 let numbers = [10, 20, 30];
 
 numbers[0] = 99;
@@ -29,7 +29,7 @@ Out of bounds access panics in Debug, in Release it is UB.
 ## Slices
 A slice is a view into array data with a pointer and a length. It does not copy data, writes through the slice change the original array. <br/>
 Syntax:
-```zeen
+```zn
 numbers[1..4]
 numbers[..]
 numbers[..3]
@@ -40,7 +40,7 @@ numbers[1..=3]
 The slice type is `[]T`. Slices have `.len` and `.ptr` fields. A slice is always `Copy`, it is just a view.
 
 Example:
-```zeen
+```zn
 let numbers = [1, 2, 3, 4, 5];
 let slice = numbers[1..4];
 
@@ -54,7 +54,7 @@ Out of bounds access panics in Debug, in Release it is UB.
 ## Ranges
 A range is a `core` type with optional bounds, used for slicing and iteration. <br/>
 Syntax:
-```zeen
+```zn
 lo..hi
 lo..=hi
 lo..
@@ -64,12 +64,12 @@ lo..
 ```
 
 Ranges can be assigned to a variable:
-```zeen
+```zn
 let range: Range = 1..4;
 ```
 
 Example:
-```zeen
+```zn
 let range = 0..3;
 
 for (i : range) {
@@ -80,13 +80,13 @@ for (i : range) {
 ## Many Pointers
 C-like pointer with unknown length, elements access with `ptr[i]`. <br/>
 Can be made from array:
-```zeen
+```zn
 let numbers = [1, 2, 3];
 let ptr: [*]i32 = numbers;
 ```
 
 Example:
-```zeen
+```zn
 let numbers = [104, 101, 108];
 let ptr: [*]i32 = numbers;
 

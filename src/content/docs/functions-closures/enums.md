@@ -5,7 +5,7 @@ description: Enum variants, payload extraction, tags, methods, Copy and Drop rul
 
 ## Variants
 An enum is a full type system member, just like structs: it can have generics, methods and `implement` blocks. An enum has three kinds of variants: empty, single value and struct. All variants are public automatically.
-```zeen
+```zn
 enum Value {
   nothing,
   number: i64,
@@ -24,7 +24,7 @@ enum Result[T, E] {
 Struct payload fields are all public and carry no methods of their own.
 
 The construction names the variant:
-```zeen
+```zn
 let empty_value = Value.nothing;
 let lucky_number = Value.number(5);
 let point = Value.pair { .first = 5, .second = 6 };
@@ -32,13 +32,13 @@ let point = Value.pair { .first = 5, .second = 6 };
 
 ## Extraction
 Payload reads through `value.variant`. In Debug the tag is checked and a mismatch panics, in Release it reads unchecked. `Copy` payloads copy out, other payloads move out of an owned enum and consume it.
-```zeen
+```zn
 @println("{}", lucky_number.number);
 @println("{}", point.pair.first);
 ```
 
 The safe way is `switch`: each arm binds the payload to a name, empty variants match by name only.
-```zeen
+```zn
 switch (point) {
   .nothing => @println("empty"),
   .number(value) => @println("single: {}", value),
@@ -50,7 +50,7 @@ With `&` the arm binds a `*Payload` pointer into the enum instead of moving the 
 
 ## Tag
 `@enumTag` returns the runtime tag as `u8`:
-```zeen
+```zn
 @println("{}", @enumTag(empty_value));
 ```
 
@@ -58,7 +58,7 @@ Only empty-only enums support `==` and `Display`.
 
 ## Methods
 Enums take the same `self` receivers as structs: `self`, `const self`, `*self`, `*const self`.
-```zeen
+```zn
 enum Counter {
   zero,
   count: i32,
@@ -73,7 +73,7 @@ let current = Counter.count(41);
 ```
 
 Interfaces apply to enums exactly like structs:
-```zeen
+```zn
 implement Display : Shape {
   fn display[W: StrWriter](*const self, out: *W) void {
     out.write_str("enum");

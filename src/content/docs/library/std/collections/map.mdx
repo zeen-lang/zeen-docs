@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/collections/map.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/collections/map.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.collections.map;
 > 
 > fn main() {
@@ -33,50 +33,50 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   buckets: List[List[Entry[K, V]]],
   _len: usize,
   _capacity: usize,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
-  ```zeen
+  ```zn
   pub fn with_capacity(cap: usize) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn capacity(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_empty(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn contains_key(*const self, key: *const K) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self, key: *const K) Option[*const V];
   ```
-  ```zeen
+  ```zn
   pub fn get_mut(*self, key: *const K) Option[*V];
   ```
 
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn insert(*self, key: K, value: V) Option[V];
   ```
-  ```zeen
+  ```zn
   pub fn remove(*self, key: *const K) Option[V];
   ```
-  ```zeen
+  ```zn
   pub fn remove_entry(*self, key: *const K) Option[Entry[K, V]];
   ```
-  ```zeen
+  ```zn
   pub fn clear(*self);
   ```
 
@@ -90,7 +90,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   pub hash: u64,
   pub value: V,
   pub key: K,
@@ -98,10 +98,10 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn value_ptr(*self) *V;
   ```
-  ```zeen
+  ```zn
   pub fn value_const_ptr(*const self) *const V;
   ```
 </Card>

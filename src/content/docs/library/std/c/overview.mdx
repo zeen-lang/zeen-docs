@@ -8,7 +8,7 @@ import { Badge } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.c" variant="note" size="medium" /> <br/>
 
 `std.c` holds thin `extern` bindings to the platform. Headers map straight to `std.c.<name>`, platform types derive through preprocessor `@os`/`@arch` in `types.zn`:
-```zeen
+```zn
 use std.c.stdlib;
 use std.c.posix.pthread;
 ```

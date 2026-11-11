@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/collections/list.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/collections/list.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.collections.list;
 > 
 > fn main() {
@@ -29,7 +29,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: [*]T,
   _len: usize,
   _capacity: usize,
@@ -37,94 +37,94 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
-  ```zeen
+  ```zn
   pub fn with_capacity(capacity: usize) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from[T: Copy](value: []const T) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_clone[T: Clone](value: []const T) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_raw_parts(ptr: [*]T, len: usize, capacity: usize) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn len(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn capacity(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_empty(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get[T: Copy](*const self, index: usize) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn get_ptr(*const self, index: usize) Option[*T];
   ```
-  ```zeen
+  ```zn
   pub fn first[T: Copy](*const self) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn last[T: Copy](*const self) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn find[T: Eq](*const self, value: *const T) Option[usize];
   ```
-  ```zeen
+  ```zn
   pub fn binary_search[T: Ord](*const self, value: *const T) Option[usize];
   ```
 
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn push(*self, value: T);
   ```
-  ```zeen
+  ```zn
   pub fn pop(*self) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn remove(*self, index: usize) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn set(*self, index: usize, value: T) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn swap(*self, a: usize, b: usize);
   ```
-  ```zeen
+  ```zn
   pub fn insert(*self, index: usize, value: T);
   ```
-  ```zeen
+  ```zn
   pub fn append(*self, other: List[T]);
   ```
-  ```zeen
+  ```zn
   pub fn swap_remove(*self, index: usize) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn reverse(*self);
   ```
-  ```zeen
+  ```zn
   pub fn clear(*self);
   ```
-  ```zeen
+  ```zn
   pub fn truncate(*self, new_len: usize);
   ```
-  ```zeen
+  ```zn
   pub fn reserve(*self, additional: usize);
   ```
 
   **Sort:**
-  ```zeen
+  ```zn
   pub fn sort[T: Ord](*self);
   ```
-  ```zeen
+  ```zn
   pub fn sort_by(*self, compare: fn(*const T, *const T) Ordering);
   ```
 
@@ -142,7 +142,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: [*]T,
   len: usize,
   idx: usize,
@@ -158,7 +158,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: [*]T,
   len: usize,
   idx: usize,

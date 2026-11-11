@@ -15,49 +15,49 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Variants:**
-  ```zeen
+  ```zn
   None,
   Some: T,
   ```
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn is_some(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn is_none(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap(self) T;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap_or(self, default: T) T;
   ```
-  ```zeen
+  ```zn
   pub fn unwrap_or_else(self, f: FnOnce() T) T;
   ```
-  ```zeen
+  ```zn
   pub fn expect(self, msg: []const char) T;
   ```
-  ```zeen
+  ```zn
   pub fn map[U](self, f: FnOnce(T) U) Option[U];
   ```
-  ```zeen
+  ```zn
   pub fn map_or[U](self, f: FnOnce(T) U, default: U) Option[U];
   ```
-  ```zeen
+  ```zn
   pub fn inspect(self, f: FnOnce(*T) void) Option[T];
   ```
-  ```zeen
+  ```zn
   pub fn ok_or[E](self, err: E) Result[T, E];
   ```
-  ```zeen
+  ```zn
   pub fn ok_or_else[E](self, err: FnOnce() E) Result[T, E];
   ```
-  ```zeen
+  ```zn
   pub fn and_then[U](self, f: FnOnce(T) Option[U]) Option[U];
   ```
-  ```zeen
+  ```zn
   pub fn filter(self, predicate: FnOnce(*T) bool) Option[T];
   ```
 

@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/net.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/net.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.net;
 > 
 > fn main() {
@@ -39,29 +39,29 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   _ip: u32,
   _port: u16,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(ip: u32, port: u16) Self;
   ```
-  ```zeen
+  ```zn
   pub fn loopback(port: u16) Self;
   ```
-  ```zeen
+  ```zn
   pub fn any(port: u16) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_str(s: []const char) Result[Self, IoError];
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn ip(*const self) u32;
   ```
-  ```zeen
+  ```zn
   pub fn port(*const self) u16;
   ```
 
@@ -76,20 +76,20 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   fd: c_int,
   handle: *void,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn bind(addr: *const SocketAddr) Result[Self, IoError];
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn accept(*const self) Result[TcpStream, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn local_addr(*const self) Result[SocketAddr, IoError];
   ```
 
@@ -103,40 +103,40 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   fd: c_int,
   handle: *void,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn connect(addr: *const SocketAddr) Result[Self, IoError];
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn local_addr(*const self) Result[SocketAddr, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn peer_addr(*const self) Result[SocketAddr, IoError];
   ```
 
   **Mutations:**
-  ```zeen
+  ```zn
   pub fn read(*self, buf: *String) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn read_exact(*self, buf: *String, n: usize) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn read_to_string(*self, buf: *String) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn write(*self, buf: []const char) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn write_all(*self, buf: []const char) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn shutdown(*const self) Result[void, IoError];
   ```
 
@@ -150,23 +150,23 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   fd: c_int,
   handle: *void,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn bind(addr: *const SocketAddr) Result[Self, IoError];
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn send_to(*const self, buf: []const char, addr: *const SocketAddr) Result[usize, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn recv_from(*self, buf: *String) Result[SocketAddr, IoError];
   ```
-  ```zeen
+  ```zn
   pub fn local_addr(*const self) Result[SocketAddr, IoError];
   ```
 

@@ -15,27 +15,27 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: *T,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(value: T) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn get(*const self) *const T;
   ```
-  ```zeen
+  ```zn
   pub fn get_mut(*self) *T;
   ```
 
   **Ownership:**
-  ```zeen
+  ```zn
   pub fn release(self) *T;
   ```
-  ```zeen
+  ```zn
   pub fn reset(*self, value: T);
   ```
 
@@ -50,26 +50,26 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   ptr: *T,
   count: *usize,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new(value: T) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn use_count(*const self) usize;
   ```
-  ```zeen
+  ```zn
   pub fn is_unique(*const self) bool;
   ```
-  ```zeen
+  ```zn
   pub fn get(*const self) *const T;
   ```
-  ```zeen
+  ```zn
   pub fn get_mut(*self) *T;
   ```
 

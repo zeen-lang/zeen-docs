@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/time.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/time.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.time;
 >
 > fn main() {
@@ -29,35 +29,35 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   secs: u64,
   nanos: u32,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn from_secs(s: u64) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_millis(ms: u64) Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_micros(us: u64) Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn as_secs(*const self) u64;
   ```
-  ```zeen
+  ```zn
   pub fn subsec_nanos(*const self) u32;
   ```
-  ```zeen
+  ```zn
   pub fn as_millis(*const self) u64;
   ```
-  ```zeen
+  ```zn
   pub fn as_nanos(*const self) u64;
   ```
-  ```zeen
+  ```zn
   pub fn is_zero(*const self) bool;
   ```
 
@@ -71,17 +71,17 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   secs: i64,
   nanos: i64,
   ```
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn now() Self;
   ```
 
   **Getters:**
-  ```zeen
+  ```zn
   pub fn elapsed(*const self) Duration;
   ```
 </Card>
@@ -92,16 +92,16 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn now() i64;
   ```
-  ```zeen
+  ```zn
   pub fn sleep(d: Duration);
   ```
 </Card>

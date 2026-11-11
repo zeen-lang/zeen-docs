@@ -9,7 +9,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [std/crypto/rand.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/crypto/rand.zn) <br/>
 
 > **Usage Example**
-> ```zeen
+> ```zn
 > use std.crypto.rand;
 >
 > fn main() {
@@ -28,19 +28,19 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Methods:**
-  ```zeen
+  ```zn
   pub fn seed(seed: u32);
   ```
-  ```zeen
+  ```zn
   pub fn next_u32() u32;
   ```
-  ```zeen
+  ```zn
   pub fn below(upper: u32) u32;
   ```
 </Card>
@@ -51,26 +51,26 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ----
 
   **Fields:**
-  ```zeen
+  ```zn
   // No Fields
   ```
   ----
 
   **Constructors:**
-  ```zeen
+  ```zn
   pub fn new() Self;
   ```
-  ```zeen
+  ```zn
   pub fn from_seed(seed: u64) Self;
   ```
   **Methods:**
-  ```zeen
+  ```zn
   pub fn next_u64(*self) u64;
   ```
-  ```zeen
+  ```zn
   pub fn next_u32(*self) u32;
   ```
-  ```zeen
+  ```zn
   pub fn range(*self, from: u32, to: u32) u32;
   ```
 </Card>
