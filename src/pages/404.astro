@@ -1,0 +1,54 @@
+---
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+---
+
+<StarlightPage
+  frontmatter={{
+    title: '404',
+    template: 'splash',
+  }}
+  hasSidebar={false}
+>
+  <div class="zn-404">
+    <p class="zn-404-code">404</p>
+
+    <p class="zn-404-text">
+      Page not found. Check the URL or try using the search bar.
+    </p>
+  </div>
+</StarlightPage>
+
+<style is:global>
+  main > .content-panel:has(h1#_top) {
+    display: none;
+  }
+
+  .zn-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    min-height: min(58vh, 34rem);
+    padding: 2rem 1rem 4rem;
+    text-align: center;
+  }
+
+  .zn-404-code {
+    margin: 0;
+    font-family: var(--zn-mono);
+    font-size: clamp(64px, 12vw, 120px);
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    color: var(--sl-color-gray-1);
+  }
+
+  .zn-404-text {
+    margin: 0;
+    max-width: 36ch;
+    font-size: 15px;
+    line-height: 24px;
+    color: var(--sl-color-gray-3);
+  }
+</style>
