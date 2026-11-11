@@ -15,7 +15,7 @@ let highlighterPromise: Promise<Highlighter> | undefined;
 const getHighlighter = () => {
 	highlighterPromise ??= createHighlighter({
 		themes: [zeenTheme],
-		langs: [{ ...zeenGrammar, aliases: ['zeen', 'zn'] }],
+		langs: [zeenGrammar],
 	});
 	return highlighterPromise;
 };

@@ -6,10 +6,7 @@ import vercel from '@astrojs/vercel';
 import zeenGrammarFile from './src/assets/zeen.tmLanguage.json';
 import zeenTheme from './src/assets/zeen-theme.json';
 
-const zeenLanguage = {
-	...zeenGrammarFile,
-	aliases: ['zeen', 'zn']
-}
+const zeenLanguage = zeenGrammarFile;
 
 // https://astro.build/config
 export default defineConfig({

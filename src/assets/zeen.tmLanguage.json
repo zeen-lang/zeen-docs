@@ -1,6 +1,9 @@
 {
-  "name": "Zeen",
+  "name": "zeen",
   "scopeName": "source.zeen",
+  "aliases": [
+    "zn"
+  ],
   "fileTypes": [
     "zeen",
     "zn"
@@ -428,8 +431,73 @@
     "turbofish": {
       "patterns": [
         {
-          "name": "keyword.operator.generic.zeen",
-          "match": "#\\["
+          "name": "meta.generic.zeen",
+          "begin": "#\\[",
+          "beginCaptures": {
+            "0": {
+              "name": "keyword.operator.generic.zeen"
+            }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": {
+              "name": "keyword.operator.generic.zeen"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#generic-arguments"
+            }
+          ]
+        }
+      ]
+    },
+
+    "generic-arguments": {
+      "patterns": [
+        {
+          "include": "#types"
+        },
+        {
+          "include": "#function-types"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#constants"
+        },
+        {
+          "include": "#generic-types"
+        },
+        {
+          "include": "#self"
+        },
+        {
+          "name": "meta.array-type.zeen",
+          "begin": "\\[",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.array.zeen"
+            }
+          },
+          "end": "\\]",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.array.zeen"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#generic-arguments"
+            }
+          ]
+        },
+        {
+          "include": "#operators"
+        },
+        {
+          "include": "#punctuation"
         }
       ]
     },
