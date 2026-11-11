@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 import vercel from '@astrojs/vercel';
 
 import zeenGrammarFile from './src/assets/zeen.tmLanguage.json';
-import zeenTheme from './src/assets/zeen-theme.json';
+import { zeenCodeTheme } from './src/lib/codeTheme.ts';
 
 const zeenLanguage = zeenGrammarFile;
 
@@ -29,7 +29,7 @@ export default defineConfig({
 
 			// code highlight
 			expressiveCode: {
-				themes: [zeenTheme],
+				themes: [zeenCodeTheme],
 				shiki: {
 					langs: [zeenLanguage]
 				},

@@ -1,7 +1,7 @@
 import { createHighlighter, type Highlighter } from 'shiki';
 
 import zeenGrammar from '../assets/zeen.tmLanguage.json';
-import zeenTheme from '../assets/zeen-theme.json';
+import { zeenCodeTheme, zeenCodeThemeName } from './codeTheme';
 
 export interface ZeenToken {
 	content: string;
@@ -14,7 +14,7 @@ let highlighterPromise: Promise<Highlighter> | undefined;
 
 const getHighlighter = () => {
 	highlighterPromise ??= createHighlighter({
-		themes: [zeenTheme],
+		themes: [zeenCodeTheme],
 		langs: [zeenGrammar],
 	});
 	return highlighterPromise;
@@ -22,7 +22,7 @@ const getHighlighter = () => {
 
 export const highlightZeen = async (code: string): Promise<ZeenLine[]> => {
 	const highlighter = await getHighlighter();
-	const { tokens } = highlighter.codeToTokens(code, { lang: 'zeen', theme: zeenTheme.name });
+	const { tokens } = highlighter.codeToTokens(code, { lang: 'zeen', theme: zeenCodeThemeName });
 
 	return tokens.map((line) =>
 		line.map((token) => {
