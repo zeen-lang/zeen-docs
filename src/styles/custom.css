@@ -1,29 +1,38 @@
-/* Dark mode colors. */
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
 :root {
-	--sl-color-accent-low: #002c1a;
+	color-scheme: dark;
+
+	--sl-font: 'Geist Variable';
+	--sl-font-mono: 'Geist Mono Variable';
+
+	/* brand */
+	--sl-color-accent-low: #062b1d;
 	--sl-color-accent: #007e53;
 	--sl-color-accent-high: #93dbb6;
-	--sl-color-white: #ffffff;
-	--sl-color-gray-1: #eceef2;
-	--sl-color-gray-2: #c0c2c7;
-	--sl-color-gray-3: #888b96;
-	--sl-color-gray-4: #545861;
-	--sl-color-gray-5: #353841;
-	--sl-color-gray-6: #24272f;
-	--sl-color-black: #17181c;
-}
-/* Light mode colors. */
-:root[data-theme='light'] {
-	--sl-color-accent-low: #b0e5c9;
-	--sl-color-accent: #00764e;
-	--sl-color-accent-high: #003d26;
-	--sl-color-white: #17181c;
-	--sl-color-gray-1: #24272f;
-	--sl-color-gray-2: #353841;
-	--sl-color-gray-3: #545861;
-	--sl-color-gray-4: #888b96;
-	--sl-color-gray-5: #c0c2c7;
-	--sl-color-gray-6: #eceef2;
-	--sl-color-gray-7: #f5f6f8;
-	--sl-color-black: #ffffff;
+
+	/* graphite ramp */
+	--sl-color-white: #f4f4f5;
+	--sl-color-gray-1: #e7e7e9;
+	--sl-color-gray-2: #a9aaae;
+	--sl-color-gray-3: #8a8b90;
+	--sl-color-gray-4: #5b5c61;
+	--sl-color-gray-5: #2a2b2f;
+	--sl-color-gray-6: #1a1b1e;
+	--sl-color-gray-7: #151618;
+	--sl-color-black: #101113;
+
+	/* surfaces and lines */
+	--zn-surface: #151618;
+	--zn-surface-raised: #1a1b1e;
+	--zn-surface-deep: #0c0d0f;
+	--zn-hairline: rgb(244 244 245 / 0.08);
+	--zn-hairline-strong: rgb(244 244 245 / 0.14);
+
+	--zn-mono: var(--sl-font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	--zn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--zn-fast: 160ms;
+	--zn-medium: 220ms;
 }

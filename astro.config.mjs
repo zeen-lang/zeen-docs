@@ -4,6 +4,7 @@ import starlight from '@astrojs/starlight';
 import vercel from '@astrojs/vercel';
 
 import zeenGrammarFile from './src/assets/zeen.tmLanguage.json';
+import zeenTheme from './src/assets/zeen-theme.json';
 
 const zeenLanguage = {
 	...zeenGrammarFile,
@@ -22,7 +23,7 @@ export default defineConfig({
 		starlight({
 			// branding
 			title: 'Zeen',
-			description: 'Zeen is a modern systems programming languaged focused on performance, safety and simplicity',
+			description: 'Zeen is a modern systems programming language focused on performance, safety and simplicity',
 			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/zeen-lang/zeen' }],
 			logo: {
 				light: './public/Zeen.png',
@@ -31,7 +32,7 @@ export default defineConfig({
 
 			// code highlight
 			expressiveCode: {
-				themes: ['kanagawa-wave'],
+				themes: [zeenTheme],
 				shiki: {
 					langs: [zeenLanguage]
 				},
@@ -43,6 +44,8 @@ export default defineConfig({
 				'./src/styles/landing.css',
 			],
 			components: {
+				Hero: './src/components/Hero.astro',
+				ThemeProvider: './src/components/ThemeProvider.astro',
 				ThemeSelect: './src/components/ThemeSelect.astro',
 				Head: './src/components/Head.astro',
 			},

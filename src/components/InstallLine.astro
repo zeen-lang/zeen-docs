@@ -1,0 +1,27 @@
+---
+import CopyButton from './CopyButton.astro';
+---
+
+<div class="zn-install">
+	<span class="zn-marker" aria-hidden="true">›</span>
+	<div data-install-command="unix">
+		<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
+	</div>
+	<div data-install-command="windows" hidden>
+		<code id="install-windows">irm https://github.com/zeen-lang/zeen/releases/latest/download/install.ps1 | iex</code>
+	</div>
+	<CopyButton target="#install-unix" label="Copy install command" />
+</div>
+
+<script is:inline>
+	(() => {
+		if (!navigator.userAgent.includes('Windows')) return;
+		const unix = document.getElementById('install-unix');
+		const windows = document.getElementById('install-windows');
+		const button = document.querySelector('[data-copy-target="#install-unix"]');
+		if (!unix || !windows || !button) return;
+		unix.parentElement.hidden = true;
+		windows.parentElement.hidden = false;
+		button.dataset.copyTarget = '#install-windows';
+	})();
+</script>

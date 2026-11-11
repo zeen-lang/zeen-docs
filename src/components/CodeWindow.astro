@@ -1,0 +1,153 @@
+---
+import CopyButton from './CopyButton.astro';
+import { highlightZeen } from '../lib/highlight';
+
+const helloCode = `fn main() {
+  @println("Hello, World!");
+}`;
+
+const resultCode = `fn divide(a: i32, b: i32) Result[i32, String] {
+  if (b == 0) {
+    return Result.Err(String.from("Division by zero"));
+  };
+
+  Result.Ok(a / b)
+}
+
+fn main() {
+  switch (divide(7, 0)) {
+    .Ok(v) => @println("Result: {}", v),
+    .Err(e) => @println("Error: {}", e),
+  };
+}`;
+
+const comptimeCode = `comptime fn pair_of(
+  struct_name: comptime_str,
+  a: zeen_type,
+  b: zeen_type,
+) zeen_decl {
+  @zeen_decl(
+    struct $(struct_name) {
+      pub a: $(a),
+      pub b: $(b),
+    }
+  )
+}
+
+comptime {
+  @emit(pair_of("NumsPair", i32, f32));
+}
+
+fn main() {
+  let pair = NumsPair { .a = 1, .b = 1.0 };
+  @println("{} {}", pair.a, pair.b);
+}`;
+
+const examples = [
+	{ id: 'hello', label: 'Hello World', code: helloCode },
+	{ id: 'result', label: 'Result And Switch', code: resultCode },
+	{ id: 'comptime', label: 'Comptime Engine', code: comptimeCode },
+];
+
+const panels = await Promise.all(
+	examples.map(async (example) => ({
+		...example,
+		lines: await highlightZeen(example.code),
+	})),
+);
+---
+
+<figure class="zn-window">
+	<div class="zn-window__bar">
+		<span class="zn-marker" aria-hidden="true">›</span>
+		<div class="zn-tabs" role="tablist" aria-label="Code examples" data-code-tabs>
+			{examples.map((example, index) => (
+				<button
+					type="button"
+					role="tab"
+					id={`tab-${example.id}`}
+					class="zn-tab"
+					aria-controls={`panel-${example.id}`}
+					aria-selected={index === 0 ? 'true' : 'false'}
+					tabindex={index === 0 ? 0 : -1}
+				>
+					{example.label}
+				</button>
+			))}
+		</div>
+		<CopyButton target="[data-code-panel]:not([hidden]) code" label="Copy code" />
+	</div>
+
+	{panels.map((panel, index) => (
+		<div
+			id={`panel-${panel.id}`}
+			role="tabpanel"
+			aria-labelledby={`tab-${panel.id}`}
+			data-code-panel
+			hidden={index !== 0}
+		>
+			<pre class="zn-code" tabindex="0"><code data-code={panel.code}>{panel.lines.map((line) => (
+				<span class="l">{line.map((token) => (
+					token.style ? <span style={token.style}>{token.content}</span> : token.content
+				))}</span>
+			))}</code></pre>
+		</div>
+	))}
+</figure>
+
+<script>
+	const swapTimers = new WeakMap();
+
+	const swapPanel = (windowEl, chrome, next) => {
+		const prev = windowEl.querySelector('[data-code-panel]:not([hidden])');
+		if (!prev || prev === next) return;
+
+		windowEl.style.height = `${windowEl.offsetHeight}px`;
+		void windowEl.offsetHeight;
+
+		next.hidden = false;
+		const end = chrome + next.offsetHeight;
+		prev.hidden = true;
+		windowEl.style.height = `${end}px`;
+
+		window.clearTimeout(swapTimers.get(windowEl));
+		swapTimers.set(
+			windowEl,
+			window.setTimeout(() => {
+				windowEl.style.height = '';
+			}, 280),
+		);
+	};
+
+	document.querySelectorAll('[data-code-tabs]').forEach((list) => {
+		const tabs = [...list.querySelectorAll('[role="tab"]')];
+		const windowEl = list.closest('.zn-window');
+		if (!windowEl) return;
+
+		const initialPanel = windowEl.querySelector('[data-code-panel]:not([hidden])');
+		const chrome = windowEl.offsetHeight - initialPanel.offsetHeight;
+
+		const select = (index) => {
+			tabs.forEach((tab, tabIndex) => {
+				const selected = tabIndex === index;
+				tab.setAttribute('aria-selected', String(selected));
+				tab.tabIndex = selected ? 0 : -1;
+				if (!selected) return;
+				const panel = document.getElementById(tab.getAttribute('aria-controls'));
+				if (panel) swapPanel(windowEl, chrome, panel);
+			});
+			tabs[index].focus();
+		};
+
+		tabs.forEach((tab, index) => {
+			tab.addEventListener('click', () => select(index));
+			tab.addEventListener('keydown', (event) => {
+				const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+				if (step === 0 && event.key !== 'Home' && event.key !== 'End') return;
+				event.preventDefault();
+				const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + step + tabs.length) % tabs.length;
+				select(next);
+			});
+		});
+	});
+</script>

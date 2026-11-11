@@ -1,0 +1,82 @@
+{
+	"$schema": "vscode://schemas/color-theme",
+	"name": "zeen-night",
+	"type": "dark",
+	"colors": {
+		"editor.background": "#151618",
+		"editor.foreground": "#e7e7e9",
+		"editor.selectionBackground": "#2a2b2f",
+		"editor.lineHighlightBackground": "#1a1b1e",
+		"editorCursor.foreground": "#34d399",
+		"editorIndentGuide.background1": "#2a2b2f",
+		"titleBar.border": "#2a2b2f"
+	},
+	"tokenColors": [
+		{
+			"scope": ["comment", "punctuation.definition.comment"],
+			"settings": {
+				"foreground": "#8a8b90",
+				"fontStyle": "italic"
+			}
+		},
+		{
+			"scope": [
+				"keyword",
+				"storage.modifier",
+				"storage.type.function",
+				"keyword.control.preprocessor",
+				"keyword.operator.generic",
+				"keyword.operator.type",
+				"variable.language.self",
+				"support.function.macro"
+			],
+			"settings": {
+				"foreground": "#34d399"
+			}
+		},
+		{
+			"scope": ["keyword.operator"],
+			"settings": {
+				"foreground": "#a9aaae"
+			}
+		},
+		{
+			"scope": [
+				"storage.type.primitive",
+				"storage.type.comptime",
+				"storage.type.pointer",
+				"storage.type.many-pointer",
+				"storage.type.slice",
+				"storage.type.array",
+				"entity.name.type"
+			],
+			"settings": {
+				"foreground": "#89b4fa"
+			}
+		},
+		{
+			"scope": ["entity.name.function"],
+			"settings": {
+				"foreground": "#cba6f7"
+			}
+		},
+		{
+			"scope": ["string", "string.quoted", "constant.character.escape"],
+			"settings": {
+				"foreground": "#f5c97b"
+			}
+		},
+		{
+			"scope": ["constant.numeric", "constant.language", "variable.language.wildcard"],
+			"settings": {
+				"foreground": "#f38ba8"
+			}
+		},
+		{
+			"scope": ["constant.character", "constant.other", "variable.other.comptime"],
+			"settings": {
+				"foreground": "#f5c97b"
+			}
+		}
+	]
+}

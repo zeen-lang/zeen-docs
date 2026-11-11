@@ -1,0 +1,65 @@
+---
+import CodeWindow from './CodeWindow.astro';
+import InstallLine from './InstallLine.astro';
+
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, tagline, actions = [] } = data.hero || {};
+---
+
+<section class="zn-hero">
+	<div class="zn-hero__copy">
+		<h1 id="_top" data-page-title class="zn-hero__title" set:html={title} />
+		{tagline && <p class="zn-hero__tagline" set:html={tagline} />}
+		{actions.length > 0 && (
+			<div class="zn-hero__actions">
+				{actions.map(({ text, link, attrs: extra = {} }, index) => (
+					<a
+						href={link}
+						class:list={['zn-btn', index === 0 ? 'zn-btn--primary' : 'zn-btn--secondary']}
+						{...extra}
+					>
+						{text}
+					</a>
+				))}
+			</div>
+		)}
+	</div>
+
+	<CodeWindow />
+	<InstallLine />
+</section>
+
+<script>
+	const flashCopied = (button) => {
+		button.classList.add('is-copied');
+		window.setTimeout(() => button.classList.remove('is-copied'), 1400);
+	};
+
+	const writeClipboard = async (value) => {
+		try {
+			await navigator.clipboard.writeText(value);
+			return true;
+		} catch {
+			const area = document.createElement('textarea');
+			area.value = value;
+			area.setAttribute('readonly', '');
+			area.style.position = 'fixed';
+			area.style.opacity = '0';
+			document.body.append(area);
+			area.select();
+			const copied = document.execCommand('copy');
+			area.remove();
+			return copied;
+		}
+	};
+
+	document.querySelectorAll('[data-copy-target]').forEach((button) => {
+		button.addEventListener('click', async () => {
+			const selector = button.dataset.copyTarget;
+			const target = selector ? document.querySelector(selector) : null;
+			if (!target) return;
+			const value = target.dataset.code || target.innerText.trim();
+			if (value && (await writeClipboard(value))) flashCopied(button);
+		});
+	});
+</script>

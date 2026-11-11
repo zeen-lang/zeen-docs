@@ -3,44 +3,40 @@ title: Zeen
 head:
   - tag: title
     content: Zeen
-description: A statically typed compiling programming language
+description: A statically typed compiling programming language with move semantics
 template: splash
 hero:
   title: Zero-cost Efficient Execution Natively
-  image:
-    file: /public/Zeen.png
-  tagline: Zeen is a modern systems programming language focused on performance, safety and simplicity.
+  tagline: A statically typed compiling programming language with move semantics
   actions:
-    - text: Read Docs
+    - text: Read the docs
       link: /getting-started/introduction/
-      icon: right-arrow
-    - text: Github
+    - text: GitHub
       link: https://github.com/zeen-lang/zeen
-      icon: external
-      variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
-import QuickInstall from '../../components/QuickInstall.astro';
+<section class="zn-features">
+	<h2 class="zn-eyebrow"><span class="zn-marker" aria-hidden="true">›</span> Features</h2>
 
-<Card title="Quick Installation" icon="down-arrow">
-  <QuickInstall />
-</Card>
+	<div class="zn-feature-grid">
+		<article class="zn-card">
+			<h3 class="zn-card__title"><span class="zn-marker" aria-hidden="true">›</span> Native Performance</h3>
+			<p class="zn-card__body">Built on LLVM, compiles to optimized native code - delivering the performance you expect from a systems language.</p>
+		</article>
 
-<CardGrid>
-	<Card title="Native Performance" icon="rocket">
-		Built on LLVM, compiles to optimized native code - delivering the performance you expect from a systems language.
-	</Card>
+		<article class="zn-card">
+			<h3 class="zn-card__title"><span class="zn-marker" aria-hidden="true">›</span> Freedom to Build</h3>
+			<p class="zn-card__body">No unnecessary restrictions. Zeen gives you direct control over your data, memory and program flow.</p>
+		</article>
 
-	<Card title="Freedom to Build" icon="approve-check">
-	  No unnecessary restrictions. Zeen gives you direct control over your data, memory and program flow.
-	</Card>
+		<article class="zn-card">
+			<h3 class="zn-card__title"><span class="zn-marker" aria-hidden="true">›</span> Move Semantics</h3>
+			<p class="zn-card__body">Explicit ownership with move semantics provides predictable memory management without a garbage collector or hidden runtime overhead.</p>
+		</article>
 
-	<Card title="Move Semantics" icon="random">
-	  Explicit ownership with move semantics provides predictable memory management without a garbage collector or hidden runtime overhead.
-	</Card>
-
-	<Card title="Compile Time" icon="setting">
-	  The comptime engine runs constants, functions, blocks and structs during compilation and substitutes the results, with reflection over your own types.
-	</Card>
-</CardGrid>
+		<article class="zn-card">
+			<h3 class="zn-card__title"><span class="zn-marker" aria-hidden="true">›</span> Compile Time</h3>
+			<p class="zn-card__body">The comptime engine runs constants, functions, blocks and structs during compilation and substitutes the results, with reflection over your own types.</p>
+		</article>
+	</div>
+</section>
