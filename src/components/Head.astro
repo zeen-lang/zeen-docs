@@ -2,9 +2,28 @@
 import { inject } from '@vercel/analytics';
 
 const { head } = Astro.locals.starlightRoute;
+
+const site = Astro.site ?? new URL('https://zeen-lang.tech');
+const image = new URL('/og.png', site).href;
+const twitterImage = new URL('/twitter.png', site).href;
+const title = Astro.locals.starlightRoute.entry?.data.title ?? 'Zeen';
+const description =
+  Astro.locals.starlightRoute.entry?.data.description ??
+  'A statically typed compiling programming language with move semantics';
+const imageAlt =
+  'Zeen - a statically typed compiling programming language with move semantics';
 ---
 
 {head.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}
+
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={twitterImage} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
 <script>
 	import { inject } from '@vercel/analytics';

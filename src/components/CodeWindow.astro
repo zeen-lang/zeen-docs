@@ -43,10 +43,43 @@ fn main() {
   @println("{} {}", pair.a, pair.b);
 }`;
 
+const jsonCode = `use std.json;
+
+fn main() {
+  let value = JsonValue.parse(r#"{"name":"zeen","tags":[1,2]}"#).unwrap();
+
+  let name = value.get("name").unwrap();
+  @println("name: {}", name.as_str().unwrap());
+
+  @println("tags: {}", value.get("tags").unwrap().len());
+  @println("{}", value.stringify());
+}
+
+// NOTE: This is a single threaded sync parser`;
+
+const zoraCode = `use std.testing;
+
+fn add_2(x: i32) i32 {
+  x + 2
+}
+
+/// @test
+pub fn add_test() {
+  assert_eq(add_2(2), 4);
+}
+
+/// @test
+/// @should-fail
+pub fn fail_test() {
+  assert_eq(add_2(2), 6);
+}`;
+
 const examples = [
 	{ id: 'hello', label: 'Hello World', code: helloCode },
 	{ id: 'result', label: 'Result And Switch', code: resultCode },
 	{ id: 'comptime', label: 'Comptime Engine', code: comptimeCode },
+	{ id: 'json', label: 'Parse JSON', code: jsonCode },
+	{ id: 'zora', label: 'Zora Tests', code: zoraCode },
 ];
 
 const panels = await Promise.all(
@@ -124,6 +157,17 @@ const panels = await Promise.all(
 		const windowEl = list.closest('.zn-window');
 		if (!windowEl) return;
 
+		const updateEdges = () => {
+			const max = list.scrollWidth - list.clientWidth;
+			const left = list.scrollLeft > 1;
+			const right = list.scrollLeft < max - 1;
+			list.dataset.edge = left && right ? 'both' : left ? 'left' : right ? 'right' : 'none';
+		};
+
+		list.addEventListener('scroll', updateEdges, { passive: true });
+		updateEdges();
+		document.fonts?.ready.then(updateEdges);
+
 		const initialPanel = windowEl.querySelector('[data-code-panel]:not([hidden])');
 		const chrome = windowEl.offsetHeight - initialPanel.offsetHeight;
 
@@ -137,6 +181,7 @@ const panels = await Promise.all(
 				if (panel) swapPanel(windowEl, chrome, panel);
 			});
 			tabs[index].focus();
+			tabs[index].scrollIntoView({ block: 'nearest', inline: 'nearest' });
 		};
 
 		tabs.forEach((tab, index) => {

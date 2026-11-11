@@ -1,0 +1,127 @@
+---
+import EditLink from 'virtual:starlight/components/EditLink';
+import LastUpdated from 'virtual:starlight/components/LastUpdated';
+import Pagination from 'virtual:starlight/components/Pagination';
+
+const org = 'https://github.com/zeen-lang';
+const repo = `${org}/zeen`;
+---
+
+<footer class="sl-flex zn-footer">
+	<div class="zn-footer__meta sl-flex">
+		<EditLink />
+		<LastUpdated />
+	</div>
+
+	<Pagination />
+
+	<div class="zn-footer__bottom">
+		<p class="zn-footer__brand">
+			<span class="zn-marker" aria-hidden="true">›</span>
+			<span>Zeen</span>
+			<a class="zn-footer__license" href={`${repo}/blob/main/LICENSE`}>Apache 2.0</a>
+		</p>
+
+		<nav class="zn-footer__links" aria-label="Project resources">
+			<a href={`${repo}/blob/main/CODE_OF_CONDUCT.md`}>Code of Conduct</a>
+			<a href={`${repo}/blob/main/SECURITY.md`}>Security</a>
+			<a href={`${repo}/blob/main/CONTRIBUTING.md`}>Contributing</a>
+			<a href={org}>GitHub</a>
+		</nav>
+	</div>
+</footer>
+
+<style>
+	footer.zn-footer {
+		flex-direction: column;
+		gap: 1.5rem;
+		margin-top: 2.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--zn-hairline);
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+
+	.zn-footer__meta {
+		gap: 0.75rem 3rem;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+
+	.zn-footer__meta:empty {
+		display: none;
+	}
+
+	footer.zn-footer > :global(.pagination-links:empty) {
+		display: none;
+	}
+
+	.zn-footer__bottom {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px 24px;
+	}
+
+	.zn-footer__brand {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin: 0;
+		font-family: var(--zn-mono);
+		font-size: 12px;
+		line-height: 18px;
+		color: var(--sl-color-gray-2);
+	}
+
+	.zn-marker {
+		font-family: var(--zn-mono);
+		font-weight: 400;
+		color: var(--sl-color-accent-high);
+	}
+
+	.zn-footer__license {
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition: color var(--zn-fast) var(--zn-ease);
+	}
+
+	.zn-footer__license:hover {
+		color: var(--sl-color-gray-2);
+	}
+
+	.zn-footer__links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 20px;
+		font-family: var(--zn-mono);
+		font-size: 12px;
+		line-height: 18px;
+	}
+
+	.zn-footer__links a {
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition: color var(--zn-fast) var(--zn-ease);
+	}
+
+	.zn-footer__links a:hover {
+		color: var(--sl-color-gray-1);
+	}
+
+	.zn-footer__license:focus-visible,
+	.zn-footer__links a:focus-visible {
+		outline: 2px solid var(--sl-color-accent-high);
+		outline-offset: 3px;
+		border-radius: 2px;
+	}
+
+	@media (max-width: 50rem) {
+		.zn-footer__bottom {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 12px;
+		}
+	}
+</style>

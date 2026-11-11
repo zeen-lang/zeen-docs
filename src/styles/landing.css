@@ -132,16 +132,49 @@
 
 [data-has-hero] .zn-tabs {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
-	gap: 4px;
+	gap: 2px;
 	min-width: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+[data-has-hero] .zn-tabs::-webkit-scrollbar {
+	display: none;
+}
+
+[data-has-hero] .zn-tabs[data-edge='right'] {
+	mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+	-webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent);
+}
+
+[data-has-hero] .zn-tabs[data-edge='left'] {
+	mask-image: linear-gradient(to left, #000 calc(100% - 20px), transparent);
+	-webkit-mask-image: linear-gradient(to left, #000 calc(100% - 20px), transparent);
+}
+
+[data-has-hero] .zn-tabs[data-edge='both'] {
+	mask-image: linear-gradient(
+		to right,
+		transparent,
+		#000 20px,
+		#000 calc(100% - 20px),
+		transparent
+	);
+	-webkit-mask-image: linear-gradient(
+		to right,
+		transparent,
+		#000 20px,
+		#000 calc(100% - 20px),
+		transparent
+	);
 }
 
 [data-has-hero] .zn-tab {
 	flex: none;
 	height: 26px;
-	padding: 0 10px;
+	padding: 0 6px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	background-color: transparent;
@@ -168,6 +201,7 @@
 
 [data-has-hero] .zn-icon-btn {
 	display: inline-flex;
+	flex: none;
 	align-items: center;
 	justify-content: center;
 	width: 32px;
@@ -215,6 +249,8 @@
 	margin: 0;
 	padding: 16px 20px 20px;
 	overflow-x: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--sl-color-gray-4) transparent;
 	background-color: var(--zn-surface);
 	font-family: var(--zn-mono);
 	font-size: 13px;
@@ -222,6 +258,23 @@
 	color: var(--sl-color-gray-2);
 	white-space: normal;
 	tab-size: 2;
+}
+
+[data-has-hero] .zn-code::-webkit-scrollbar {
+	height: 8px;
+}
+
+[data-has-hero] .zn-code::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+[data-has-hero] .zn-code::-webkit-scrollbar-thumb {
+	border-radius: 999px;
+	background-color: var(--sl-color-gray-4);
+}
+
+[data-has-hero] .zn-code::selection {
+	background-color: rgb(147 219 182 / 0.22);
 }
 
 [data-has-hero] .zn-code code {
@@ -266,6 +319,48 @@
 	scrollbar-color: var(--sl-color-gray-4) transparent;
 }
 
+[data-has-hero] .zn-install__body {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+[data-has-hero] .zn-install__meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+[data-has-hero] .zn-install__version {
+	color: var(--sl-color-gray-3);
+}
+
+[data-has-hero] .zn-install__changelog {
+	color: var(--sl-color-gray-2);
+	text-decoration: none;
+	transition: color var(--zn-fast) var(--zn-ease);
+}
+
+[data-has-hero] .zn-install__changelog::before {
+	content: '·';
+	margin-right: 8px;
+	color: var(--sl-color-gray-5);
+}
+
+[data-has-hero] .zn-install__changelog:hover {
+	color: var(--sl-color-gray-1);
+}
+
+[data-has-hero] .zn-install__changelog:focus-visible {
+	outline: 2px solid var(--sl-color-accent-high);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
 [data-has-hero] .zn-install code {
 	white-space: nowrap;
 	color: var(--sl-color-gray-1);
@@ -280,7 +375,7 @@
 
 [data-has-hero] .zn-features {
 	margin-top: 88px;
-	padding-bottom: 96px;
+	padding-bottom: 64px;
 }
 
 [data-has-hero] .zn-eyebrow {
@@ -342,7 +437,8 @@
 @media (prefers-reduced-motion: no-preference) {
 	[data-has-hero] .zn-hero__copy,
 	[data-has-hero] .zn-window,
-	[data-has-hero] .zn-install {
+	[data-has-hero] .zn-install,
+	[data-has-hero] .zn-card {
 		animation: zn-rise 420ms var(--zn-ease) both;
 	}
 
@@ -353,10 +449,32 @@
 	[data-has-hero] .zn-install {
 		animation-delay: 120ms;
 	}
+
+	[data-has-hero] .zn-card:nth-child(1) {
+		animation-delay: 160ms;
+	}
+
+	[data-has-hero] .zn-card:nth-child(2) {
+		animation-delay: 200ms;
+	}
+
+	[data-has-hero] .zn-card:nth-child(3) {
+		animation-delay: 240ms;
+	}
+
+	[data-has-hero] .zn-card:nth-child(4) {
+		animation-delay: 280ms;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	[data-has-hero] .zn-window {
+		transition: none;
+	}
+
+	[data-has-hero] .zn-tab,
+	[data-has-hero] .zn-icon-btn,
+	[data-has-hero] .zn-btn {
 		transition: none;
 	}
 }
@@ -416,6 +534,7 @@
 		height: 28px;
 	}
 
+
 	[data-has-hero] .zn-install [data-install-command] {
 		scrollbar-width: none;
 	}
@@ -439,7 +558,7 @@
 
 	[data-has-hero] .zn-features {
 		margin-top: 64px;
-		padding-bottom: 64px;
+		padding-bottom: 40px;
 	}
 
 	[data-has-hero] .zn-feature-grid {

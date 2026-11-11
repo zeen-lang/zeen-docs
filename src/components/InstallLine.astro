@@ -1,15 +1,28 @@
 ---
 import CopyButton from './CopyButton.astro';
+import { latestRelease } from '../lib/release';
+
+const version = await latestRelease();
 ---
 
 <div class="zn-install">
 	<span class="zn-marker" aria-hidden="true">›</span>
-	<div data-install-command="unix">
-		<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
+
+	<div class="zn-install__body">
+		<div class="zn-install__command" data-install-command="unix">
+			<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
+		</div>
+
+		<div class="zn-install__command" data-install-command="windows" hidden>
+			<code id="install-windows">irm https://github.com/zeen-lang/zeen/releases/latest/download/install.ps1 | iex</code>
+		</div>
+
+		<div class="zn-install__meta">
+			<span class="zn-install__version">{version}</span>
+			<a class="zn-install__changelog" href="/changelog/">Changelog</a>
+		</div>
 	</div>
-	<div data-install-command="windows" hidden>
-		<code id="install-windows">irm https://github.com/zeen-lang/zeen/releases/latest/download/install.ps1 | iex</code>
-	</div>
+
 	<CopyButton target="#install-unix" label="Copy install command" />
 </div>
 

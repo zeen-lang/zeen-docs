@@ -16,6 +16,12 @@ export async function getStaticPaths() {
 
 const { release } = Astro.props;
 const { Content } = await render(release);
+
+const releases = await getCollection('changelog', ({ data }) => !data.draft);
+const latest = releases.reduce((current, candidate) =>
+  candidate.data.date > current.data.date ? candidate : current,
+);
+const isLatest = latest.id === release.id;
 ---
 
 <StarlightPage
@@ -26,11 +32,12 @@ const { Content } = await render(release);
   }}
   hasSidebar={false}
 >
-  <article class="release-page">
-    <a href="/changelog/">← All releases</a>
+  <article class="zn-changelog">
+    <a class="zn-back" href="/changelog/">
+      <span aria-hidden="true">←</span> All releases
+    </a>
 
-    <div class="meta">
-      <span>v{release.data.version}</span>
+    <div class="zn-release-meta">
       <time datetime={release.data.date.toISOString()}>
         {release.data.date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -39,47 +46,170 @@ const { Content } = await render(release);
           timeZone: 'UTC',
         })}
       </time>
+
+      {isLatest && <span class="zn-release-latest">Latest</span>}
     </div>
 
-    <h1>v{release.data.version}</h1>
-
     {release.data.description && (
-      <p class="description">{release.data.description}</p>
+      <p class="zn-release-lead">{release.data.description}</p>
     )}
 
-    <hr />
+    <hr class="zn-rule" />
 
-    <div class="content">
+    <div class="zn-release-content">
       <Content />
     </div>
   </article>
 </StarlightPage>
 
-<style>
-  .release-page {
-    max-width: 760px;
-    margin: 0 auto;
+<style is:global>
+  main:has(.zn-changelog) > .content-panel > .sl-container {
+    max-width: 52rem;
   }
 
-  .meta {
+  main:has(.zn-changelog) > .content-panel:first-child h1 {
+    margin: 0;
+    font-size: clamp(34px, 4vw, 44px);
+    line-height: 1.1;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--sl-color-white);
+  }
+
+  .zn-changelog {
+    padding-top: 1.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .zn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--zn-mono);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+    transition: color var(--zn-fast) var(--zn-ease);
+  }
+
+  .zn-back:hover {
+    color: var(--sl-color-gray-1);
+  }
+
+  .zn-back:focus-visible {
+    outline: 2px solid var(--sl-color-accent-high);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .zn-release-meta {
     display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    color: var(--sl-color-gray-3);
-    font-size: 0.9rem;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    font-family: var(--zn-mono);
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--sl-color-gray-4);
   }
 
-  .meta span {
-    color: var(--sl-color-text-accent);
-    font-weight: 700;
+  .zn-release-latest {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 1px 8px;
+    border: 1px solid rgb(147 219 182 / 0.24);
+    border-radius: 999px;
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--sl-color-accent-high);
   }
 
-  .description {
-    color: var(--sl-color-gray-3);
-    font-size: 0.9rem;
+  .zn-release-latest::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background-color: var(--sl-color-accent-high);
   }
 
-  .content {
-    margin-top: 2rem;
+  .zn-release-lead {
+    margin: 12px 0 0;
+    max-width: 62ch;
+    font-size: 17px;
+    line-height: 27px;
+    color: var(--sl-color-gray-2);
+  }
+
+  .zn-rule {
+    margin: 28px 0 32px;
+    border: 0;
+    border-top: 1px solid var(--zn-hairline);
+  }
+
+  .zn-release-content {
+    color: var(--sl-color-gray-2);
+    font-size: 15px;
+    line-height: 26px;
+  }
+
+  .zn-release-content > :first-child {
+    margin-top: 0;
+  }
+
+  .zn-release-content h2 {
+    margin: 40px 0 12px;
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--sl-color-gray-1);
+  }
+
+  .zn-release-content h3 {
+    margin: 28px 0 8px;
+    font-size: 18px;
+    line-height: 26px;
+    font-weight: 500;
+    color: var(--sl-color-gray-1);
+  }
+
+  .zn-release-content p,
+  .zn-release-content li {
+    font-size: 15px;
+    line-height: 26px;
+  }
+
+  .zn-release-content a {
+    color: var(--sl-color-accent-high);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .zn-release-content code:not(:where(.expressive-code code)) {
+    padding: 1px 5px;
+    border: 1px solid var(--zn-hairline);
+    border-radius: 4px;
+    background-color: var(--zn-surface-raised);
+    font-family: var(--zn-mono);
+    font-size: 0.86em;
+    color: var(--sl-color-gray-1);
+  }
+
+  .zn-release-content .expressive-code pre {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sl-color-gray-4) transparent;
+  }
+
+  @media (max-width: 50rem) {
+    .zn-changelog {
+      padding-top: 1rem;
+      padding-bottom: 2rem;
+    }
+
+    .zn-rule {
+      margin: 24px 0;
+    }
   }
 </style>
