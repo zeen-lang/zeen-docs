@@ -1,10 +1,6 @@
 ---
 import { highlightZeen } from '../lib/highlight';
 
-const helloCode = `fn main() {
-  @println("Hello, World!");
-}`;
-
 const resultCode = `fn divide(a: i32, b: i32) Result[i32, String] {
   if (b == 0) {
     return Result.Err(String.from("Division by zero"));
@@ -79,7 +75,6 @@ pub fn fail_test() {
 }`;
 
 const examples = [
-	{ id: 'hello', label: 'Hello World', code: helloCode },
 	{ id: 'result', label: 'Result And Switch', code: resultCode },
 	{ id: 'comptime', label: 'Comptime Engine', code: comptimeCode },
 	{ id: 'json', label: 'Parse JSON', code: jsonCode },
