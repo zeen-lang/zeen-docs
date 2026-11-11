@@ -64,6 +64,7 @@
 	font-weight: 500;
 	line-height: 1;
 	text-decoration: none;
+	-webkit-tap-highlight-color: transparent;
 	transition:
 		background-color var(--zn-fast) var(--zn-ease),
 		border-color var(--zn-fast) var(--zn-ease),
@@ -123,9 +124,9 @@
 [data-has-hero] .zn-window__bar {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 	height: 40px;
-	padding: 0 12px 0 16px;
+	padding: 0 8px 0 14px;
 	background-color: var(--zn-surface-raised);
 	border-bottom: 1px solid var(--zn-hairline);
 }
@@ -134,8 +135,9 @@
 	display: flex;
 	flex-wrap: nowrap;
 	align-items: center;
-	gap: 2px;
+	gap: 10px;
 	min-width: 0;
+	margin-inline: auto;
 	overflow-x: auto;
 	scrollbar-width: none;
 }
@@ -172,9 +174,10 @@
 }
 
 [data-has-hero] .zn-tab {
+	position: relative;
 	flex: none;
 	height: 26px;
-	padding: 0 6px;
+	padding: 0 5px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	background-color: transparent;
@@ -183,10 +186,23 @@
 	line-height: 1;
 	color: var(--sl-color-gray-3);
 	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
 	transition:
 		background-color var(--zn-fast) var(--zn-ease),
 		border-color var(--zn-fast) var(--zn-ease),
 		color var(--zn-fast) var(--zn-ease);
+}
+
+[data-has-hero] .zn-tab + .zn-tab::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: -5px;
+	width: 1px;
+	height: 12px;
+	border-radius: 1px;
+	background-color: var(--sl-color-gray-4);
+	transform: translateY(-50%);
 }
 
 [data-has-hero] .zn-tab:hover {
@@ -213,6 +229,7 @@
 	background: transparent;
 	color: var(--sl-color-gray-3);
 	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
 	transition:
 		background-color var(--zn-fast) var(--zn-ease),
 		border-color var(--zn-fast) var(--zn-ease),
@@ -300,15 +317,65 @@
 [data-has-hero] .zn-install {
 	grid-column: 1 / -1;
 	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	font-family: var(--zn-mono);
+	font-size: 13px;
+	line-height: 20px;
+	color: var(--sl-color-gray-2);
+}
+
+[data-has-hero] .zn-install__meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-bottom: 10px;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+[data-has-hero] .zn-install__version {
+	color: var(--sl-color-gray-3);
+	text-decoration: none;
+	transition: color var(--zn-fast) var(--zn-ease);
+}
+
+[data-has-hero] .zn-install__version:hover {
+	color: var(--sl-color-gray-1);
+}
+
+[data-has-hero] .zn-install__dot {
+	flex: none;
+	width: 5px;
+	height: 5px;
+	border-radius: 999px;
+	background-color: var(--sl-color-gray-2);
+}
+
+[data-has-hero] .zn-install__changelog {
+	color: var(--sl-color-gray-2);
+	text-decoration: none;
+	transition: color var(--zn-fast) var(--zn-ease);
+}
+
+[data-has-hero] .zn-install__changelog:hover {
+	color: var(--sl-color-gray-1);
+}
+
+[data-has-hero] .zn-install__version:focus-visible,
+[data-has-hero] .zn-install__changelog:focus-visible {
+	outline: 2px solid var(--sl-color-accent-high);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+[data-has-hero] .zn-install__row {
+	display: flex;
 	align-items: center;
 	gap: 12px;
 	min-height: 56px;
 	padding: 12px 0;
 	border-top: 1px solid var(--zn-hairline);
-	font-family: var(--zn-mono);
-	font-size: 13px;
-	line-height: 20px;
-	color: var(--sl-color-gray-2);
 }
 
 [data-has-hero] .zn-install [data-install-command] {
@@ -325,40 +392,6 @@
 	flex-direction: column;
 	gap: 2px;
 	min-width: 0;
-}
-
-[data-has-hero] .zn-install__meta {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	font-size: 12px;
-	line-height: 18px;
-}
-
-[data-has-hero] .zn-install__version {
-	color: var(--sl-color-gray-3);
-}
-
-[data-has-hero] .zn-install__changelog {
-	color: var(--sl-color-gray-2);
-	text-decoration: none;
-	transition: color var(--zn-fast) var(--zn-ease);
-}
-
-[data-has-hero] .zn-install__changelog::before {
-	content: '·';
-	margin-right: 8px;
-	color: var(--sl-color-gray-5);
-}
-
-[data-has-hero] .zn-install__changelog:hover {
-	color: var(--sl-color-gray-1);
-}
-
-[data-has-hero] .zn-install__changelog:focus-visible {
-	outline: 2px solid var(--sl-color-accent-high);
-	outline-offset: 2px;
-	border-radius: 2px;
 }
 
 [data-has-hero] .zn-install code {
@@ -549,9 +582,12 @@
 		line-height: 19px;
 	}
 
-	[data-has-hero] .zn-install {
+	[data-has-hero] .zn-install__row {
 		align-items: flex-start;
-		padding-block: 16px;
+		padding-block: 12px;
+	}
+
+	[data-has-hero] .zn-install {
 		font-size: 12px;
 		line-height: 18px;
 	}

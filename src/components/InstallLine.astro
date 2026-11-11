@@ -3,27 +3,31 @@ import CopyButton from './CopyButton.astro';
 import { latestRelease } from '../lib/release';
 
 const version = await latestRelease();
+const releaseUrl = `https://github.com/zeen-lang/zeen/releases/tag/${version}`;
 ---
 
 <div class="zn-install">
-	<span class="zn-marker" aria-hidden="true">›</span>
-
-	<div class="zn-install__body">
-		<div class="zn-install__command" data-install-command="unix">
-			<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
-		</div>
-
-		<div class="zn-install__command" data-install-command="windows" hidden>
-			<code id="install-windows">irm https://github.com/zeen-lang/zeen/releases/latest/download/install.ps1 | iex</code>
-		</div>
-
-		<div class="zn-install__meta">
-			<span class="zn-install__version">{version}</span>
-			<a class="zn-install__changelog" href="/changelog/">Changelog</a>
-		</div>
+	<div class="zn-install__meta">
+		<a class="zn-install__version" href={releaseUrl}>{version}</a>
+		<span class="zn-install__dot" aria-hidden="true"></span>
+		<a class="zn-install__changelog" href="/changelog/">See Changelog</a>
 	</div>
 
-	<CopyButton target="#install-unix" label="Copy install command" />
+	<div class="zn-install__row">
+		<span class="zn-marker" aria-hidden="true">›</span>
+
+		<div class="zn-install__body">
+			<div class="zn-install__command" data-install-command="unix">
+				<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
+			</div>
+
+			<div class="zn-install__command" data-install-command="windows" hidden>
+				<code id="install-windows">irm https://github.com/zeen-lang/zeen/releases/latest/download/install.ps1 | iex</code>
+			</div>
+		</div>
+
+		<CopyButton target="#install-unix" label="Copy install command" />
+	</div>
 </div>
 
 <script is:inline>

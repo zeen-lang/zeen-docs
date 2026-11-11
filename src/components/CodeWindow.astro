@@ -1,5 +1,4 @@
 ---
-import CopyButton from './CopyButton.astro';
 import { highlightZeen } from '../lib/highlight';
 
 const helloCode = `fn main() {
@@ -108,7 +107,6 @@ const panels = await Promise.all(
 				</button>
 			))}
 		</div>
-		<CopyButton target="[data-code-panel]:not([hidden]) code" label="Copy code" />
 	</div>
 
 	{panels.map((panel, index) => (
