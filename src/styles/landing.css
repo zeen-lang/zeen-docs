@@ -177,7 +177,7 @@
 	position: relative;
 	flex: none;
 	height: 26px;
-	padding: 0 5px;
+	padding: 0 7px;
 	border: 1px solid transparent;
 	border-radius: 6px;
 	background-color: transparent;
@@ -346,8 +346,8 @@
 
 [data-has-hero] .zn-install__dot {
 	flex: none;
-	width: 5px;
-	height: 5px;
+	width: 3px;
+	height: 3px;
 	border-radius: 999px;
 	background-color: var(--sl-color-gray-2);
 }
@@ -450,11 +450,6 @@
 	font-weight: 500;
 	letter-spacing: 0;
 	color: var(--sl-color-gray-1);
-}
-
-[data-has-hero] .zn-card__title .zn-marker {
-	font-size: 14px;
-	line-height: 1;
 }
 
 [data-has-hero] .zn-card__body {

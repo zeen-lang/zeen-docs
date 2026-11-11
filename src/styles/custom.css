@@ -36,3 +36,7 @@
 	--zn-fast: 160ms;
 	--zn-medium: 220ms;
 }
+
+.social-icons::after {
+	display: none;
+}
