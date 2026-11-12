@@ -64,6 +64,9 @@
       "include": "#function-calls"
     },
     {
+      "include": "#closures"
+    },
+    {
       "include": "#operators"
     },
     {
@@ -352,6 +355,14 @@
     "function-types": {
       "patterns": [
         {
+          "match": "\\bCallableOnce\\s*(?=\\()",
+          "name": "storage.type.function.callableonce.zeen"
+        },
+        {
+          "match": "\\bCallable\\s*(?=\\()",
+          "name": "storage.type.function.callable.zeen"
+        },
+        {
           "match": "\\bFnOnce\\s*(?=\\()",
           "name": "storage.type.function.fnonce.zeen"
         },
@@ -383,6 +394,14 @@
         {
           "name": "keyword.other.zeen",
           "match": "\\b(?:link|include)\\b"
+        },
+        {
+          "name": "keyword.other.where.zeen",
+          "match": "\\bwhere\\b"
+        },
+        {
+          "name": "keyword.other.builtin.zeen",
+          "match": "\\bbuiltin\\b"
         },
         {
           "name": "storage.modifier.zeen",
@@ -603,8 +622,59 @@
       ]
     },
 
+    "closures": {
+      "patterns": [
+        {
+          "match": "\\|\\|",
+          "name": "keyword.operator.logical.zeen"
+        },
+        {
+          "name": "meta.closure.zeen",
+          "begin": "(?<!\\|)\\|(?=\\s*[A-Za-z_][A-Za-z0-9_]*(?:\\s*:\\s*[^|\\n]+)?\\s*(?:,\\s*[A-Za-z_][A-Za-z0-9_]*(?:\\s*:\\s*[^|\\n]+)?\\s*)*\\|)",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.closure.begin.zeen"
+            }
+          },
+          "end": "\\|",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.closure.end.zeen"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#types"
+            },
+            {
+              "include": "#function-types"
+            },
+            {
+              "match": "\\b[A-Za-z_][A-Za-z0-9_]*(?=\\s*:)",
+              "name": "variable.parameter.zeen"
+            },
+            {
+              "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+              "name": "variable.parameter.zeen"
+            },
+            {
+              "include": "#punctuation"
+            }
+          ]
+        }
+      ]
+    },
+
     "operators": {
       "patterns": [
+        {
+          "name": "keyword.operator.arrow.zeen",
+          "match": "->"
+        },
+        {
+          "name": "keyword.operator.ellipsis.zeen",
+          "match": "\\.\\.\\."
+        },
         {
           "name": "keyword.operator.range.zeen",
           "match": "\\.\\.(?:=|\\.)?"
