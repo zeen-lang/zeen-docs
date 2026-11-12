@@ -1,0 +1,258 @@
+---
+title: i32
+description: Integer methods for the i32 type.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.i32" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives/i32.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/primitives/i32.zn) <br/>
+
+## Methods
+<Card title="i32">
+  Signed 32-bit integer
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn bits() u32;
+  ```
+  ```zn
+  pub fn min_value() i32;
+  ```
+  ```zn
+  pub fn max_value() i32;
+  ```
+  ```zn
+  pub fn count_ones(self) u32;
+  ```
+  ```zn
+  pub fn count_zeros(self) u32;
+  ```
+  ```zn
+  pub fn leading_zeros(self) u32;
+  ```
+  ```zn
+  pub fn trailing_zeros(self) u32;
+  ```
+  ```zn
+  pub fn leading_ones(self) u32;
+  ```
+  ```zn
+  pub fn trailing_ones(self) u32;
+  ```
+  ```zn
+  pub fn rotate_left(self, n: u32) i32;
+  ```
+  ```zn
+  pub fn rotate_right(self, n: u32) i32;
+  ```
+  ```zn
+  pub fn swap_bytes(self) i32;
+  ```
+  ```zn
+  pub fn reverse_bits(self) i32;
+  ```
+  ```zn
+  pub fn checked_add(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_sub(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_mul(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_div(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_rem(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_neg(self) Option[i32];
+  ```
+  ```zn
+  pub fn checked_abs(self) Option[i32];
+  ```
+  ```zn
+  pub fn checked_pow(self, exp: u32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_shl(self, rhs: u32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_shr(self, rhs: u32) Option[i32];
+  ```
+  ```zn
+  pub fn wrapping_add(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn wrapping_sub(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn wrapping_mul(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn wrapping_div(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn wrapping_rem(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn wrapping_pow(self, exp: u32) i32;
+  ```
+  ```zn
+  pub fn wrapping_shl(self, rhs: u32) i32;
+  ```
+  ```zn
+  pub fn wrapping_shr(self, rhs: u32) i32;
+  ```
+  ```zn
+  pub fn wrapping_neg(self) i32;
+  ```
+  ```zn
+  pub fn wrapping_abs(self) i32;
+  ```
+  ```zn
+  pub fn overflowing_add(self, rhs: i32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_sub(self, rhs: i32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_mul(self, rhs: i32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_neg(self) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_abs(self) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_pow(self, exp: u32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_shl(self, rhs: u32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn overflowing_shr(self, rhs: u32) Overflowing[i32];
+  ```
+  ```zn
+  pub fn saturating_add(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn saturating_sub(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn saturating_mul(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn saturating_div(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn saturating_neg(self) i32;
+  ```
+  ```zn
+  pub fn saturating_abs(self) i32;
+  ```
+  ```zn
+  pub fn saturating_pow(self, exp: u32) i32;
+  ```
+  ```zn
+  pub fn pow(self, exp: u32) i32;
+  ```
+  ```zn
+  pub fn div_euclid(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn rem_euclid(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn checked_div_euclid(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn checked_rem_euclid(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn div_ceil(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn next_multiple_of(self, rhs: i32) i32;
+  ```
+  ```zn
+  pub fn checked_next_multiple_of(self, rhs: i32) Option[i32];
+  ```
+  ```zn
+  pub fn abs_diff(self, other: i32) u32;
+  ```
+  ```zn
+  pub fn midpoint(self, other: i32) i32;
+  ```
+  ```zn
+  pub fn min(self, other: i32) i32;
+  ```
+  ```zn
+  pub fn max(self, other: i32) i32;
+  ```
+  ```zn
+  pub fn clamp(self, min: i32, max: i32) i32;
+  ```
+  ```zn
+  pub fn abs(self) i32;
+  ```
+  ```zn
+  pub fn unsigned_abs(self) u32;
+  ```
+  ```zn
+  pub fn signum(self) i32;
+  ```
+  ```zn
+  pub fn is_positive(self) bool;
+  ```
+  ```zn
+  pub fn is_negative(self) bool;
+  ```
+  ```zn
+  pub fn ilog2(self) u32;
+  ```
+  ```zn
+  pub fn ilog10(self) u32;
+  ```
+  ```zn
+  pub fn ilog(self, base: u32) u32;
+  ```
+  ```zn
+  pub fn to_be(self) i32;
+  ```
+  ```zn
+  pub fn to_le(self) i32;
+  ```
+  ```zn
+  pub fn from_be(value: i32) i32;
+  ```
+  ```zn
+  pub fn from_le(value: i32) i32;
+  ```
+  ```zn
+  pub fn to_be_bytes(self) [4]u8;
+  ```
+  ```zn
+  pub fn to_le_bytes(self) [4]u8;
+  ```
+  ```zn
+  pub fn to_ne_bytes(self) [4]u8;
+  ```
+  ```zn
+  pub fn from_be_bytes(bytes: [4]u8) i32;
+  ```
+  ```zn
+  pub fn from_le_bytes(bytes: [4]u8) i32;
+  ```
+  ```zn
+  pub fn from_ne_bytes(bytes: [4]u8) i32;
+  ```
+  ```zn
+  pub fn to_string(self) String;
+  ```
+</Card>

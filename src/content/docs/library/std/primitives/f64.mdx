@@ -1,0 +1,198 @@
+---
+title: f64
+description: Floating point methods for the f64 type.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.f64" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives/f64.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/primitives/f64.zn) <br/>
+
+## Methods
+<Card title="f64">
+  64-bit floating point
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn min_value() f64;
+  ```
+  ```zn
+  pub fn max_value() f64;
+  ```
+  ```zn
+  pub fn min_positive_value() f64;
+  ```
+  ```zn
+  pub fn epsilon() f64;
+  ```
+  ```zn
+  pub fn infinity() f64;
+  ```
+  ```zn
+  pub fn neg_infinity() f64;
+  ```
+  ```zn
+  pub fn nan() f64;
+  ```
+  ```zn
+  pub fn to_bits(self) u64;
+  ```
+  ```zn
+  pub fn from_bits(bits: u64) f64;
+  ```
+  ```zn
+  pub fn is_nan(self) bool;
+  ```
+  ```zn
+  pub fn is_infinite(self) bool;
+  ```
+  ```zn
+  pub fn is_finite(self) bool;
+  ```
+  ```zn
+  pub fn is_sign_positive(self) bool;
+  ```
+  ```zn
+  pub fn is_sign_negative(self) bool;
+  ```
+  ```zn
+  pub fn abs(self) f64;
+  ```
+  ```zn
+  pub fn signum(self) f64;
+  ```
+  ```zn
+  pub fn copysign(self, sign: f64) f64;
+  ```
+  ```zn
+  pub fn sqrt(self) f64;
+  ```
+  ```zn
+  pub fn cbrt(self) f64;
+  ```
+  ```zn
+  pub fn powf(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn powi(self, n: i32) f64;
+  ```
+  ```zn
+  pub fn exp(self) f64;
+  ```
+  ```zn
+  pub fn exp2(self) f64;
+  ```
+  ```zn
+  pub fn exp_m1(self) f64;
+  ```
+  ```zn
+  pub fn ln(self) f64;
+  ```
+  ```zn
+  pub fn ln_1p(self) f64;
+  ```
+  ```zn
+  pub fn log2(self) f64;
+  ```
+  ```zn
+  pub fn log10(self) f64;
+  ```
+  ```zn
+  pub fn log(self, base: f64) f64;
+  ```
+  ```zn
+  pub fn sin(self) f64;
+  ```
+  ```zn
+  pub fn cos(self) f64;
+  ```
+  ```zn
+  pub fn tan(self) f64;
+  ```
+  ```zn
+  pub fn asin(self) f64;
+  ```
+  ```zn
+  pub fn acos(self) f64;
+  ```
+  ```zn
+  pub fn atan(self) f64;
+  ```
+  ```zn
+  pub fn atan2(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn sinh(self) f64;
+  ```
+  ```zn
+  pub fn cosh(self) f64;
+  ```
+  ```zn
+  pub fn tanh(self) f64;
+  ```
+  ```zn
+  pub fn asinh(self) f64;
+  ```
+  ```zn
+  pub fn acosh(self) f64;
+  ```
+  ```zn
+  pub fn atanh(self) f64;
+  ```
+  ```zn
+  pub fn hypot(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn mul_add(self, a: f64, b: f64) f64;
+  ```
+  ```zn
+  pub fn floor(self) f64;
+  ```
+  ```zn
+  pub fn ceil(self) f64;
+  ```
+  ```zn
+  pub fn round(self) f64;
+  ```
+  ```zn
+  pub fn trunc(self) f64;
+  ```
+  ```zn
+  pub fn fract(self) f64;
+  ```
+  ```zn
+  pub fn recip(self) f64;
+  ```
+  ```zn
+  pub fn to_degrees(self) f64;
+  ```
+  ```zn
+  pub fn to_radians(self) f64;
+  ```
+  ```zn
+  pub fn min(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn max(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn minimum(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn maximum(self, other: f64) f64;
+  ```
+  ```zn
+  pub fn clamp(self, min: f64, max: f64) f64;
+  ```
+  ```zn
+  pub fn div_euclid(self, rhs: f64) f64;
+  ```
+  ```zn
+  pub fn rem_euclid(self, rhs: f64) f64;
+  ```
+  ```zn
+  pub fn to_string(self) String;
+  ```
+</Card>

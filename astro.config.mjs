@@ -363,8 +363,66 @@ export default defineConfig({
 									slug: 'library/std/path',
 								},
 								{
-									label: 'primitives',
-									slug: 'library/std/primitives',
+									label: 'primitives/',
+									collapsed: true,
+									items: [
+										{
+											label: 'i8',
+											slug: 'library/std/primitives/i8',
+										},
+										{
+											label: 'i16',
+											slug: 'library/std/primitives/i16',
+										},
+										{
+											label: 'i32',
+											slug: 'library/std/primitives/i32',
+										},
+										{
+											label: 'i64',
+											slug: 'library/std/primitives/i64',
+										},
+										{
+											label: 'isize',
+											slug: 'library/std/primitives/isize',
+										},
+										{
+											label: 'u8',
+											slug: 'library/std/primitives/u8',
+										},
+										{
+											label: 'u16',
+											slug: 'library/std/primitives/u16',
+										},
+										{
+											label: 'u32',
+											slug: 'library/std/primitives/u32',
+										},
+										{
+											label: 'u64',
+											slug: 'library/std/primitives/u64',
+										},
+										{
+											label: 'usize',
+											slug: 'library/std/primitives/usize',
+										},
+										{
+											label: 'f32',
+											slug: 'library/std/primitives/f32',
+										},
+										{
+											label: 'f64',
+											slug: 'library/std/primitives/f64',
+										},
+										{
+											label: 'char',
+											slug: 'library/std/primitives/char',
+										},
+										{
+											label: 'bool',
+											slug: 'library/std/primitives/bool',
+										},
+									],
 								},
 								{
 									label: 'process',

@@ -1,0 +1,198 @@
+---
+title: f32
+description: Floating point methods for the f32 type.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.f32" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives/f32.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/primitives/f32.zn) <br/>
+
+## Methods
+<Card title="f32">
+  32-bit floating point
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn min_value() f32;
+  ```
+  ```zn
+  pub fn max_value() f32;
+  ```
+  ```zn
+  pub fn min_positive_value() f32;
+  ```
+  ```zn
+  pub fn epsilon() f32;
+  ```
+  ```zn
+  pub fn infinity() f32;
+  ```
+  ```zn
+  pub fn neg_infinity() f32;
+  ```
+  ```zn
+  pub fn nan() f32;
+  ```
+  ```zn
+  pub fn to_bits(self) u32;
+  ```
+  ```zn
+  pub fn from_bits(bits: u32) f32;
+  ```
+  ```zn
+  pub fn is_nan(self) bool;
+  ```
+  ```zn
+  pub fn is_infinite(self) bool;
+  ```
+  ```zn
+  pub fn is_finite(self) bool;
+  ```
+  ```zn
+  pub fn is_sign_positive(self) bool;
+  ```
+  ```zn
+  pub fn is_sign_negative(self) bool;
+  ```
+  ```zn
+  pub fn abs(self) f32;
+  ```
+  ```zn
+  pub fn signum(self) f32;
+  ```
+  ```zn
+  pub fn copysign(self, sign: f32) f32;
+  ```
+  ```zn
+  pub fn sqrt(self) f32;
+  ```
+  ```zn
+  pub fn cbrt(self) f32;
+  ```
+  ```zn
+  pub fn powf(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn powi(self, n: i32) f32;
+  ```
+  ```zn
+  pub fn exp(self) f32;
+  ```
+  ```zn
+  pub fn exp2(self) f32;
+  ```
+  ```zn
+  pub fn exp_m1(self) f32;
+  ```
+  ```zn
+  pub fn ln(self) f32;
+  ```
+  ```zn
+  pub fn ln_1p(self) f32;
+  ```
+  ```zn
+  pub fn log2(self) f32;
+  ```
+  ```zn
+  pub fn log10(self) f32;
+  ```
+  ```zn
+  pub fn log(self, base: f32) f32;
+  ```
+  ```zn
+  pub fn sin(self) f32;
+  ```
+  ```zn
+  pub fn cos(self) f32;
+  ```
+  ```zn
+  pub fn tan(self) f32;
+  ```
+  ```zn
+  pub fn asin(self) f32;
+  ```
+  ```zn
+  pub fn acos(self) f32;
+  ```
+  ```zn
+  pub fn atan(self) f32;
+  ```
+  ```zn
+  pub fn atan2(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn sinh(self) f32;
+  ```
+  ```zn
+  pub fn cosh(self) f32;
+  ```
+  ```zn
+  pub fn tanh(self) f32;
+  ```
+  ```zn
+  pub fn asinh(self) f32;
+  ```
+  ```zn
+  pub fn acosh(self) f32;
+  ```
+  ```zn
+  pub fn atanh(self) f32;
+  ```
+  ```zn
+  pub fn hypot(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn mul_add(self, a: f32, b: f32) f32;
+  ```
+  ```zn
+  pub fn floor(self) f32;
+  ```
+  ```zn
+  pub fn ceil(self) f32;
+  ```
+  ```zn
+  pub fn round(self) f32;
+  ```
+  ```zn
+  pub fn trunc(self) f32;
+  ```
+  ```zn
+  pub fn fract(self) f32;
+  ```
+  ```zn
+  pub fn recip(self) f32;
+  ```
+  ```zn
+  pub fn to_degrees(self) f32;
+  ```
+  ```zn
+  pub fn to_radians(self) f32;
+  ```
+  ```zn
+  pub fn min(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn max(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn minimum(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn maximum(self, other: f32) f32;
+  ```
+  ```zn
+  pub fn clamp(self, min: f32, max: f32) f32;
+  ```
+  ```zn
+  pub fn div_euclid(self, rhs: f32) f32;
+  ```
+  ```zn
+  pub fn rem_euclid(self, rhs: f32) f32;
+  ```
+  ```zn
+  pub fn to_string(self) String;
+  ```
+</Card>

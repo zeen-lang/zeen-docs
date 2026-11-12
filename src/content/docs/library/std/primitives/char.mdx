@@ -1,0 +1,90 @@
+---
+title: char
+description: Character methods for the char type.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.char" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives/char.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/primitives/char.zn) <br/>
+
+## Methods
+<Card title="char">
+  One UTF-8 byte
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn is_ascii(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_alphabetic(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_digit(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_alphanumeric(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_whitespace(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_uppercase(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_lowercase(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_punctuation(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_control(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_graphic(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_hexdigit(self) bool;
+  ```
+  ```zn
+  pub fn is_alphabetic(self) bool;
+  ```
+  ```zn
+  pub fn is_numeric(self) bool;
+  ```
+  ```zn
+  pub fn is_alphanumeric(self) bool;
+  ```
+  ```zn
+  pub fn is_whitespace(self) bool;
+  ```
+  ```zn
+  pub fn is_control(self) bool;
+  ```
+  ```zn
+  pub fn is_uppercase(self) bool;
+  ```
+  ```zn
+  pub fn is_lowercase(self) bool;
+  ```
+  ```zn
+  pub fn to_ascii_uppercase(self) char;
+  ```
+  ```zn
+  pub fn to_ascii_lowercase(self) char;
+  ```
+  ```zn
+  pub fn eq_ignore_ascii_case(self, other: char) bool;
+  ```
+  ```zn
+  pub fn to_digit(self, radix: u32) Option[u32];
+  ```
+  ```zn
+  pub fn from_digit(num: u32, radix: u32) Option[char];
+  ```
+  ```zn
+  pub fn to_string(self) String;
+  ```
+</Card>

@@ -1,0 +1,231 @@
+---
+title: usize
+description: Integer methods for the usize type.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.usize" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives/usize.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/primitives/usize.zn) <br/>
+
+## Methods
+<Card title="usize">
+  Unsigned pointer-sized integer
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn bits() u32;
+  ```
+  ```zn
+  pub fn min_value() usize;
+  ```
+  ```zn
+  pub fn max_value() usize;
+  ```
+  ```zn
+  pub fn count_ones(self) u32;
+  ```
+  ```zn
+  pub fn count_zeros(self) u32;
+  ```
+  ```zn
+  pub fn leading_zeros(self) u32;
+  ```
+  ```zn
+  pub fn trailing_zeros(self) u32;
+  ```
+  ```zn
+  pub fn leading_ones(self) u32;
+  ```
+  ```zn
+  pub fn trailing_ones(self) u32;
+  ```
+  ```zn
+  pub fn rotate_left(self, n: u32) usize;
+  ```
+  ```zn
+  pub fn rotate_right(self, n: u32) usize;
+  ```
+  ```zn
+  pub fn swap_bytes(self) usize;
+  ```
+  ```zn
+  pub fn reverse_bits(self) usize;
+  ```
+  ```zn
+  pub fn checked_add(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_sub(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_mul(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_div(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_rem(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_pow(self, exp: u32) Option[usize];
+  ```
+  ```zn
+  pub fn checked_shl(self, rhs: u32) Option[usize];
+  ```
+  ```zn
+  pub fn checked_shr(self, rhs: u32) Option[usize];
+  ```
+  ```zn
+  pub fn wrapping_add(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn wrapping_sub(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn wrapping_mul(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn wrapping_div(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn wrapping_rem(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn wrapping_pow(self, exp: u32) usize;
+  ```
+  ```zn
+  pub fn wrapping_shl(self, rhs: u32) usize;
+  ```
+  ```zn
+  pub fn wrapping_shr(self, rhs: u32) usize;
+  ```
+  ```zn
+  pub fn overflowing_add(self, rhs: usize) Overflowing[usize];
+  ```
+  ```zn
+  pub fn overflowing_sub(self, rhs: usize) Overflowing[usize];
+  ```
+  ```zn
+  pub fn overflowing_mul(self, rhs: usize) Overflowing[usize];
+  ```
+  ```zn
+  pub fn overflowing_pow(self, exp: u32) Overflowing[usize];
+  ```
+  ```zn
+  pub fn overflowing_shl(self, rhs: u32) Overflowing[usize];
+  ```
+  ```zn
+  pub fn overflowing_shr(self, rhs: u32) Overflowing[usize];
+  ```
+  ```zn
+  pub fn saturating_add(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn saturating_sub(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn saturating_mul(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn saturating_div(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn saturating_pow(self, exp: u32) usize;
+  ```
+  ```zn
+  pub fn pow(self, exp: u32) usize;
+  ```
+  ```zn
+  pub fn div_euclid(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn rem_euclid(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn checked_div_euclid(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn checked_rem_euclid(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn div_ceil(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn next_multiple_of(self, rhs: usize) usize;
+  ```
+  ```zn
+  pub fn checked_next_multiple_of(self, rhs: usize) Option[usize];
+  ```
+  ```zn
+  pub fn abs_diff(self, other: usize) usize;
+  ```
+  ```zn
+  pub fn midpoint(self, other: usize) usize;
+  ```
+  ```zn
+  pub fn min(self, other: usize) usize;
+  ```
+  ```zn
+  pub fn max(self, other: usize) usize;
+  ```
+  ```zn
+  pub fn clamp(self, min: usize, max: usize) usize;
+  ```
+  ```zn
+  pub fn is_power_of_two(self) bool;
+  ```
+  ```zn
+  pub fn next_power_of_two(self) usize;
+  ```
+  ```zn
+  pub fn checked_next_power_of_two(self) Option[usize];
+  ```
+  ```zn
+  pub fn isqrt(self) usize;
+  ```
+  ```zn
+  pub fn ilog2(self) u32;
+  ```
+  ```zn
+  pub fn ilog10(self) u32;
+  ```
+  ```zn
+  pub fn ilog(self, base: u32) u32;
+  ```
+  ```zn
+  pub fn to_be(self) usize;
+  ```
+  ```zn
+  pub fn to_le(self) usize;
+  ```
+  ```zn
+  pub fn from_be(value: usize) usize;
+  ```
+  ```zn
+  pub fn from_le(value: usize) usize;
+  ```
+  ```zn
+  pub fn to_be_bytes(self) [8]u8;
+  ```
+  ```zn
+  pub fn to_le_bytes(self) [8]u8;
+  ```
+  ```zn
+  pub fn to_ne_bytes(self) [8]u8;
+  ```
+  ```zn
+  pub fn from_be_bytes(bytes: [8]u8) usize;
+  ```
+  ```zn
+  pub fn from_le_bytes(bytes: [8]u8) usize;
+  ```
+  ```zn
+  pub fn from_ne_bytes(bytes: [8]u8) usize;
+  ```
+  ```zn
+  pub fn to_string(self) String;
+  ```
+</Card>
