@@ -1,34 +1,63 @@
 ---
 title: Arrays, Slices and Ranges
-description: Fixed arrays, views with slices, ranges and many pointers.
+description: Fixed arrays with brace literals, slice views, ranges and many pointers.
 ---
 
 ## Arrays
-Fixed-size collection, size known at compile time. Elements access with `a[i]`, indexing starts at 0. <br/>
-Syntax:
+
+An array has a fixed length known at compile time. Elements go between braces:
+
 ```zn
-[1, 2, 3, 4]
-[0; 1024]
+fn main() {
+  let numbers = {10, 20, 30};
+
+  numbers[0] = 99;
+
+  @println("{} {}", numbers[0], numbers[2]);
+}
 ```
 
-The array type is `[N]T` (`[0; 1024]` is `[1024]i32`).
+The type of that literal is `[3]i32`. A repeated value uses a count:
 
-If elements are not `Copy`, the array is move-only.
-
-Example:
 ```zn
-let numbers = [10, 20, 30];
+fn main() {
+  const buffer: [1024]u8 = {0; 1024};
 
-numbers[0] = 99;
-
-@println("{} {}", numbers[0], numbers[2]);
+  @println("{} {}", buffer.len, buffer[1023]);
+}
 ```
 
-Out of bounds access panics in Debug, in Release it is UB.
+The count must be known at compile time. An empty array is `zeen::typechecker::empty_array`, because `[0]T` does not exist, and `{}` without an expected array type is rejected too.
+
+Arrays nest like any other value:
+
+```zn
+let matrix = {{1, 2}, {3, 4}};
+```
+
+The old `[1, 2, 3]` form is a parser error that points to `{ ... }`. In statement position a leading `{` is an array literal only when it holds a top level comma, otherwise it is a block. Inside an expression, a `{` is always an array literal. A one element array in statement position is therefore written `{1,}`, and a repeated array in tail position needs `return {0; 4};`.
+
+Indexing starts at zero. An out of bounds read panics in Debug and is undefined in Release.
+
+An array is move-only when its element type is not `Copy`.
 
 ## Slices
-A slice is a view into array data with a pointer and a length. It does not copy data, writes through the slice change the original array. <br/>
-Syntax:
+
+A slice is a view into array data. It stores a pointer and a length, and it borrows the data instead of copying it:
+
+```zn
+fn main() {
+  let numbers = {1, 2, 3, 4, 5};
+  const slice = numbers[1..4];
+
+  @println("{} {} {}", slice.len, slice[0], slice[2]);
+}
+```
+
+A slice has type `[]T` and is always `Copy`. Writes through it reach the original array. A string literal coerces to `[]const char`, and `[]const T` views the data read only.
+
+The slice syntax covers every range form:
+
 ```zn
 numbers[1..4]
 numbers[..]
@@ -37,23 +66,12 @@ numbers[2..]
 numbers[1..=3]
 ```
 
-The slice type is `[]T`. Slices have `.len` and `.ptr` fields. A slice is always `Copy`, it is just a view.
-
-Example:
-```zn
-let numbers = [1, 2, 3, 4, 5];
-let slice = numbers[1..4];
-
-slice[0] = 99;
-
-@println("{} {}", slice.len, slice[0]);
-```
-
-Out of bounds access panics in Debug, in Release it is UB.
+`a[lo..hi]` excludes `hi`, `a[lo..=hi]` includes it. An out of bounds slice panics in Debug and is undefined in Release.
 
 ## Ranges
-A range is a `core` type with optional bounds, used for slicing and iteration. <br/>
-Syntax:
+
+A range is `core.slice.Range` with an optional start and end. The literal forms are:
+
 ```zn
 lo..hi
 lo..=hi
@@ -63,34 +81,37 @@ lo..
 ..
 ```
 
-Ranges can be assigned to a variable:
-```zn
-let range: Range = 1..4;
-```
+A range can be stored in a binding and iterated:
 
-Example:
 ```zn
-let range = 0..3;
+fn main() {
+  const range: Range = 1..4;
 
-for (i : range) {
-  @println("{}", i);
+  for (i : range) {
+    @println("{}", i);
+  }
 }
 ```
 
-## Many Pointers
-C-like pointer with unknown length, elements access with `ptr[i]`. <br/>
-Can be made from array:
+`Range` is `Copy` and implements `Iterator` over `usize`, so the same value works in slicing and in `for`.
+
+## Many pointers
+
+A many pointer is a C-style pointer with no length. It is written `[*]T`, and elements are reached with `ptr[i]`:
+
 ```zn
-let numbers = [1, 2, 3];
-let ptr: [*]i32 = numbers;
+fn main() {
+  let numbers = {104, 101, 108};
+  let ptr: [*]i32 = numbers;
+
+  ptr[1] = 121;
+
+  @println("{} {}", ptr[0], ptr[1]);
+}
 ```
 
-Example:
-```zn
-let numbers = [104, 101, 108];
-let ptr: [*]i32 = numbers;
+An array converts to `[*]T` when the element type matches. A many pointer does not carry a length, so bounds are the caller's responsibility.
 
-ptr[1] = 121;
+## Formatting
 
-@println("{} {}", ptr[0], ptr[1]);
-```
+An array or slice prints through `{:?}` with its elements, for example `{1, 2, 3}`. `{}` accepts only `[N]char` and `[]char` as text.

@@ -112,7 +112,7 @@ fn main() {
 }
 ```
 
-The standard library keeps methods of field-carrying types in `implement` blocks and leaves methods of field-less helper types in the body. This is a style choice, not a language rule.
+The standard library keeps methods of field-carrying types in `implement` blocks and methods of field-less helper types in the body. That is a convention, not a language rule.
 
 Builtin types such as `i32` and `[]u8` take methods through `implement builtin`, covered on [Builtin Blocks](/functions-closures/implement-builtin/).
 
@@ -186,7 +186,30 @@ Ties keep the block declared first. Overloads must share one signature and diffe
 
 ## Copy and Drop
 
-A struct is move-only by default, even when every field is `Copy`. `implement Copy : Foo {}` marks it copyable, and assignment then copies the fields instead of moving them. The marker can also declare a struct with move-only fields `Copy`, so use it only where copying is safe. `Copy` and `Drop` do not combine: a type that declares both reports `zeen::typechecker::copy_with_drop`.
+A struct is move-only by default, even when every field is `Copy`. `implement Copy : Foo {}` makes assignment and argument passing copy the fields:
+
+```zn
+struct Pair {
+  pub a: i32,
+  pub b: i32,
+}
+
+implement Copy : Pair {}
+
+fn take(pair: Pair) i32 {
+  return pair.a + pair.b;
+}
+
+fn main() {
+  const pair: Pair = .{ .a = 1, .b = 2 };
+
+  @println("{} {}", take(pair), take(pair));
+}
+```
+
+The marker is not checked against the fields. A struct with a `String` field can become `Copy` as well, and every copy then owns the same buffer, so the buffer is freed more than once. Keep `Copy` on plain data without owned resources.
+
+A struct with an explicit `Drop` runs its own cleanup at scope end:
 
 ```zn
 struct Tag {
@@ -200,4 +223,4 @@ implement Drop : Tag {
 }
 ```
 
-Without an explicit `Drop`, every field drops recursively at scope end. A block can carry generics and bounds like any other `implement` block.
+Without an explicit `Drop`, the fields drop in reverse declaration order at scope end. Declaring both `Copy` and `Drop` on one type is `zeen::typechecker::copy_with_drop`.

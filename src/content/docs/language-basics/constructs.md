@@ -1,200 +1,236 @@
 ---
 title: Constructs
-description: Statements and expressions for calls, blocks, conditionals and loops.
+description: Calls, blocks, conditionals and loops, including loop updates, else branches and labels.
 ---
 
-This page describes the main Zeen statements and expressions used to control program flow.
-They might be familiar for you from other languages.
+## Calls
 
-## Basic
+A call names a callee and passes arguments in parentheses:
 
-### Calls
-Calls can be function calls, method calls or macro calls, and a call can be an expression that returns a value. <br/>
-Syntax:
 ```zn
-callee(args)
+foo("hello");
+@println("hello");
+Foo.new("hello");
+instance.method("hello");
 ```
 
-Possible callees:
+A call is an expression when the callee returns a value. A function value is called the same way:
+
 ```zn
-// function call
-foo("hello");
+const func: fn(i32) void = foo;
 
-// compiler macro call
-@println("hello");
-
-// struct static call
-Foo.new("hello")
-
-// struct instance (method) call
-foo_instance.func("hello")
-
-// indirect call
-let func: fn(i32) void = foo;
 func(123);
 ```
 
-### Blocks
-Blocks can be a small execution context inside a statement, or an expression with a return value.<br/>
-Syntax:
+## Blocks
+
+A block groups statements:
+
 ```zn
 {
+  let a = 1;
+  let b = 2;
+
+  @println("{}", a + b);
+}
+```
+
+A block is not a general value. Inside an expression a leading `{` is an array literal, so `let a = { 123 };` builds a one element array. A function body is the exception: its trailing expression is the return value, and an explicit `return` works as well.
+
+The trailing semicolon after `if`, `while`, `for`, `switch` or a bare block is optional inside a block.
+
+## Conditions
+
+`if` takes a condition and a body:
+
+```zn
+if (condition) {
   statements
 }
 ```
 
-:::note[Remember that]
-To return value from **block** use only **trailing expression return**:
+The body can be one statement, and `else` adds the alternative:
+
 ```zn
-let a = {
-  // code before return
-  123
-};
-```
-Usage of `return` keyword will lead to return from function.
-:::
-
-The trailing semicolon after `if` / `while` / `for` / bare block is optional.
-
-## Conditional Constructions
-Conditional constructions are the statements that let you pick a branch based on a condition result.
-
-### `If` / `If-Else`
-Syntax:
-```zn
-if (condition) expression
-if (condition) { statements }
-
-if (condition) expression else expression
-if (condition) { statements } else { statements }
+if (a == 5) @println("five") else @println("other");
 ```
 
-The `if` construction is an **expression**, which means you can use it to assign a variable conditionally,
-or chain it to get the `else if` variation:
-```zn
-let a = 5;
-let conditional = if (a == 5) 123 else 321;
+`if` is an expression, so it can produce a value. A chain of conditions uses `else if`:
 
-if (conditional == 123) {
-  // ...
-} else if (conditional == 321) {
-  // ...
-} else {
-  // ...
-}
-```
-
-### `Switch`
-Example:
 ```zn
 fn main() {
-  let value = 123;
+  const a = 5;
+  const conditional = if (a == 5) 123 else 321;
 
-  switch (value) {
-    1 => @println("this is one!"),
-    2 => @println("not exactly one"),
-
-    val if (val > 500) => @println("woah, very big!"),
-    _ if (0 == 1) => @println("wth is this"),
-
-    _ => @println("Seems like something else"),
+  if (conditional == 123) {
+    @println("first");
+  } else if (conditional == 321) {
+    @println("second");
+  } else {
+    @println("other");
   };
 }
 ```
 
-Full description in the [Switch](/functions-closures/switch/) topic.
+`switch` is the multi-branch counterpart. [Switch](/functions-closures/switch/) covers patterns, ranges and enum arms.
 
-## Loops
-Loops are constructions that repeat a block of statements while a condition holds.
+## `while`
 
-### `While`
-Syntax:
-```zn
-while (condition) expression
-while (condition) { statements }
-```
+`while` repeats a body while a condition holds:
 
-Example:
 ```zn
 fn main() {
-  let i = 0;
+  let i: i32 = 0;
 
-  while (i < 10) {
+  while (i < 3) {
     @println("{}", i);
 
     i += 1;
-  }
-
-  @println("loop ended");
+  };
 }
 ```
 
-### `For`
-Syntax:
+A while loop takes an optional update after a colon. The update runs after the body, and after `continue`, but not after `break`:
+
 ```zn
-for (varname : iterator) expression
-for (varname : iterator) { statements }
+fn main() {
+  let i: i32 = 0;
+  let sum: i32 = 0;
+
+  while (i < 6) : (i += 1) {
+    if (i == 2) {
+      continue;
+    };
+
+    if (i == 5) {
+      break;
+    };
+
+    sum += i;
+  };
+
+  @println("{} {}", i, sum);
+}
 ```
 
-Supported iterators types:
+The order is condition, body, update, condition again. `continue` jumps to the update, `break` leaves the loop and skips it, and a normal end of the body also reaches the update.
+
+The update is one assignment, compound assignment or expression without a semicolon. A declaration, `return`, `break`, `continue`, `if`, loop, `switch`, `comptime`, `fn` or block is `zeen::parser::unsupported_action`. The update sees the variables of the loop header, but not `let` bindings from the body.
+
+## `for`
+
+`for` walks a range, an array, a slice or a struct that implements `Iterator`:
+
 ```zn
-// integer signed types
-i8 i16 i32 i64 isize
-
-// integer unsigned types
-u8 u16 u32 u64 usize
-
-// array types
-[N]T
-
-// slice types
-[]T
-
-// structs with Iterator
+fn main() {
+  for (i : 0..=5) {
+    @println("{}", i);
+  };
+}
 ```
 
-Example:
+`0..5` stops before the right bound and `0..=5` includes it. A bare integer walks the range up to that value:
+
 ```zn
-for (i : 10) {
+for (i : 5) {
   @println("{}", i);
 }
 ```
 
-## Program Flow Controllers
+An array or a slice yields its elements. A struct that implements `Iterator` yields whatever `next` returns; [Iterators](/ownership-types/iterators/) covers that case.
 
-### `return`
-Returns provided expression value for current function. <br/>
-Syntax:
 ```zn
-return; // empty/void return
-return expression; // expression return
+fn main() {
+  const items = {3, 7, 9};
+
+  for (x : items) {
+    @println("{}", x);
+  };
+}
 ```
 
-Example:
+## Loop else
+
+`for` and `while` accept an optional `else` that runs only when the loop finishes on its own:
+
 ```zn
-fn foo() i32 {
+fn main() {
+  const items = {3, 7, 9};
+  const target = 4;
+
+  for (x : items) {
+    if (x == target) {
+      @println("found");
+      break;
+    };
+  } else {
+    @println("not found");
+  };
+}
+```
+
+A `break` skips the `else`. `continue` does not: the loop keeps going and the `else` still runs at the natural end. The `else` is checked outside the loop, so `break` and `continue` inside it belong to the enclosing loop.
+
+The `for` variable and body locals are not visible in the `else`. A `while (true)` without a `break` never reaches its `else`.
+
+## Labels
+
+A loop can carry a label, and `break` or `continue` can name it from a nested loop:
+
+```zn
+fn main() {
+  outer: for (i : 0..3) {
+    for (j : 0..3) {
+      if (j == 1) {
+        continue :outer;
+      };
+
+      if (i == 2) {
+        break :outer;
+      };
+
+      @println("{} {}", i, j);
+    };
+  };
+}
+```
+
+`continue :outer` on a `while` runs that loop's update, and on a `for` it moves to the next element. An unlabeled `break` or `continue` targets the nearest loop.
+
+## Program flow
+
+`return` leaves the current function, with a value when the function returns one:
+
+```zn
+fn answer() i32 {
   return 123 + 321 * 2;
 }
 ```
 
-### `break`
-Breaks current loop execution and returns to the branch after the loop. <br/>
-Syntax:
-```zn
-break;
-```
+A function whose body ends with an expression returns that expression, so the same function can drop the keyword:
 
-Example:
 ```zn
-for (i : 10) {
-  if (i == 6)
-    break;
+fn answer() i32 {
+  123 + 321 * 2
 }
 ```
 
-### `continue`
-Skips current loop iteration and returns to the loop condition. <br/>
-Syntax:
+`break` leaves a loop and `continue` starts the next iteration:
+
 ```zn
-continue;
+fn main() {
+  for (i : 10) {
+    if (i == 6) {
+      break;
+    };
+
+    if (i == 2) {
+      continue;
+    };
+
+    @println("{}", i);
+  };
+}
 ```
+
+`return` is a statement, so a `switch` arm that returns needs a body: `.Zero => { return 10; }` instead of `.Zero => return 10`.
