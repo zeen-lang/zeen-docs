@@ -476,6 +476,11 @@ export default defineConfig({
 					],
 				},
 
+				{
+					label: 'Diagnostics',
+					link: '/diagnostics/',
+				},
+
 				// Changelog
 				{
 					label: 'Changelog',

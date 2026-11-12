@@ -1,0 +1,43 @@
+---
+title: Diagnostics
+description: Compiler errors and warnings, grouped by pipeline stage, with examples.
+---
+
+import DiagnosticCard from '../../components/DiagnosticCard.astro';
+import { diagnostics } from '../../data/diagnostics';
+
+## Errors
+
+### Parser
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-parser' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### Resolver
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-resolve' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### Typechecker
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-typecheck' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### Comptime
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-comptime' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### MIR
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-mir' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### Codegen
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-codegen' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+## Warnings
+
+### Dataflow
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-dataflow' && diagnostic.severity === 'warning').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+### MIR
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-mir' && diagnostic.severity === 'warning').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}

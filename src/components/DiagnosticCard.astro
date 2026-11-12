@@ -1,0 +1,91 @@
+---
+import { Code } from '@astrojs/starlight/components';
+import type { Diagnostic } from '../data/diagnostics';
+
+interface Props {
+  diagnostic: Diagnostic;
+}
+
+const { diagnostic } = Astro.props;
+const anchor = diagnostic.code.replaceAll('::', '-');
+---
+
+<section class:list={['diag', diagnostic.severity]}>
+  <h4 id={anchor}>
+    <span class="severity">{diagnostic.severity}</span>{' '}
+    <a class="code" href={`#${anchor}`}><code>{diagnostic.code}</code></a>
+  </h4>
+
+  <p>{diagnostic.message}</p>
+
+  {diagnostic.example && <Code code={diagnostic.example} lang="zn" />}
+
+  {diagnostic.help && (
+    <p class="help"><span class="label">help:</span>{diagnostic.help}</p>
+  )}
+</section>
+
+<style>
+  .diag {
+    margin-block: 1.5rem 2rem;
+    padding-inline-start: 1rem;
+    border-inline-start: 3px solid var(--sl-color-red);
+  }
+
+  .diag.warning {
+    border-inline-start-color: var(--sl-color-orange);
+  }
+
+  h4 {
+    margin-block: 0 0.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  h4 code {
+    font-size: var(--sl-text-base);
+    background: none;
+    padding: 0;
+  }
+
+  .code {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .code:hover code {
+    text-decoration: underline;
+  }
+
+  .severity {
+    font-size: var(--sl-text-xs);
+    text-transform: lowercase;
+    color: var(--sl-color-red);
+  }
+
+  .warning .severity {
+    color: var(--sl-color-orange);
+  }
+
+  p {
+    margin-block: 0.5rem;
+  }
+
+  .help {
+    margin-block: 0.9rem 0;
+    padding-block: 0.7rem 0.75rem;
+    border-block-start: 1px solid var(--sl-color-gray-5);
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+  }
+
+  .label {
+    font-family: var(--__sl-font-mono);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+    margin-inline-end: 0.5rem;
+    color: hsl(159deg 35% 32%);
+  }
+</style>
