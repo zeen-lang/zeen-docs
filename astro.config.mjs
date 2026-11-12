@@ -144,6 +144,10 @@ export default defineConfig({
 							slug: 'functions-closures/structures-and-methods',
 						},
 						{
+							label: 'Builtin Blocks',
+							slug: 'functions-closures/implement-builtin',
+						},
+						{
 							label: 'Enums',
 							slug: 'functions-closures/enums',
 						},

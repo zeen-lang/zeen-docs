@@ -114,6 +114,8 @@ fn main() {
 
 The standard library keeps methods of field-carrying types in `implement` blocks and leaves methods of field-less helper types in the body. This is a style choice, not a language rule.
 
+Builtin types such as `i32` and `[]u8` take methods through `implement builtin`, covered on [Builtin Blocks](/functions-closures/implement-builtin/).
+
 ## Overloads and Specialization
 
 Two blocks can declare the same method name when they differ by block bounds or by concrete type arguments. The signatures must match.
