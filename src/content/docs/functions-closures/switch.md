@@ -3,119 +3,206 @@ title: Switch
 description: Pattern matching over values, ranges, strings, binds and enum variants.
 ---
 
-A switch picks the first matching arm, from top to bottom.
-
-An arm can be:
-
-- a value: `123 => ...`
-- several values: `1 | 2 => ...`
-- a bind: `value => ...`
-- a bind with guard: `value if (value > 0) => ...`
-- a wildcard: `_ => ...`
-- a wildcard with guard: `_ if (ready) => ...`
+A `switch` evaluates the scrutinee once and runs the first matching arm.
 
 ```zn
-let answer = 123;
+fn main() {
+  const answer: i32 = 123;
 
-let points = switch (answer) {
-  123 => 444,
-  _ => -1,
-};
+  const points = switch (answer) {
+    123 => 444,
+    _ => -1,
+  };
+
+  @println("{}", points);
+}
 ```
 
-## Values
-Bools and chars match the same way:
+An arm matches a value, several values, a range, a bind, a wildcard or an enum variant. A bind and a wildcard can carry a guard. Integers, `bool`, `char`, string slices and enums are supported. Floats and structs such as `String` report `zeen::typechecker::switch_unsupported_type`.
+
+## Values and ranges
+
+A range excludes its end, `0..5` covers `0` to `4`. The inclusive form `0..=5` covers `5` too. Alternatives combine with `|`:
+
 ```zn
-let flag = true;
+fn tier(level: i32) i32 {
+  return switch (level) {
+    0..5 | 10..15 => 1,
+    20 | 25..30 => 2,
+    _ => 0,
+  };
+}
 
-let code = switch (flag) {
-  true => 10,
-  false => 20,
-};
+fn main() {
+  @println("{} {} {}", tier(3), tier(12), tier(26));
+}
+```
 
-let letter = 'x';
+Chars take ranges the same way:
 
-let group = switch (letter) {
-  'a' | 'b' | 'x' => 7,
-  _ => 8,
-};
+```zn
+fn grade(letter: char) []const char {
+  return switch (letter) {
+    'a'..='z' => "lower",
+    'A'..='Z' => "upper",
+    _ => "other",
+  };
+}
+
+fn main() {
+  @println("{} {} {}", grade('m'), grade('M'), grade('7'));
+}
+```
+
+`bool` needs both values or a wildcard:
+
+```zn
+fn flag_code(flag: bool) i32 {
+  return switch (flag) {
+    true => 1,
+    false => 0,
+  };
+}
+
+fn main() {
+  @println("{}", flag_code(true));
+}
 ```
 
 ## Strings
-String literals and slices match by content:
-```zn
-let name = "mealet";
 
-let id = switch (name) {
-  "hello" => 1,
-  "mealet" => 2,
-  _ => 0,
-};
+String arms match slice bytes by content. The scrutinee has to be a string slice, `[]const char` or `[]char`:
+
+```zn
+fn id(name: []const char) i32 {
+  return switch (name) {
+    "hello" => 1,
+    "mealet" => 2,
+    _ => 0,
+  };
+}
+
+fn main() {
+  @println("{} {}", id("mealet"), id("other"));
+}
 ```
 
-## Ranges
-Ranges match inclusive-exclusive intervals, chars included. Ranges combine with `|` like plain values:
+`String` is a struct, so a switch over it reports the unsupported type. Switch over `name.slice(..)` instead, or compare two `String` values with `==`.
+
+## Binds and guards
+
+A bare name binds the whole scrutinee. A guard after `if` narrows the arm. Arms run top to bottom, and an arm that can never match is `zeen::typechecker::switch_unreachable_arm`.
+
 ```zn
-let level = 12;
+fn bonus(score: i32) i32 {
+  return switch (score) {
+    value if (value > 999) => 1050,
+    value => value + 1,
+  };
+}
 
-let tier = switch (level) {
-  0..5 | 10..15 => 1,
-  20 | 25..30 => 2,
-  _ => 0,
-};
-
-let index = 'm';
-
-let kind = switch (index) {
-  'a'..='z' => 100,
-  'A'..='Z' => 200,
-  _ => 300,
-};
+fn main() {
+  @println("{} {}", bonus(500), bonus(1200));
+}
 ```
 
-## Binds and Guards
-An arm binds the scrutinee to a name, with an optional guard after it. A wildcard arm binds nothing, `_ if` checks only the guard. `return` is a statement, so returning arms need `{ }` blocks.
-```zn
-let score = 500;
+A bare name that resolves to a `const` compares against its value instead of binding:
 
-let bonus = switch (score) {
-  value if (value > 999) => 1050,
-  value => value + 1,
-};
+```zn
+const ENOENT: i32 = 2;
+
+fn describe(code: i32) []const char {
+  return switch (code) {
+    ENOENT => "no such file",
+    _ => "other",
+  };
+}
+
+fn main() {
+  @println("{}", describe(2));
+}
+```
+
+`_` matches anything and binds nothing. `_ if (...)` checks only the guard.
+
+`return`, `break` and `continue` are statements, so an arm that uses one needs a block:
+
+```zn
+fn code(value: i32) i32 {
+  switch (value) {
+    0 => {
+      return 10;
+    },
+    _ => {
+      return 20;
+    },
+  };
+}
+
+fn main() {
+  @println("{}", code(0));
+}
 ```
 
 ## Enums
-Enum arms name the variant with a dot. Payload variants bind the payload, guards can check it. A wildcard catches the rest.
+
+An enum arm names the variant after a dot. A payload variant binds its payload, and a guard can inspect it. Every variant has to be covered, or the switch needs `_`:
+
 ```zn
 enum Shape {
   dot,
   rect: i32,
 }
 
-let shape = Shape.rect(5);
+fn area(shape: Shape) i32 {
+  return switch (shape) {
+    .dot => 0,
+    .rect(side) => side * side,
+  };
+}
 
-let area = switch (shape) {
-  .dot => 0,
-  .rect(side) if (side > 100) => 100,
-  .rect(side) => side,
-};
+fn main() {
+  @println("{} {}", area(Shape.dot), area(Shape.rect(3)));
+}
 ```
 
-With `&` the arm binds a pointer into the value instead of moving it out. `&_` discards:
+Without `&` the payload moves out of an owned enum, or copies when it is `Copy`. `&name` binds a pointer into the value instead:
+
 ```zn
-switch (shape) {
-  .rect(&side) => @println("side: {}", *side),
-  _ => @println("other"),
-};
+enum Shape {
+  dot,
+  rect: i32,
+}
+
+fn main() {
+  const shape = Shape.rect(5);
+
+  switch (shape) {
+    .rect(&side) => {
+      @println("side: {}", *side);
+    },
+    .dot => {
+      @println("dot");
+    },
+  };
+}
 ```
 
-Bare `_` as a payload binding moves the payload into a dead local and drops it. For a non-`Copy` payload this is a hard error (`zeen::mir::discard_drop_payload`), use `&_` instead.
+`&_` discards the payload without moving it. A bare `_` moves the payload into a dead local and drops it, and that is a hard error for a payload with a drop (`zeen::mir::discard_drop_payload`). Use `&_` there.
 
-## Statement Position
-A switch works as a statement too:
+## Statement position
+
+A switch works as a statement. The trailing semicolon is optional:
+
 ```zn
-switch (answer) {
-  123 => @println("found"),
-  _ => @println("missing"),
-};
+fn main() {
+  const answer: i32 = 1;
+
+  switch (answer) {
+    1 => @println("found"),
+    _ => @println("missing"),
+  }
+
+  @println("done");
+}
 ```
