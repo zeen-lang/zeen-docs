@@ -1,11 +1,13 @@
 ---
 title: Compile Time Engine
-description: Compile time constants, functions, blocks, structs, types and reflection.
+description: Compile time constants, functions, blocks, structs, type captures and reflection.
 ---
 
-Area `comptime` evaluates code during compilation and substitutes the result into the program. Compile time values have no runtime storage.
+`comptime` evaluates code while the program compiles and substitutes the result into the program. Compile time values take no runtime storage.
 
 ## Constants
+
+`comptime NAME = expr;` builds a constant with no type annotation. Every use site receives the value itself:
 
 ```zn
 comptime N = 16;
@@ -16,19 +18,28 @@ fn main() {
 }
 ```
 
-A plain name is enough inside code. Use a splice `$(NAME)` where only a literal works, for example inside a string or a type:
+A name works as a normal expression. A splice `$(NAME)` writes the value as text, which is what string literals and captured syntax need:
 
 ```zn
+comptime N = 16;
+
 fn main() {
-  @println("$(N) squared is $(SquaredN)");
+  @println("$(N) squared is $(N * N)");
 }
 ```
 
+A `pub comptime` name is visible through `use` in another module.
+
 ## Functions
+
+A compile time function takes comptime parameters and returns a comptime value. Recursion works, and a call may appear in a type position:
 
 ```zn
 comptime fn fact(n: comptime_int) comptime_int {
-  if (n <= 1) { return 1; };
+  if (n <= 1) {
+    return 1;
+  };
+
   return n * fact(n - 1);
 }
 
@@ -37,33 +48,39 @@ comptime fn double(x: comptime_int) comptime_int {
 }
 
 fn main() {
-  let arr: [double(2)]i32 = [1, 2, 3, 4];
-  @println("{} {}", fact(5), arr[3]);
+  const values: [double(2)]i32 = {1, 2, 3, 4};
+
+  @println("{} {}", fact(5), values[3]);
 }
 ```
 
-A compile time function takes comptime parameters, returns a comptime value and supports recursion. Its result can be used in a type position, so a call works wherever a constant expression does.
+`[double(2)]i32` becomes `[4]i32` during compilation.
 
 ## Blocks
 
-`comptime { ... }` works at three levels:
-
-- **declaration level**, where it may emit declarations,
-- **statement level** inside a runtime function
-- **expression level**, where the tail value is substituted.
+`comptime { ... }` works at three levels. At declaration level it runs once and may emit declarations. At statement level it runs inside a runtime function. At expression level it yields the value of its tail expression:
 
 ```zn
+comptime {
+  @println("declaration level");
+}
+
 fn main() {
   comptime {
-    @println("evaluated during compilation");
+    @println("statement level");
   }
 
-  let size = comptime { 4 * 8 };
+  const size = comptime { 4 * 8 };
+
   @println("{}", size);
 }
 ```
 
+A block produces output during compilation, prefixed with the file and line.
+
 ## Structs
+
+`comptime struct` holds comptime fields. The value is `Copy`, accepts the usual `self` receivers and stays out of the runtime program:
 
 ```zn
 comptime struct Point {
@@ -71,88 +88,138 @@ comptime struct Point {
   y: comptime_int,
 }
 
-comptime P = Point { .x = 123, .y = 321 };
+comptime Origin = Point { .x = 0, .y = 0 };
+comptime Corner = Point { .x = 3, .y = 4 };
 
 fn main() {
-  @println("x = $(P.x)");
-  @println("y = $(P.y)");
+  @println("origin is $(Origin.x), $(Origin.y)");
+  @println("corner is $(Corner.x), $(Corner.y)");
 }
 ```
 
-A comptime struct is compile time only. It is `Copy`, accepts the usual `self` receivers, and cannot be used as a runtime type.
+Core uses the same feature for reflection records in [core.reflection](/library/core/reflection/).
 
-:::tip
-You can see a good `comptime struct` example in core library: [`reflection.zn`](/library/core/reflection/) <br/>
-provides compile time structs for the compiler to use reflection.
-:::
-
-## Types and declarations
+## Captured types and declarations
 
 | Macro | Result |
-|-------|--------|
-| `@zeen_type(T)` | the type as a `zeen_type` value |
-| `@zeen_expr(expr)` | the expression as a `zeen_expr` value |
-| `@zeen_decl(decl)` | the declaration as a `zeen_decl` value |
-| `@emit(decl)` | emit a captured declaration into the program |
-| `@fresh_name(prefix)` | unique name `prefix_N` |
+|---|---|
+| `@zeen_type(T)` | a type as a `zeen_type` value |
+| `@zeen_expr(expr)` | an expression as a `zeen_expr` value |
+| `@zeen_decl(decl)` | a declaration as a `zeen_decl` value |
+| `@emit(decl)` | writes a captured declaration into the program |
+| `@fresh_name(prefix)` | a unique name `prefix_N` |
 
-`zeen_decl` lets a compile time function build declarations. `@emit` places them into scope:
+A captured type acts like an alias, and `$(...)` fills the holes:
 
 ```zn
-comptime fn pair_of(struct_name: comptime_str, a: zeen_type, b: zeen_type) zeen_decl {
+comptime fn array_type(n: comptime_int) zeen_type {
+  return @zeen_type([$(n)]i32);
+}
+
+alias Buffer = array_type(3);
+
+fn main() {
+  const values: Buffer = {1, 2, 3};
+
+  @println("{}", values[1]);
+}
+```
+
+A captured expression splices back into runtime code:
+
+```zn
+comptime fn twice(n: comptime_int) zeen_expr {
+  return @zeen_expr($(n) + $(n));
+}
+
+comptime Captured = @zeen_expr(1 + 2);
+
+fn main() {
+  const sum = $(Captured);
+  const four = $(twice(2));
+
+  @println("{} {}", sum, four);
+}
+```
+
+A captured declaration goes out through `@emit`, and `@fresh_name` mints names for a loop:
+
+```zn
+comptime fn named_struct(name: comptime_str) zeen_decl {
   @zeen_decl(
-    struct $(struct_name) {
-      pub a: $(a),
-      pub b: $(b),
+    pub struct $(name) {
+      pub value: i32
     }
-  )
+  );
 }
 
 comptime {
-  @emit(pair_of("NumsPair", i32, f32));
+  @emit(named_struct("Alpha"));
+
+  for (i : 0..2) {
+    const name = @fresh_name("Item");
+
+    @emit(@zeen_decl(
+      pub struct $(name) {
+        pub index: i32
+      }
+    ));
+  }
 }
 
 fn main() {
-  let pair = NumsPair { .a = 1, .b = 1.0 };
-  @println("{} {}", pair.a, pair.b);
+  const alpha = Alpha { .value = 10 };
+  const second = Item_1 { .index = 2 };
+
+  @println("{} {}", alpha.value, second.index);
 }
 ```
+
+`@emit` adds declarations next to the block that calls it, so the generated `Alpha` and `Item_N` are ordinary structs in that module.
 
 ## Reflection
 
 | Macro | Result |
-|-------|--------|
+|---|---|
 | `@fields(T)` | array of `Field` records |
 | `@variants(T)` | array of `Variant` records |
-| `@typeInfo(T)` | kind string, `struct` or `enum` |
+| `@typeInfo(T)` | `struct` or `enum` |
 | `@hasField(T, name)` | `bool` |
-| `@fieldType(T, name)` | field type |
+| `@fieldType(T, name)` | the field type |
 
 ```zn
-struct User {
-  pub id: i32,
-  pub score: f64,
+struct Point {
+  pub x: i32,
+  pub y: i64,
+}
+
+enum Shape {
+  empty,
+  circle: f64,
+}
+
+comptime {
+  @println("{}", @typeInfo(Point));
+  @println("{} {}", @hasField(Point, "x"), @fieldType(Point, "y"));
+
+  for (field : @fields(Point)) {
+    @println("{}: {}", field.name, field.ty);
+  }
+
+  for (variant : @variants(Shape)) {
+    @println("{} {}", variant.name, variant.payload);
+  }
 }
 
 fn main() {
-
-  comptime {
-    @println("{}", @typeInfo(User));
-
-    for (field : @fields(User)) {
-      @println("[{}] {}: {}", field.index, field.name, field.ty);
-    }
-  }
-
 }
 ```
 
-`@variantNames(T)` and `@variantCount(T)` are regular macros: they work at run time and inside comptime blocks.
+A `Field` record holds `index`, `name` and `ty`. A `Variant` record holds `index`, `name` and `payload`, which is `none` or `value`. Reflection macros work only inside comptime. `@variantNames` and `@variantCount` are runtime macros, covered on [Builtin Macros](/language-basics/macros-builtin/).
 
 ## Formatting and layout
 
-`@print`, `@println`, `@format`, `@dbg`, `@panic` accept the same format syntax as at run time.
-`@sizeof(T)`, `@alignof(T)` in comptime area return `comptime_int`.
+`@print`, `@println`, `@format`, `@dbg` and `@panic` take the same format strings as at runtime. `@sizeof(T)` and `@alignof(T)` return `comptime_int` here:
 
 ```zn
 comptime Size = @sizeof(i64);
@@ -164,17 +231,17 @@ fn main() {
 ```
 
 ## Allowed types
-List allowed types in compile time area:
+
+A comptime value is one of:
+
 - `comptime_int`, `comptime_float`, `comptime_bool`, `comptime_char`, `comptime_str`
 - `zeen_type`, `zeen_expr`, `zeen_decl`
-- `comptime struct`
-- arrays of the above
-- `void`
+- a comptime struct
+- an array of the above
+- `void`, as a return type
 
-Runtime types are rejected in comptime signatures and local annotations. <br/>
-`@uninit` and `@void` are forbidden inside comptime.
+Runtime types such as `i32`, `f64` or `String` are rejected in comptime signatures and local annotations (`zeen::comptime::runtime_type`). `@uninit` reports `zeen::comptime::runtime_only`, and `@void()` is gone entirely. Only the empty `.{ }` form is evaluated at comptime.
 
 ## Limits
 
-The interpreter has a step budget and a recursion depth limit. <br/>
-Exceeding either one is a compile error with the code `zeen::comptime::limit_exceeded`.
+The interpreter has a step budget and a recursion depth limit. Exceeding either one is a compile error with the code `zeen::comptime::limit_exceeded`.

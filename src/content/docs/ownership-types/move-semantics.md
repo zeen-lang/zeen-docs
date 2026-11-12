@@ -1,98 +1,197 @@
 ---
 title: Move Semantics
-description: Ownership rules, copying, forced Copy and drop behavior.
+description: One owner per value, Copy types, forced Copy, drops and borrowing.
 ---
 
-**Move Semantics** is a key feature of Zeen memory management.
+Every value has one owner. Moving a value hands ownership to the new place, and the old place becomes invalid. `Copy` types skip this and are duplicated instead. Drops use the same rule, so data is released exactly once.
 
-## Principles
+## Copy and move
 
-1. Every value has one owner.
-2. Taking a move-only value applies a move operation: the new owner takes full ownership of
-the data, and using the previous access point is now an error.
-3. Taking a Copy value applies a copy operation: the previous owner is still valid and the new one gets
-copied data loaded from memory.
-4. Automatic value drops use move semantics to free data only once, by its owner.
+Builtin scalars are `Copy`. A copy leaves the source usable:
 
-### Examples
-Copy values example:
 ```zn
 fn main() {
-  let a: i32 = 123; // `i32` is a Copy type
-  let b = a; // copied value from `a`, so it's still valid
+  const a: i32 = 123;
+  const b = a;
 
   @println("{} {}", a, b);
 }
 ```
 
-----
+A `String` owns a heap buffer, so it is move-only. The new binding takes the value and the old one cannot be read:
 
-Move values example:
 ```zn
+use std.string;
+
 fn main() {
-  let lang = String.from("Zeen"); // `String` is a move-only struct
-  let next_lang = lang; // moved String instance to the `next_lang` variable
+  const lang = String.from("Zeen");
+  const next_lang = lang;
+
   @println("{}", next_lang);
 }
 ```
 
-----
+Reading the moved binding reports `zeen::dataflow::use_after_move`:
 
-Use after move example:
 ```zn
-fn main() {
-  let lang = String.from("Zeen"); // `String` is a move-only struct
-  let next_lang = lang; // moved String instance to the `next_lang` variable
+use std.string;
 
-  // Let's use the `lang` variable after moving its ownership
+fn main() {
+  const lang = String.from("Zeen");
+  const next_lang = lang;
+
   @println("{}", lang);
 }
 ```
+
 ```
 zeen::dataflow::use_after_move
 
-  × use of moved value `lang`
-   ╭─[test.zn:6:18]
- 5 │   // Let's use the `lang` variable after moving its ownership
- 6 │   @println("{}", lang);
-   ·                  ────
- 7 │ }
-   ╰────
+  x use of moved value `lang`
   help: value `lang` was moved out, borrow or clone it instead
 ```
 
-----
+A move also happens when a value is passed by value, stored into a struct field, put in an array or returned. A moved value is dropped by its last owner only.
 
-## Copy Types
-Table of compiler marked `Copy` types:
+## What is Copy
 
 | Type | Copy |
-|------|------|
-| ints, floats, `bool`, `char` | yes |
-| `*T`, `[*]T`, basic `fn` | yes |
-| `[]T` (slice) | yes |
-| `[N]T` (array) | _if the element is_ |
-| struct, enum | _if every field / payload is_ |
+|---|---|
+| integers, floats, `bool`, `char` | yes |
+| `*T`, `[*]T`, basic `fn` values | yes |
+| `[]T` slices | yes |
+| `[N]T` arrays | when the element type is `Copy` |
 | `void`, `never` | yes |
+| `Fn` and `FnOnce` | no |
+| structs | only with `implement Copy` |
+| enums | when every payload is `Copy` |
+
+Structs are move-only by default, even when every field is `Copy`. An enum derives `Copy` on its own when all payloads are `Copy`. [Structures and Methods](/functions-closures/structures-and-methods/) and [Enums](/functions-closures/enums/) show the declarations.
 
 ## Forced Copy
-`implement Copy` forces a type to be `Copy` regardless of its fields.
-This is a promise: the type must really be trivially copyable, the compiler trusts it.
+
+`implement Copy : Foo {}` makes a struct or an enum copyable regardless of its fields:
+
 ```zn
-implement Copy : StructName {}
+struct Point {
+  pub x: i32,
+  pub y: i32,
+}
+
+implement Copy : Point {}
+
+fn main() {
+  const a: Point = .{ .x = 1, .y = 2 };
+  const b = a;
+
+  @println("{} {} {}", a.x, b.x, b.y);
+}
 ```
 
-A type with `Drop` cannot be `Copy`: pick one. Without an explicit `Drop`, fields drop recursively at scope end.
+The compiler trusts the promise and does not inspect the fields. Marking a type with a heap buffer as `Copy` leads to a double free, so add the block only when the value is really trivially copyable.
 
-## Payload Discard
+`Copy` and `Drop` exclude each other. A struct with both reports `zeen::typechecker::copy_with_drop`: a copied value has no way to release a resource once.
 
-`.Variant(_)` moves the payload into a dead local and drops it immediately. For a non-copy payload that is a hard error (`zeen::mir::discard_drop_payload`), because the payload may own data. Use `&_` to borrow and discard, or `&name` to keep a pointer:
+## Drop
+
+A type releases resources in `implement Drop : Foo`. The destructor takes `self` by value:
+
 ```zn
-switch (value) {
-  .number(_) => @println("dropped"),
-  .pair(&coords) => @println("{} {}", coords.first, coords.second),
-  _ => @println("other"),
-};
+struct Noisy {
+  pub name: []const char,
+}
+
+implement Drop : Noisy {
+  fn drop(self) {
+    @println("drop {}", self.name);
+  }
+}
+
+fn main() {
+  const noise: Noisy = .{ .name = "noise" };
+
+  @println("{}", noise.name);
+}
 ```
 
-Bare `_` stays legal for `Copy` payloads.
+The value drops at the end of its scope. Fields drop in reverse declaration order, and locals drop in reverse declaration order too:
+
+```zn
+struct Noisy {
+  pub name: []const char,
+}
+
+implement Drop : Noisy {
+  fn drop(self) {
+    @println("drop {}", self.name);
+  }
+}
+
+struct Pair {
+  pub first: Noisy,
+  pub second: Noisy,
+}
+
+fn main() {
+  const pair: Pair = .{
+    .first = .{ .name = "first" },
+    .second = .{ .name = "second" },
+  };
+
+  @println("{} {}", pair.first.name, pair.second.name);
+}
+```
+
+This prints `first second`, then `drop second` and `drop first`. Without an explicit `Drop`, fields drop recursively the same way. A temporary drops at the end of its statement, so a guard returned from a method is released as soon as the expression is done.
+
+## Discarding
+
+`let _ = value;` discards a value without dropping it. The bindings `_name` and `_` differ:
+
+```zn
+struct Noisy {
+  pub name: []const char,
+}
+
+implement Drop : Noisy {
+  fn drop(self) {
+    @println("drop {}", self.name);
+  }
+}
+
+fn main() {
+  const leaked: Noisy = .{ .name = "leaked" };
+  let _ = leaked;
+
+  let _kept = Noisy { .name = "kept" };
+
+  @println("done");
+}
+```
+
+`leaked` never drops, since `let _ =` releases nothing. `_kept` drops at the end of `main`, printing `drop kept`.
+
+Inside a switch, a bare `_` payload binding moves the payload into a dead local and drops it right away. That is a hard error for a payload that needs a drop (`zeen::mir::discard_drop_payload`), so use `&_` to discard by borrow. [Switch](/functions-closures/switch/) covers both forms.
+
+## Borrowing instead of moving
+
+Most code avoids moves by borrowing. Pass a pointer, call a method on a pointer receiver or take a slice view:
+
+```zn
+use std.string;
+
+fn first_len(text: *const String) usize {
+  return text.len();
+}
+
+fn main() {
+  const text: String = String.from("zeen");
+  const copy: String = text.clone();
+
+  @println("{} {} {}", text, copy, first_len(&text));
+}
+```
+
+`clone()` builds a new value when ownership really has to be split.
+
+Reading a whole value through a raw pointer aliases the owner. `const moved: String = (*ptr);` copies the struct without transferring ownership, and both sides free the same buffer. The flow pass rejects that case with `zeen::dataflow::aliased_drop`. Borrow through the pointer, clone, or free the source storage first.
