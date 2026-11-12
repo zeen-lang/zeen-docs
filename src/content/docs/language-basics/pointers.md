@@ -1,47 +1,102 @@
 ---
 title: Pointers
-description: Single pointers, dereference, casts and element based arithmetic.
+description: Single and many pointers, dereference, casts and element arithmetic.
 ---
 
-## Single Pointers
-A single pointer holds the address of one value. `*T` points to mutable data, `*const T` to read-only data. To get a pointer, apply addr-of `&` to an expression. Pointers are always `Copy`, and an empty pointer is `nullptr`, which can be compared with `==` and `!=`.
+## Single pointers
 
-Calls see through pointers to the inner value: `ptr.len()`, `@println!("{}", ptr)` and `ptr[..]` work the same as on the value itself.
+`*T` points to one mutable value, `*const T` to a read-only one. `&` takes the address of a place. Pointers are `Copy`, and `nullptr` is the empty pointer, compared with `==` and `!=`:
 
 ```zn
-let num = 123;
-let ptr = &num;
-let null_ptr: *i32 = nullptr;
+fn main() {
+  const num: i32 = 123;
+  const ptr: *const i32 = &num;
+  const empty: *const i32 = nullptr;
 
-if (ptr != nullptr) {
-  @println("ptr is not null");
+  if (ptr != empty) {
+    @println("{}", *ptr);
+  }
+}
+```
+
+Method calls and format arguments see through a pointer to the inner value, so no manual deref is needed:
+
+```zn
+use std.string;
+
+fn main() {
+  const text: String = String.from("zeen");
+  const ptr: *const String = &text;
+
+  @println("{} {}", ptr, ptr.len());
 }
 ```
 
 ## Dereference
-The pointed data is accessed only through dereference `*ptr`. The same dereference modifies the data the pointer points to, if the pointer itself is mutable.
+
+`*ptr` reads or writes the pointed place. Writing needs a mutable pointee:
 
 ```zn
-let num = 123;
-let ptr = &num;
+fn main() {
+  let num: i32 = 123;
+  const ptr: *i32 = &num;
 
-*ptr = 0;
+  *ptr = 0;
 
-@println("{}", num);
+  @println("{}", num);
+}
 ```
 
 ## Casts
-Pointers cast to integers and back, the usual target is `usize`. Single and many pointers cast to each other explicitly with `@as`, and any pointer casts to `*void` and back.
+
+Pointers cast to and from `usize`, and to and from `*void`. Two pointer types convert with `@as` as well:
 
 ```zn
-let addr = @as(usize, ptr);
-let back = @as(*i32, addr);
+use std.string;
+
+fn main() {
+  const text: String = String.from("zeen");
+  const ptr: *const String = &text;
+
+  const addr: usize = @as(usize, ptr);
+  const raw: *void = @as(*void, ptr);
+  const back: *const String = @as(*const String, raw);
+
+  @println("{} {}", back.len(), addr != 0);
+}
 ```
 
 ## Arithmetic
-Pointer arithmetic moves by elements, not bytes: `ptr + 1` points to the next value of type `T`. Integers can be added and subtracted from both sides. Subtracting one pointer from another gives the element distance as `isize`.
+
+Pointer arithmetic moves by elements, not bytes. `ptr + 1` points to the next `T`. Subtracting two pointers gives the distance as `isize`:
 
 ```zn
-let next = ptr + 1;
-let diff: isize = next - ptr;
+fn main() {
+  let values: [3]i32 = {10, 20, 30};
+  const ptr: *[3]i32 = &values;
+  const next: *[3]i32 = ptr + 1;
+
+  @println("{}", next - ptr);
+}
 ```
+
+Indexing goes through arrays and slices. A pointer to an array is not indexable, read `(*ptr)[0]` instead.
+
+## Many pointers
+
+`[*]T` points to a run of values with no stored length, and `[*]const T` does the same read-only. Index with `p[i]`, the bounds check is on you:
+
+```zn
+extern fn malloc(usize) *void;
+
+fn main() {
+  let buffer: [*]u8 = @as([*]u8, malloc(4));
+
+  buffer[0] = 65;
+  buffer[1] = 66;
+
+  @println("{} {}", buffer[0], buffer[1]);
+}
+```
+
+A slice `[]T` keeps its length next to the pointer, so prefer it when the count is known. `[*]T` usually appears at the C boundary.

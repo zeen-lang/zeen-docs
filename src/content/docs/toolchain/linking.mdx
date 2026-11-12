@@ -7,14 +7,14 @@ The object file from codegen links into a binary with a toolchain picked by the 
 
 ## Selection
 | Target | Toolchain |
-|--------|-----------|
-| gnu | gcc-family alias (`x86_64-linux-gnu-gcc` …) |
-| native `cc`/`gcc` when host matches target | |
-| otherwise | `clang -target <triple>` |
-| Windows MSVC | `link.exe` only on Windows |
+|---|---|
+| gnu family | gcc alias for the triple, such as `x86_64-linux-gnu-gcc` |
+| host equals target | native `cc` or `gcc` |
+| anything else | `clang -target <triple>` |
+| Windows MSVC | `link.exe`, only on Windows |
 | Wasm | `wasm-ld --allow-undefined` |
 
-Probe order: family alias, then `clang`. Missing symbols in Wasm become imports due to `--allow-undefined`.
+The linker probes the gcc family alias first, then falls back to `clang`. Wasm turns missing symbols into imports because of `--allow-undefined`.
 
 ## Overrides
 | Flag | Effect |

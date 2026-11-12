@@ -1,29 +1,34 @@
 ---
 title: Examples
-description: Small code examples
+description: Small programs that use the language end to end.
 ---
 
-## Result and Switch
-```zn
-fn divide(a: i32, b: i32) Result[i32, String] {
-  if (b == 0)
-    return Result.Err(String.from("Division by zero"));
+## Result and switch
 
-  Result.Ok(a / b)
+```zn
+use std.string;
+
+fn divide(a: i32, b: i32) Result[i32, String] {
+  if (b == 0) {
+    return Result.Err(String.from("Division by zero"));
+  };
+
+  return Result.Ok(a / b);
 }
 
 fn main() {
-  switch (divide(7, 0)) {
+  switch (divide(7, 2)) {
     .Ok(v) => @println("Result: {}", v),
     .Err(e) => @println("Error: {}", e),
   }
 }
 ```
 
-## Formatting Strings
+## Formatting strings
+
 ```zn
 fn greet_message(name: []const char) String {
-  @format("Hello, {}!", name)
+  return @format("Hello, {}!", name);
 }
 
 fn main() {
@@ -32,9 +37,10 @@ fn main() {
 ```
 
 ## Structures
+
 ```zn
 struct Person {
-  age: u32,
+  pub age: u32,
 
   pub fn new(age: u32) Self {
     Self { .age = age }
@@ -42,16 +48,17 @@ struct Person {
 
   pub fn birthday(*self) {
     self.age += 1;
-    @println("Happy, Birthday!");
+    @println("Happy Birthday!");
   }
 
   pub fn get_age(*const self) u32 {
-    self.age
+    return self.age;
   }
 }
 
 fn main() {
   let person = Person.new(26);
+
   person.birthday();
 
   @println("Current age: {}", person.get_age());
@@ -59,9 +66,10 @@ fn main() {
 ```
 
 ## Generics
+
 ```zn
 fn print_this[T: Display](value: T) {
-  @println("Yeah, I've printed this: {}", value);
+  @println("printed: {}", value);
 }
 
 fn main() {
@@ -70,23 +78,22 @@ fn main() {
 }
 ```
 
-## Extern functions (with generic example)
+## Extern functions
+
 ```zn
-/* declaration of extern C functions */
 extern fn malloc(usize) *void;
 extern fn free(*void);
 
 fn alloc_me[T](count: usize) *T {
-  malloc(@sizeof(T) * count)
+  return @as(*T, malloc(@sizeof(T) * count));
 }
 
 fn free_me[T](ptr: *T) {
-  free(ptr);
+  free(@as(*void, ptr));
 }
 
 fn main() {
-  /* Note how we're filling generics in non-type expressions */
-  let pointer = alloc_me #[i32](3);
+  const pointer = alloc_me#[i32](3);
 
   *pointer = 123;
   *(pointer + 1) = 321;
@@ -99,6 +106,7 @@ fn main() {
 ```
 
 ## Iterators
+
 ```zn
 struct Counter {
   cur: i32,
@@ -110,20 +118,22 @@ struct Counter {
 }
 
 implement Iterator : Counter {
+  alias Item = i32;
+
   fn next(*self) Option[i32] {
     if (self.cur < self.end) {
-      let output = self.cur;
+      const output = self.cur;
       self.cur += 1;
 
       return Option.Some(output);
     }
 
-    Option.None
+    return Option.None;
   }
 }
 
 fn main() {
-  let counter = Counter.until(5);
+  const counter = Counter.until(5);
 
   for (i : counter) {
     @println("{}", i);
@@ -131,6 +141,4 @@ fn main() {
 }
 ```
 
-----
-
-More examples of specific language's spheres you'll find in the relevant topics.
+More examples live in the topic pages.

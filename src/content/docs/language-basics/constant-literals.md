@@ -1,122 +1,145 @@
 ---
 title: Constant Literals
-description: Compile time literals for numbers, strings, chars and arrays.
+description: Literals for integers, floats, booleans, chars, bytes, strings and arrays.
 ---
 
-A constant literal is compile-time data you set in your code. <br/>
-Zeen supports 8 types of literals: **integer, float, boolean, char, byte-char, str, raw-str, array**.
+A literal writes compile time data straight into the source. Zeen has integer, float, boolean, char, byte char, string, raw string and array literals.
 
-## Integer Literals
-There are 4 numerical systems supported by the compiler: decimal, hexadecimal, binary, octal. <br/>
-Besides that language allows you to use `_` separator for big numbers (idea taken from Rust).
+## Integer literals
 
-Example:
-```zn
-/* 6 WAYS TO WRITE "1000" */
-
-1000 // decimal
-1_000 // decimal with separator
-0b111110100 // binary
-0x3E8 // hexadecimal uppercase
-0x3e8 // hexadecimal lowercase
-0o1750 // octal
-```
-
-Default integer literal type is `i32`.
-
-A literal takes its type from the context around it: an annotation, a call parameter or `@as`. The value must fit that type, otherwise the compiler reports `zeen::typechecker::int_literal_out_of_range`.
-
-Valid:
-```zn
-let a: i32 = 123;
-let b: i64 = 9223372036854775807;
-```
-
-Does not fit `i32`:
-```zn
-let c: i32 = 9223372036854775807;
-```
-
-A literal that does not fit `i64` at all is rejected by the lexer with `zeen::parser::invalid_literal`:
-```zn
-let d: i64 = 9300000000000000000;
-```
-
-## Float Literals
-Float (or floating point numbers) are the same with other languages.
-
-Example:
-```zn
-1.0 // default number
-1. // same number but shorter
-3.1415926535897932384626 // big number
-```
-
-Default float literal type is `f64`.
-
-## Boolean Literals
-Boolean constants are keywords with specified type. <br/>
-Keywords to use:
-```zn
-true, false
-```
-
-Boolean literal type is `bool`.
-
-## Char
-A _char_ is essentially an unsigned 1-byte integer that contains symbol representation inside. <br/>
-To define char use single quote:
-```zn
-'a', '\n'
-```
-
-Character literal type is `char`.
-
-## Byte Char
-Byte character literal is similar as _char_, but it returns `u8` (unsigned 1 byte integer) type. <br/>
-Usage:
-```zn
-b'a', b'\n'
-```
-
-## String
-Strings in Zeen may seem familiar like in C programming language. <br/>
-Core mechanics are similar: string literal ends with '\0' terminator.
-
-To define string use double quotes:
-```zn
-"Hello, World!"
-"Привет, Мир!"
-"Xin Chào, Thế Giới!"
-```
-
-String literals use array type `[N + 1]char` (N chars + 1 for null terminator) and convert implicitly to `[]const char`.
-
-## Raw String
-Raw strings are just another way to bake your string in source code and tell compiler where to stop. <br/>
-It starts with `r#"` and ends with `"#`, that allows user to use any other symbols in this literal.
+Four bases are supported, and `_` groups digits:
 
 ```zn
-r#"
-String literal,
-still string,
-we can even use "double quotes"
-ends only now
-"#
+fn main() {
+  @println("{}", 1000);
+  @println("{}", 1_000);
+  @println("{}", 0b111110100);
+  @println("{}", 0x3E8);
+  @println("{}", 0o1750);
+}
 ```
 
-## Array
-An array is a basic collection of ordered data in memory with a compile-time known size. <br/>
-To define array use brackets:
+All six lines hold `1000`. An integer literal defaults to `i32`. The context sets the real type, and the value has to fit it:
+
 ```zn
-[1, 2, 3, 4]
+fn main() {
+  const small: i32 = 123;
+  const large: i64 = 9223372036854775807;
+
+  @println("{} {}", small, large);
+}
 ```
 
-The array type is `[N]T` (example above is `[4]i32`)
+A value that does not fit the target type is rejected instead of truncated:
 
-Fast init with repeated value:
 ```zn
-[0; 1024]
+fn main() {
+  const too_big: i32 = 9223372036854775807;
+}
 ```
 
-Type of example above is `[1024]i32`
+A literal that does not parse into `i64` at all fails earlier, in the parser.
+
+## Float literals
+
+Floats default to `f64`:
+
+```zn
+fn main() {
+  const plain: f64 = 1.0;
+  const short: f64 = 1.;
+  const precise: f64 = 3.1415926535897932384626;
+
+  @println("{} {} {}", plain, short, precise);
+}
+```
+
+## Boolean literals
+
+`true` and `false` have the `bool` type:
+
+```zn
+fn main() {
+  const ready: bool = true;
+  const done: bool = false;
+
+  @println("{} {}", ready, done);
+}
+```
+
+## Chars
+
+A char is one byte written between single quotes. Escape sequences such as `\n` and `\t` work. Only ASCII fits, since `char` stores a single byte:
+
+```zn
+fn main() {
+  const letter: char = 'a';
+  const digit: char = '7';
+
+  @println("{:?} {:?}", letter, digit);
+}
+```
+
+A non-ASCII char literal is rejected, since one byte cannot hold it. Use `Rune` from `core.unicode` for code points.
+
+## Byte chars
+
+A byte char has the `u8` type and uses the same escapes with a `b` prefix:
+
+```zn
+fn main() {
+  const letter: u8 = b'a';
+  const terminator: u8 = b'\0';
+
+  @println("{} {}", letter, terminator);
+}
+```
+
+## Strings
+
+A string literal sits between double quotes and ends with a null byte in memory. Its type is `[N + 1]char`, which coerces to `[]const char` wherever a slice is expected:
+
+```zn
+fn main() {
+  const slice: []const char = "Hello, World!";
+  const array: [5]char = "Zeen";
+
+  @println("{} {}", slice, array);
+}
+```
+
+Both forms print as text. A string may hold UTF-8 bytes, and the count in `[N + 1]char` is a byte count.
+
+## Raw strings
+
+A raw string starts with `r#"` and ends with `"#`. Nothing between the markers is escaped, so quotes and backslashes appear as written:
+
+```zn
+fn main() {
+  @println("{}", r#"a "quoted" path C:\temp"#);
+}
+```
+
+## Arrays
+
+An array literal puts its elements between braces, and the type is `[N]T`:
+
+```zn
+fn main() {
+  const numbers = {1, 2, 3, 4};
+
+  @println("{:?}", numbers);
+}
+```
+
+The repeat form fills `N` copies of one value, where `N` is comptime known:
+
+```zn
+fn main() {
+  const zeroed: [1024]i32 = {0; 1024};
+
+  @println("{} {}", zeroed.len, zeroed[0]);
+}
+```
+
+The old bracket form `[1, 2, 3]` is a syntax error. `[0]T` does not exist, an array always holds at least one element.
