@@ -1,0 +1,184 @@
+---
+title: Primitives
+description: Builtin methods for integers, floats, char and bool, injected from std.primitives.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.primitives.*" variant="note" size="medium" /> <br/>
+**Source:** [std/primitives](https://github.com/zeen-lang/zeen/tree/main/lib/std/src/primitives) <br/>
+
+Every builtin type gets its methods from `implement builtin` blocks in `lib/std/src/primitives`. One file per type, `i32.zn`, `u8.zn`, `f64.zn`, `char.zn`, `bool.zn`, and so on.
+
+The resolver injects `use std.primitives.<type>` into every module of the program, so `n.count_ones()` and `i32.max_value()` work without imports. Core modules and the primitive files themselves are skipped.
+
+The injection needs a std root. The compiler looks at `--std`, then `ZEEN_STD`, then `~/.zeen/std`, then `share/zeen/std` next to the binary. Without a std root the methods are absent and only your own `implement builtin` blocks remain. The LSP uses the same root, so completion works without imports when std is found.
+
+| Module | Methods | Target |
+|---|---|---|
+| `i8`, `i16`, `i32`, `i64`, `isize` | 80 | signed integers |
+| `u8`, `u16`, `u32`, `u64`, `usize` | 71 | unsigned integers |
+| `f32`, `f64` | 60 | floats |
+| `char` | 24 | one UTF-8 byte |
+| `bool` | 1 | `to_string` |
+
+A user method with the same name on the same type is `zeen::typechecker::duplicate_method`.
+
+## Integers
+
+Static calls take the type name, instance calls take the value:
+
+```zn
+fn main() {
+  const small: u8 = 5;
+  const max = i32.max_value();
+  const result = max.overflowing_add(1);
+
+  @println("{} {}", i32.min_value(), u8.max_value());
+  @println("{}", small.count_ones());
+  @println("{} {}", result.value, result.overflowed);
+}
+```
+
+Integer literals default to `i32`, so `42.abs()` is an `i32` value. Annotate the binding or use `@as` for another width.
+
+| Group | Methods |
+|---|---|
+| size and limits | `bits`, `min_value`, `max_value` |
+| bit counts | `count_ones`, `count_zeros`, `leading_zeros`, `trailing_zeros`, `leading_ones`, `trailing_ones` |
+| bit moves | `rotate_left`, `rotate_right`, `swap_bytes`, `reverse_bits` |
+| checked arithmetic | `checked_add`, `checked_sub`, `checked_mul`, `checked_div`, `checked_rem`, `checked_pow`, `checked_shl`, `checked_shr` |
+| wrapping arithmetic | `wrapping_add`, `wrapping_sub`, `wrapping_mul`, `wrapping_div`, `wrapping_rem`, `wrapping_pow`, `wrapping_shl`, `wrapping_shr` |
+| overflowing arithmetic | `overflowing_add`, `overflowing_sub`, `overflowing_mul`, `overflowing_pow`, `overflowing_shl`, `overflowing_shr` |
+| saturating arithmetic | `saturating_add`, `saturating_sub`, `saturating_mul`, `saturating_div`, `saturating_pow` |
+| powers and division | `pow`, `div_euclid`, `rem_euclid`, `div_ceil`, `next_multiple_of` |
+| value helpers | `abs_diff`, `midpoint`, `min`, `max`, `clamp` |
+| logarithms | `ilog2`, `ilog10`, `ilog` |
+| endian | `to_be`, `to_le`, `from_be`, `from_le` |
+| byte arrays | `to_be_bytes`, `to_le_bytes`, `to_ne_bytes`, `from_be_bytes`, `from_le_bytes`, `from_ne_bytes` |
+| strings | `to_string` |
+
+`checked_*` returns `Option[T]`, `wrapping_*` and `saturating_*` return `T`, and `overflowing_*` returns `Overflowing[T]`.
+
+Signed types add `checked_neg`, `checked_abs`, `wrapping_neg`, `wrapping_abs`, `overflowing_neg`, `overflowing_abs`, `saturating_neg`, `saturating_abs`, `abs`, `unsigned_abs`, `signum`, `is_positive` and `is_negative`. They also add `checked_div_euclid`, `checked_rem_euclid` and `checked_next_multiple_of`.
+
+Unsigned types have no negated forms. They add `is_power_of_two`, `next_power_of_two`, `checked_next_power_of_two` and `isqrt`. `abs_diff` returns the unsigned type.
+
+`to_be_bytes` and the other byte functions return `[N]u8`, where `N` is the type width:
+
+```zn
+fn main() {
+  const one: i32 = 1;
+  const bytes = one.to_be_bytes();
+
+  @println("{:?}", bytes);
+  @println("{}", i32.from_be_bytes(bytes));
+}
+```
+
+## Floats
+
+```zn
+fn main() {
+  const x: f64 = 2.5;
+
+  @println("{} {}", x.sqrt(), x.floor());
+  @println("{:.3}", x.sqrt());
+  @println("{}", f64.nan().is_nan());
+}
+```
+
+| Group | Methods |
+|---|---|
+| constants | `min_value`, `max_value`, `min_positive_value`, `epsilon`, `infinity`, `neg_infinity`, `nan` |
+| bits | `to_bits`, `from_bits` |
+| predicates | `is_nan`, `is_infinite`, `is_finite`, `is_sign_positive`, `is_sign_negative` |
+| sign | `abs`, `signum`, `copysign` |
+| roots and powers | `sqrt`, `cbrt`, `powf`, `powi` |
+| exponentials | `exp`, `exp2`, `exp_m1` |
+| logarithms | `ln`, `ln_1p`, `log2`, `log10`, `log` |
+| trigonometry | `sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `atan2` |
+| hyperbolic | `sinh`, `cosh`, `tanh`, `asinh`, `acosh`, `atanh` |
+| combined | `hypot`, `mul_add` |
+| rounding | `floor`, `ceil`, `round`, `trunc`, `fract`, `recip` |
+| angles | `to_degrees`, `to_radians` |
+| comparison | `min`, `max`, `minimum`, `maximum`, `clamp` |
+| division | `div_euclid`, `rem_euclid` |
+| strings | `to_string` |
+
+`recip` returns `1 / self`. The methods call `std.c.math` (libm), and the linker adds `-lm` for you.
+
+## char
+
+`char` is one UTF-8 byte. These methods cover ASCII only, so a multi-byte code point does not belong in `char`. `core.unicode` provides `Rune` for code points.
+
+| Group | Methods |
+|---|---|
+| ASCII classes | `is_ascii`, `is_ascii_alphabetic`, `is_ascii_digit`, `is_ascii_alphanumeric`, `is_ascii_whitespace`, `is_ascii_uppercase`, `is_ascii_lowercase`, `is_ascii_punctuation`, `is_ascii_control`, `is_ascii_graphic`, `is_ascii_hexdigit` |
+| short aliases | `is_alphabetic`, `is_numeric`, `is_alphanumeric`, `is_whitespace`, `is_control`, `is_uppercase`, `is_lowercase` |
+| case | `to_ascii_uppercase`, `to_ascii_lowercase`, `eq_ignore_ascii_case` |
+| digits | `to_digit`, `from_digit` |
+| strings | `to_string` |
+
+The short aliases are ASCII checks with shorter names, not Unicode classes. `to_digit(radix)` and `from_digit(num, radix)` return `Option`, with `None` for a digit outside the radix:
+
+```zn
+fn main() {
+  @println("{}", '7'.to_digit(16).unwrap());
+  @println("{}", char.from_digit(10, 16).unwrap());
+  @println("{}", 'a'.to_ascii_uppercase());
+}
+```
+
+## bool
+
+`bool` has one method, `to_string`. Boolean values print as `true` and `false`.
+
+## Overflowing
+
+<Card title="Overflowing[T]">
+  Wrapped value and overflow flag returned by every `overflowing_*` method
+
+  ----
+
+  **Fields:**
+  ```zn
+  pub value: T,
+  pub overflowed: bool,
+  ```
+</Card>
+
+Type inference reaches the fields without an import:
+
+```zn
+fn main() {
+  const limit: u8 = 255;
+  const wrapped = limit.overflowing_add(1);
+
+  @println("{} {}", wrapped.value, wrapped.overflowed);
+}
+```
+
+Naming the type directly needs `use std.primitives;`:
+
+```zn
+use std.primitives;
+
+fn main() {
+  const manual: Overflowing[u8] = .{ .value = 1, .overflowed = false };
+
+  @println("{} {}", manual.value, manual.overflowed);
+}
+```
+
+## Strings
+
+`to_string` returns `std.string.String` through `@format`, not `*char`. The resolver pulls in `std.string` when the program needs it:
+
+```zn
+fn main() {
+  const text: String = (-42).to_string();
+
+  @println("{} {}", text, true.to_string());
+}
+```

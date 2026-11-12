@@ -191,3 +191,5 @@ fn same[T: Eq](a: *const T, b: *const T) bool {
 ```
 
 An own method in an `implement builtin` block with the same name takes priority, and core interfaces cannot be reimplemented for builtin types. [Builtin Blocks](/functions-closures/implement-builtin/) covers both.
+
+Numbers, `char` and `bool` also get the std methods from [Primitives](/library/std/primitives/), such as `count_ones`, `sqrt` and `to_string`.

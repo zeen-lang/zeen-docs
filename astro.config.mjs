@@ -363,6 +363,10 @@ export default defineConfig({
 									slug: 'library/std/path',
 								},
 								{
+									label: 'primitives',
+									slug: 'library/std/primitives',
+								},
+								{
 									label: 'process',
 									slug: 'library/std/process',
 								},
