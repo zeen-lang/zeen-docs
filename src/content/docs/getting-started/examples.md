@@ -8,7 +8,7 @@ description: Small code examples
 fn divide(a: i32, b: i32) Result[i32, String] {
   if (b == 0) {
     return Result.Err(String.from("Division by zero"));
-  };
+  }
 
   Result.Ok(a / b)
 }
@@ -17,7 +17,7 @@ fn main() {
   switch (divide(7, 0)) {
     .Ok(v) => @println("Result: {}", v),
     .Err(e) => @println("Error: {}", e),
-  };
+  }
 }
 ```
 
