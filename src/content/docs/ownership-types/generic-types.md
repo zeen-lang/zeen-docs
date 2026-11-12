@@ -173,7 +173,8 @@ A `where` clause holds the bounds of a long signature. It starts on its own line
 
 ```zn
 fn first[T](items: []const T) T
-  where T: Copy {
+  where T: Copy
+{
   return items[0];
 }
 ```
@@ -184,7 +185,8 @@ With two or more clauses the keyword stands alone and each clause gets four spac
 fn pair_up[T, E](left: T, right: E) T
   where
     T: Copy,
-    E: Copy {
+    E: Copy
+{
   return left;
 }
 ```
