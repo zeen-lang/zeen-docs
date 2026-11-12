@@ -1,6 +1,6 @@
 ---
 title: Ops
-description: Compiler and operator interfaces implemented by user types.
+description: Operator, comparison and memory interfaces implemented by user types.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -9,8 +9,9 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [core/ops.zn](https://github.com/zeen-lang/zeen/blob/main/lib/core/ops.zn) <br/>
 
 ## Interfaces
+
 <Card title="Copy">
-  Empty marker to tell compiler that structure can be copied (simple load instructions)
+  Marker that tells the compiler a value is duplicated by a plain load.
 
   ----
 
@@ -20,7 +21,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Clone">
-  Clone structure method (simply interface without compiler markers)
+  Builds a new value from a borrowed one.
 
   ----
 
@@ -30,7 +31,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Drop">
-  Automatic function to free struct resources after it goes out of scope
+  Releases resources when the value leaves its scope.
 
   ----
 
@@ -40,7 +41,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Ord">
-  Comparison interface between Self structs
+  Ordering between two values. Drives `<`, `>`, `<=`, `>=` and backs `==` when `Eq` is missing.
 
   ----
 
@@ -50,7 +51,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Eq">
-  Interface for `==` operator between structures
+  Equality used by `==` and `!=`.
 
   ----
 
@@ -60,177 +61,329 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Add">
-  `+` operator
+  `+` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn add(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn add(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="Sub">
-  `-` operator
+  `-` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn sub(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn sub(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="Mul">
-  `*` operator
+  `*` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn mul(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn mul(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="Div">
-  `/` operator
+  `/` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn div(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn div(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="Mod">
-  `%` operator
+  `%` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn mod(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn mod(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitAnd">
-  `&` operator
+  `&` binary operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn bit_and(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_and(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitOr">
-  `|` operator
+  `|` binary operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn bit_or(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_or(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitXor">
-  `^` operator
+  `^` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn bit_xor(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_xor(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitShl">
-  `<<` operator
+  `<<` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn bit_shl(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_shl(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitShr">
-  `>>` operator
+  `>>` operator.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  fn bit_shr(self, other: Self) Self;
+  [Rhs]
+  ```
+
+  **Associated types:**
+  ```zn
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_shr(self, other: Rhs) Output;
   ```
 </Card>
 
 <Card title="BitNot">
-  `~` operator
+  `~` operator.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn bit_not(self) Self;
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn bit_not(self) Output;
   ```
 </Card>
 
 <Card title="Neg">
-  `-` operator
+  Unary `-` operator.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn neg(self) Self;
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn neg(self) Output;
   ```
 </Card>
 
 <Card title="Not">
-  `!` operator
+  `!` operator.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn not(self) Self;
+  alias Output = Self;
+  ```
+
+  **Methods:**
+  ```zn
+  fn not(self) Output;
   ```
 </Card>
 
-<Card title="Deref[T]">
-  Dereference operator (`*expr`)
+<Card title="Deref">
+  `*value` read.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn deref(*const self) T;
+  alias Target;
+  ```
+
+  **Methods:**
+  ```zn
+  fn deref(*const self) Target;
   ```
 </Card>
 
-<Card title="DerefPtr[T]">
-  Dereference operator with pointer access (example: `*lvalue = rvalue`, uses DerefPtr for lvalue)
+<Card title="DerefPtr">
+  `*value` write through a pointer-like owner.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn deref_ptr(*self) *T;
+  alias Target;
+  ```
+
+  **Methods:**
+  ```zn
+  fn deref_ptr(*self) *Target;
   ```
 </Card>
 
-<Card title="Index[T]">
-  Index operation (`expr[index] -> T`)
+<Card title="Index">
+  `value[index]` read.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn index(*const self, index: usize) T;
+  alias Output;
+  ```
+
+  **Methods:**
+  ```zn
+  fn index(*const self, index: usize) Output;
   ```
 </Card>
 
-<Card title="IndexPtr[T]">
-  Index operation with pointer access (`lvalue[index] = rvalue`)
+<Card title="IndexPtr">
+  `value[index]` write.
 
   ----
 
+  **Associated types:**
   ```zn
-  fn index_ptr(*self, index: usize) *T;
+  alias Output;
+  ```
+
+  **Methods:**
+  ```zn
+  fn index_ptr(*self, index: usize) *Output;
   ```
 </Card>
 
 <Card title="Hash">
-  Hash value generation for hash based collections
+  Hash value for hash based collections.
 
   ----
 
@@ -240,14 +393,22 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 ## Enums
+
 <Card title="Ordering">
-  An ordering result between two values
+  Result of `Ord.cmp`:
 
   ----
 
+  **Variants:**
   ```zn
   Less,
   Equal,
-  Greater
+  Greater,
   ```
+
+  ----
+
+  **Interfaces:**
+  - `core.ops` : `Copy`, `Eq`
+  - `core.io` : `Display`, `Debug`
 </Card>

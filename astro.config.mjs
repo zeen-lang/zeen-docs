@@ -250,6 +250,10 @@ export default defineConfig({
 									label: 'slice',
 									slug: 'library/core/slice',
 								},
+								{
+									label: 'unicode',
+									slug: 'library/core/unicode',
+								},
 							],
 						},
 						{

@@ -1,6 +1,6 @@
 ---
 title: Iter
-description: Iterator interfaces for borrowing, consuming and yielding values.
+description: Iterator interfaces, adapters and terminal methods.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -9,32 +9,197 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [core/iter.zn](https://github.com/zeen-lang/zeen/blob/main/lib/core/iter.zn) <br/>
 
 ## Interfaces
-<Card title="Iterator[T]">
-  Main Iterator interface
+
+<Card title="Iterator">
+  Advances a sequence one item at a time. `Item` names the element type.
 
   ----
 
+  **Associated types:**
   ```zn
-  pub fn next(*self) Option[T];
+  alias Item;
+  ```
+
+  **Required method:**
+  ```zn
+  pub fn next(*self) Option[Item];
+  ```
+
+  **Adapters:**
+  ```zn
+  pub fn map[U, F: Callable(Item) U](self, f: F) MapIter[Self, U, F];
+  ```
+  ```zn
+  pub fn filter[P: Callable(Item) bool](self, pred: P) FilterIter[Self, P];
+  ```
+  ```zn
+  pub fn take(self, count: usize) TakeIter[Self];
+  ```
+  ```zn
+  pub fn skip(self, count: usize) SkipIter[Self];
+  ```
+
+  **Terminal methods:**
+  ```zn
+  pub fn any[P: Callable(Item) bool](self, pred: P) bool;
+  ```
+  ```zn
+  pub fn all[P: Callable(Item) bool](self, pred: P) bool;
+  ```
+  ```zn
+  pub fn last_item(self) Option[Item];
+  ```
+  ```zn
+  pub fn nth(self, index: usize) Option[Item];
+  ```
+  ```zn
+  pub fn collect[C: FromIterator](self) C
+    where C.Item = Item;
+  ```
+  ```zn
+  pub fn count(self) usize;
+  ```
+  ```zn
+  pub fn for_each[F: Callable(Item) void](self, f: F);
+  ```
+  ```zn
+  pub fn fold[Acc, F: Callable(Acc, Item) Acc](self, init: Acc, f: F) Acc;
   ```
 </Card>
 
-<Card title="PtrIterator[T]">
-  Returns struct that implements `Iterator` with pointer access
+<Card title="FromIterator">
+  Target container for `Iterator.collect`.
 
   ----
 
+  **Associated types:**
   ```zn
-  pub fn iter[I: Iterator](*self) I;
+  alias Item;
+  ```
+
+  **Methods:**
+  ```zn
+  pub fn empty() Self;
+  ```
+  ```zn
+  pub fn push(*self, item: Item);
   ```
 </Card>
 
-<Card title="OwnedIterator[T]">
-  Converter from ownership `self` to struct with `Iterator` implementation
+<Card title="PtrIterator">
+  Borrowing iterator over a container, yielded items are read-only pointers.
 
   ----
 
+  **Associated types:**
   ```zn
-  pub fn into_iter[I: Iterator](self) I;
+  alias Iter: Iterator;
   ```
+
+  **Methods:**
+  ```zn
+  pub fn iter(*const self) Iter;
+  ```
+</Card>
+
+<Card title="MutPtrIterator">
+  Mutable borrowing iterator, yielded items are pointers into the container.
+
+  ----
+
+  **Associated types:**
+  ```zn
+  alias Iter: Iterator;
+  ```
+
+  **Methods:**
+  ```zn
+  pub fn iter_mut(*self) Iter;
+  ```
+</Card>
+
+<Card title="OwnedIterator">
+  Consuming iterator that takes the container and yields owned items.
+
+  ----
+
+  **Associated types:**
+  ```zn
+  alias Iter: Iterator;
+  ```
+
+  **Methods:**
+  ```zn
+  pub fn into_iter(self) Iter;
+  ```
+</Card>
+
+## Structures
+
+<Card title="MapIter[I: Iterator, U, F]">
+  Lazily applies a closure to every item.
+
+  ----
+
+  **Fields:**
+  ```zn
+  inner: I,
+  f: F,
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = U`)
+</Card>
+
+<Card title="FilterIter[I: Iterator, P]">
+  Lazily drops items the predicate rejects.
+
+  ----
+
+  **Fields:**
+  ```zn
+  inner: I,
+  pred: P,
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = I.Item`)
+</Card>
+
+<Card title="TakeIter[I: Iterator]">
+  Stops after a fixed number of items.
+
+  ----
+
+  **Fields:**
+  ```zn
+  inner: I,
+  remaining: usize,
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = I.Item`)
+</Card>
+
+<Card title="SkipIter[I: Iterator]">
+  Drops the first items and yields the rest.
+
+  ----
+
+  **Fields:**
+  ```zn
+  inner: I,
+  remaining: usize,
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = I.Item`)
 </Card>

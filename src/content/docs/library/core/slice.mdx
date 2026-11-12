@@ -9,25 +9,34 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [core/slice.zn](https://github.com/zeen-lang/zeen/blob/main/lib/core/slice.zn) <br/>
 
 ## Interfaces
-<Card title="Sliceable[T]">
-  Slicing with a `Range`
+
+<Card title="Sliceable">
+  Produces a slice view over a range of the container.
 
   ----
 
+  **Generic parameters:**
   ```zn
-  pub fn slice(*self, range: Range) []T;
+  [T]
+  ```
+
+  **Methods:**
+  ```zn
+  pub fn slice(*const self, range: Range) []T;
   ```
 </Card>
 
 ## Structures
+
 <Card title="Range">
-  Ranges variations:
-  * `lo..hi` - `{ start: Some, end: Some }`
-  * `lo..=hi` - `{ start: Some, end: Some + 1 }`
-  * `lo..` - `{ start: Some, end: None }`
-  * `..hi` - `{ start: None, end: Some }`
-  * `..=hi` - `{ start: None, end: Some + 1 }`
-  * `..` - `{ start: None, end: None }`
+  Bounds of a slice or an index range:
+
+  * `lo..hi` gives `{ start: Some, end: Some }`
+  * `lo..=hi` gives `{ start: Some, end: Some + 1 }`
+  * `lo..` gives `{ start: Some, end: None }`
+  * `..hi` gives `{ start: None, end: Some }`
+  * `..=hi` gives `{ start: None, end: Some + 1 }`
+  * `..` gives `{ start: None, end: None }`
 
   ----
 
@@ -36,15 +45,20 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub start: Option[usize],
   pub end: Option[usize],
   ```
+
   ----
+
   **Methods:**
   ```zn
   pub fn first(*const self) Option[usize];
+  ```
+  ```zn
   pub fn last(*const self) Option[usize];
   ```
 
   ----
+
   **Interfaces:**
   - `core.ops` : `Copy`
-  - `core.iter` : `Iterator`
+  - `core.iter` : `Iterator` (`Item = usize`, yields every index in the range)
 </Card>

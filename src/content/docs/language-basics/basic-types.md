@@ -44,7 +44,7 @@ A float literal defaults to `f64`. Floating point comparison follows IEEE rules:
 | `void` | No value |
 | `never` | Never returns, as in `@panic` |
 
-`char` holds a single byte, so a literal outside ASCII is `zeen::typechecker::non_ascii_char` and gets a help to use a string literal. Text and code points go through `[]const char` and `Rune`.
+`char` holds a single byte, so a literal outside ASCII is `zeen::typechecker::non_ascii_char` and gets a help to use a string literal. Text and code points go through `[]const char` and [Rune](/library/core/unicode/).
 
 `void` has one value, written `.{ }`. The old `@void()` macro is gone and reports `zeen::typechecker::void_macro_removed`:
 

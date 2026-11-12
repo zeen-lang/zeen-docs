@@ -1,0 +1,168 @@
+---
+title: Unicode
+description: Rune code points, UTF-8 decoding, encoding and ASCII helpers.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="core.unicode" variant="note" size="medium" /> <br/>
+**Source:** [core/unicode.zn](https://github.com/zeen-lang/zeen/blob/main/lib/core/unicode.zn) <br/>
+
+`char` holds one byte, so text stays `[]const char` in UTF-8. `Rune` holds a full code point and provides the Unicode helpers.
+
+## Structures
+
+<Card title="Rune">
+  Unicode scalar value stored as a 32 bit code point.
+
+  ----
+
+  **Fields:**
+  ```zn
+  inner: u32,
+  ```
+
+  ----
+
+  **Constructors:**
+  ```zn
+  pub fn replacement() Rune;
+  ```
+  ```zn
+  pub fn max() Rune;
+  ```
+  ```zn
+  pub fn from_u32(value: u32) Option[Rune];
+  ```
+  ```zn
+  pub fn from_u32_unchecked(value: u32) Rune;
+  ```
+  ```zn
+  pub fn from_ascii(byte: char) Option[Rune];
+  ```
+  ```zn
+  pub fn from_utf8(bytes: []const char) Option[Rune];
+  ```
+  ```zn
+  pub fn is_scalar(value: u32) bool;
+  ```
+
+  **Decoding:**
+  ```zn
+  pub fn decode(bytes: []const char, index: *usize) Option[Rune];
+  ```
+  ```zn
+  pub fn decode_ptr(ptr: [*]const char, len: usize, index: *usize) Option[Rune];
+  ```
+  ```zn
+  pub fn decode_lossy(bytes: []const char, index: *usize) Rune;
+  ```
+  ```zn
+  pub fn decode_ptr_lossy(ptr: [*]const char, len: usize, index: *usize) Rune;
+  ```
+  ```zn
+  pub fn count(bytes: []const char) usize;
+  ```
+  ```zn
+  pub fn count_ptr(ptr: [*]const char, len: usize) usize;
+  ```
+  ```zn
+  pub fn prev_start(ptr: [*]const char, end: usize) usize;
+  ```
+
+  **Encoding:**
+  ```zn
+  pub fn to_u32(self) u32;
+  ```
+  ```zn
+  pub fn to_ascii(self) Option[char];
+  ```
+  ```zn
+  pub fn utf8_len(self) usize;
+  ```
+  ```zn
+  pub fn encode_utf8(self, out: *[4]u8) usize;
+  ```
+  ```zn
+  pub fn utf16_len(self) usize;
+  ```
+  ```zn
+  pub fn encode_utf16(self, out: *[2]u16) usize;
+  ```
+
+  **ASCII checks:**
+  ```zn
+  pub fn is_ascii(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_digit(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_alphabetic(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_alphanumeric(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_whitespace(self) bool;
+  ```
+  ```zn
+  pub fn is_ascii_control(self) bool;
+  ```
+  ```zn
+  pub fn to_ascii_uppercase(self) Rune;
+  ```
+  ```zn
+  pub fn to_ascii_lowercase(self) Rune;
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.ops` : `Copy`, `Eq`, `Ord`, `Hash`
+  - `core.io` : `Display`, `Debug`
+</Card>
+
+<Card title="RuneIter">
+  Iterator over the code points of a UTF-8 byte sequence.
+
+  ----
+
+  **Fields:**
+  ```zn
+  ptr: [*]const char,
+  len: usize,
+  index: usize,
+  ```
+
+  ----
+
+  **Methods:**
+  ```zn
+  pub fn new(bytes: []const char) RuneIter;
+  ```
+  ```zn
+  pub fn from_parts(ptr: [*]const char, len: usize) RuneIter;
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = Rune`)
+</Card>
+
+## Example
+
+`String` exposes the same decoding through `runes`, `push_rune` and friends. `Rune` works on plain slices as well:
+
+```zn
+fn main() {
+  const rune = Rune.from_u32(0x1F600).unwrap();
+  const text: String = String.from_rune(rune);
+  let out: [4]u8 = {0; 4};
+
+  const written = rune.encode_utf8(&out);
+
+  @println("{} {} {}", text, written, Rune.count(text.slice(..)));
+}
+```

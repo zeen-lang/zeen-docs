@@ -1,6 +1,6 @@
 ---
 title: Option
-description: Optional values with None and Some, and their methods.
+description: Optional values with None and Some, and their combinators.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -9,8 +9,9 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Source:** [core/option.zn](https://github.com/zeen-lang/zeen/blob/main/lib/core/option.zn) <br/>
 
 ## Enums
+
 <Card title="Option[T]">
-  Optional value: either something or nothing
+  Either a value or nothing. `?` on an `Option` unwraps `Some` and returns `Option.None` from the enclosing function.
 
   ----
 
@@ -20,13 +21,15 @@ import { Badge, Card } from '@astrojs/starlight/components';
   Some: T,
   ```
 
-  **Methods:**
+  **Inspection:**
   ```zn
   pub fn is_some(*const self) bool;
   ```
   ```zn
   pub fn is_none(*const self) bool;
   ```
+
+  **Extraction:**
   ```zn
   pub fn unwrap(self) T;
   ```
@@ -34,34 +37,37 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn unwrap_or(self, default: T) T;
   ```
   ```zn
-  pub fn unwrap_or_else(self, f: FnOnce() T) T;
+  pub fn unwrap_or_else[F: CallableOnce() T](self, f: F) T;
   ```
   ```zn
   pub fn expect(self, msg: []const char) T;
   ```
+
+  **Combinators:**
   ```zn
-  pub fn map[U](self, f: FnOnce(T) U) Option[U];
+  pub fn map[U, F: CallableOnce(T) U](self, f: F) Option[U];
   ```
   ```zn
-  pub fn map_or[U](self, f: FnOnce(T) U, default: U) Option[U];
+  pub fn map_or[U, F: CallableOnce(T) U](self, f: F, default: U) Option[U];
   ```
   ```zn
-  pub fn inspect(self, f: FnOnce(*T) void) Option[T];
+  pub fn inspect[F: CallableOnce(*T) void](self, f: F) Option[T];
   ```
   ```zn
   pub fn ok_or[E](self, err: E) Result[T, E];
   ```
   ```zn
-  pub fn ok_or_else[E](self, err: FnOnce() E) Result[T, E];
+  pub fn ok_or_else[E, F: CallableOnce() E](self, f: F) Result[T, E];
   ```
   ```zn
-  pub fn and_then[U](self, f: FnOnce(T) Option[U]) Option[U];
+  pub fn and_then[U, F: CallableOnce(T) Option[U]](self, f: F) Option[U];
   ```
   ```zn
-  pub fn filter(self, predicate: FnOnce(*T) bool) Option[T];
+  pub fn filter[P: CallableOnce(*T) bool](self, predicate: P) Option[T];
   ```
 
   ----
+
   **Interfaces:**
   - `core.ops` : `Copy` (when `T` is `Copy`)
 </Card>
