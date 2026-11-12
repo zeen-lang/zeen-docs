@@ -1,6 +1,6 @@
 ---
 title: Map
-description: Hash map with separate chaining, insertion and lookup methods.
+description: Hash map with separate chaining, lookup, insertion and removal.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -8,27 +8,31 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.collections.map" variant="note" size="medium" /> <br/>
 **Source:** [std/collections/map.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/collections/map.zn) <br/>
 
-> **Usage Example**
-> ```zn
-> use std.collections.map;
-> 
-> fn main() {
->   let map = HashMap#[String, i32].new();
-> 
->   map.insert(String.from("a"), 1);
-> 
->   switch (
->     map.get(&String.from("a"))
->   ) {
->     .Some(value) => @println("{}", *value),
->     .None => @println("Nothing"),
->   };
-> }
-> ```
+`HashMap[K, V]` stores entries in chained buckets over a `List`. The load factor is 0.75 and the bucket count doubles when it is crossed. Keys need `Hash + Eq`.
+
+```zn
+use std.collections.map;
+use std.string;
+
+fn main() {
+  let map: HashMap[String, i32] = HashMap.new();
+  const key: String = String.from("a");
+
+  const previous = map.insert(key, 1);
+
+  @println("{}", previous.is_none());
+
+  switch (map.get(&String.from("a"))) {
+    .Some(value) => @println("{}", *value),
+    .None => @println("nothing"),
+  }
+}
+```
 
 ## Structures
+
 <Card title="HashMap[K: Hash + Eq, V]">
-  Separate-chaining hash map over `List[List[Entry]]`, load factor 0.75
+  Separate chaining hash map over `List[List[Entry[K, V]]]`, load factor 0.75.
 
   ----
 
@@ -38,6 +42,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   _len: usize,
   _capacity: usize,
   ```
+
   **Constructors:**
   ```zn
   pub fn new() Self;
@@ -80,12 +85,14 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn clear(*self);
   ```
 
+  ----
+
   **Interfaces:**
   - `core.ops` : `Drop`, `Clone` (when `K: Clone`, `V: Clone`)
 </Card>
 
 <Card title="Entry[K, V]">
-  Single map entry
+  One map entry. Field order puts `value` before `key` so the value drops first.
 
   ----
 
@@ -95,7 +102,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub value: V,
   pub key: K,
   ```
-  ----
 
   **Methods:**
   ```zn
@@ -105,3 +111,32 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn value_const_ptr(*const self) *const V;
   ```
 </Card>
+
+## Lookup and mutation
+
+`get` returns a borrow into the bucket, never a copy. `insert` returns the value it displaced:
+
+```zn
+use std.collections.map;
+use std.string;
+
+fn main() {
+  let counts: HashMap[String, i32] = HashMap.new();
+  const previous = counts.insert(String.from("zeen"), 1);
+
+  @println("{}", previous.is_none());
+
+  const key: String = String.from("zeen");
+
+  switch (counts.get_mut(&key)) {
+    .Some(value) => {
+      *value = *value + 1;
+    },
+    .None => {},
+  }
+
+  @println("{}", *counts.get(&key).unwrap());
+}
+```
+
+`remove` hands back the value, `remove_entry` hands back the whole entry so the key leaves with it.

@@ -1,6 +1,6 @@
 ---
 title: String
-description: Heap string with mutation, search, splitting and parsing methods.
+description: Heap string with byte and rune access, search, splitting and parsing.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -8,22 +8,24 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.string" variant="note" size="medium" /> <br/>
 **Source:** [std/string.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/string.zn) <br/>
 
-> **Usage Example**
-> ```zn
-> use std.string;
-> 
-> fn main() {
->   let text = String.from("hello");
-> 
->   text.push_str(" world");
-> 
->   @println("{}", text);
-> }
-> ```
+`String` owns a heap buffer of UTF-8 bytes. It grows geometrically, implements `StrWriter` so `@format` and `Display` can write into it, and exposes both byte and rune access.
+
+```zn
+use std.string;
+
+fn main() {
+  let text: String = String.from("hello");
+
+  text.push_str(" world");
+
+  @println("{}", text);
+}
+```
 
 ## Structures
+
 <Card title="String">
-  Dynamic heap-allocated string
+  Dynamic heap allocated string of UTF-8 bytes.
 
   ----
 
@@ -33,7 +35,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   _len: usize,
   _capacity: usize,
   ```
-  ----
+
   **Constructors:**
   ```zn
   pub fn new() Self;
@@ -48,13 +50,19 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn from_cstr(value: [*]const char) Self;
   ```
   ```zn
+  pub fn from_rune(rune: Rune) Self;
+  ```
+  ```zn
+  pub fn from_runes(value: []const Rune) Self;
+  ```
+  ```zn
   pub fn from_raw_parts(ptr: *void, len: usize, capacity: usize) Self;
   ```
   ```zn
   pub fn from_list(value: *const List[char]) Self;
   ```
 
-  **Getters:**
+  **Byte access:**
   ```zn
   pub fn len(*const self) usize;
   ```
@@ -70,6 +78,14 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ```zn
   pub fn get_ptr(*const self, index: usize) Option[*char];
   ```
+  ```zn
+  pub fn set(*self, index: usize, value: char) Option[char];
+  ```
+  ```zn
+  pub fn to_list(*const self) List[char];
+  ```
+
+  **Byte search:**
   ```zn
   pub fn contains(*const self, value: char) bool;
   ```
@@ -88,20 +104,37 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ```zn
   pub fn find_cstr(*const self, value: [*]const char) Option[usize];
   ```
+
+  **Rune access:**
   ```zn
-  pub fn to_list(*const self) List[char];
+  pub fn runes(*const self) RuneIter;
   ```
   ```zn
-  pub fn trim(*const self) []const char;
+  pub fn rune_count(*const self) usize;
   ```
   ```zn
-  pub fn trim_start(*const self) []const char;
+  pub fn rune_at(*const self, byte_index: usize) Option[Rune];
   ```
   ```zn
-  pub fn trim_end(*const self) []const char;
+  pub fn nth_rune(*const self, position: usize) Option[Rune];
   ```
   ```zn
-  pub fn split(*const self, delim: char) List[String];
+  pub fn push_rune(*self, rune: Rune);
+  ```
+  ```zn
+  pub fn push_runes(*self, value: []const Rune);
+  ```
+  ```zn
+  pub fn pop_rune(*self) Option[Rune];
+  ```
+  ```zn
+  pub fn find_rune(*const self, rune: Rune) Option[usize];
+  ```
+  ```zn
+  pub fn contains_rune(*const self, rune: Rune) bool;
+  ```
+  ```zn
+  pub fn to_rune_list(*const self) List[Rune];
   ```
 
   **Mutations:**
@@ -121,9 +154,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn remove(*self, index: usize) Option[char];
   ```
   ```zn
-  pub fn set(*self, index: usize, value: char) Option[char];
-  ```
-  ```zn
   pub fn to_uppercase(*self);
   ```
   ```zn
@@ -140,6 +170,25 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ```
   ```zn
   pub fn truncate(*self, new_len: usize);
+  ```
+
+  **Trimming:**
+  ```zn
+  pub fn trim(*const self) []const char;
+  ```
+  ```zn
+  pub fn trim_start(*const self) []const char;
+  ```
+  ```zn
+  pub fn trim_end(*const self) []const char;
+  ```
+
+  **Splitting:**
+  ```zn
+  pub fn split(*const self, delim: char) List[Self];
+  ```
+  ```zn
+  pub fn split_rune(*const self, delim: Rune) List[Self];
   ```
 
   **Parsing:**
@@ -166,5 +215,67 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   **Interfaces:**
   - `core.ops` : `Clone`, `Drop`, `Eq`, `Hash`, `Index`, `IndexPtr`, `Sliceable`
+  - `core.iter` : `FromIterator` (`Item = char`)
   - `core.io` : `Display`, `Debug`, `StrWriter`
 </Card>
+
+## Bytes and runes
+
+`len` counts bytes, `rune_count` counts code points. Methods with a `char` argument work on single bytes, methods with a `Rune` argument decode UTF-8:
+
+```zn
+use std.string;
+
+fn main() {
+  const text: String = String.from("héllo");
+
+  @println("{} bytes, {} runes", text.len(), text.rune_count());
+
+  const accented = Rune.from_u32(0xE9).unwrap();
+  const found = text.find_rune(accented).unwrap();
+
+  @println("byte {}, rune {}", found, text.nth_rune(1).unwrap().to_u32());
+}
+```
+
+`reverse` moves whole runes, so multi byte sequences stay intact. `truncate` cuts at a byte offset and can split a rune, use `pop_rune` when you need clean UTF-8.
+
+## Building from runes
+
+```zn
+use std.string;
+
+fn main() {
+  let out: String = String.new();
+
+  out.push_rune(Rune.from_ascii('a').unwrap());
+  out.push_rune(Rune.from_u32(0x1F600).unwrap());
+
+  @println("{} {}", out.rune_count(), out);
+
+  switch (out.pop_rune()) {
+    .Some(rune) => @println("{:?}", rune),
+    .None => @println("empty"),
+  }
+}
+```
+
+## Parsing
+
+Each parser is strict and returns `None` on garbage or overflow:
+
+```zn
+use std.string;
+
+fn main() {
+  const good: String = String.from("42");
+  const bad: String = String.from("4x");
+
+  switch (good.parse_i32()) {
+    .Some(value) => @println("{}", value),
+    .None => @println("garbage"),
+  }
+
+  @println("{}", bad.parse_i32().is_none());
+}
+```

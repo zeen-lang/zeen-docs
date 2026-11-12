@@ -1,6 +1,6 @@
 ---
 title: Set
-description: Hash set with insertion, lookup and removal methods.
+description: Hash set with insertion, lookup and removal.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -8,9 +8,26 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.collections.set" variant="note" size="medium" /> <br/>
 **Source:** [std/collections/set.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/collections/set.zn) <br/>
 
+`HashSet[T]` is a chained hash table of unique values. The load factor is 0.75 and the bucket count doubles when it is crossed. Elements need `Hash + Eq`.
+
+```zn
+use std.collections.set;
+
+fn main() {
+  let tags: HashSet[i32] = HashSet.new();
+
+  @println("{}", tags.insert(1));
+  @println("{}", tags.insert(1));
+  @println("{}", tags.insert(2));
+
+  @println("len: {}, has 2: {}", tags.len(), tags.contains(&2));
+}
+```
+
 ## Structures
+
 <Card title="HashSet[T: Hash + Eq]">
-  Separate-chaining hash set, load factor 0.75
+  Separate chaining hash set, load factor 0.75.
 
   ----
 
@@ -20,6 +37,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   _len: usize,
   _capacity: usize,
   ```
+
   **Constructors:**
   ```zn
   pub fn new() Self;
@@ -56,12 +74,15 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn clear(*self);
   ```
 
+  ----
+
   **Interfaces:**
   - `core.ops` : `Drop`, `Clone` (when `T: Clone`)
+  - `core.iter` : `FromIterator`
 </Card>
 
 <Card title="SetEntry[T]">
-  Single set entry
+  Single set entry.
 
   ----
 
@@ -71,3 +92,23 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub key: T,
   ```
 </Card>
+
+## Results
+
+`insert` returns `true` when the value was new, `remove` returns `true` when it was present:
+
+```zn
+use std.collections.set;
+use std.string;
+
+fn main() {
+  let names: HashSet[String] = HashSet.new();
+
+  @println("{}", names.insert(String.from("zeen")));
+  @println("{}", names.insert(String.from("zeen")));
+
+  const key: String = String.from("zeen");
+
+  @println("{} {}", names.contains(&key), names.remove(&key));
+}
+```

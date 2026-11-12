@@ -1,6 +1,6 @@
 ---
 title: List
-description: Dynamic array buffer with access, mutation and sorting methods.
+description: Dynamic array buffer with access, mutation, sorting and iteration.
 ---
 
 import { Badge, Card } from '@astrojs/starlight/components';
@@ -8,23 +8,25 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.collections.list" variant="note" size="medium" /> <br/>
 **Source:** [std/collections/list.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/collections/list.zn) <br/>
 
-> **Usage Example**
-> ```zn
-> use std.collections.list;
-> 
-> fn main() {
->   let items = List#[i32].new();
-> 
->   items.push(1);
->   items.push(2);
-> 
->   @println("len: {}", items.len());
-> }
-> ```
+`List[T]` is a growable heap buffer. Elements live inline, and the buffer doubles when it runs out of room.
+
+```zn
+use std.collections.list;
+
+fn main() {
+  let items: List[i32] = List.new();
+
+  items.push(1);
+  items.push(2);
+
+  @println("len: {}, first: {}", items.len(), items.first().unwrap());
+}
+```
 
 ## Structures
+
 <Card title="List[T]">
-  Dynamic heap-allocated array buffer
+  Dynamic heap allocated array buffer.
 
   ----
 
@@ -34,7 +36,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
   _len: usize,
   _capacity: usize,
   ```
-  ----
 
   **Constructors:**
   ```zn
@@ -44,10 +45,10 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn with_capacity(capacity: usize) Self;
   ```
   ```zn
-  pub fn from[T: Copy](value: []const T) Self;
+  pub fn from(value: []const T) Self; // T: Copy
   ```
   ```zn
-  pub fn from_clone[T: Clone](value: []const T) Self;
+  pub fn from(value: []const T) Self; // T: Clone
   ```
   ```zn
   pub fn from_raw_parts(ptr: [*]T, len: usize, capacity: usize) Self;
@@ -93,6 +94,9 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn remove(*self, index: usize) Option[T];
   ```
   ```zn
+  pub fn swap_remove(*self, index: usize) Option[T];
+  ```
+  ```zn
   pub fn set(*self, index: usize, value: T) Option[T];
   ```
   ```zn
@@ -103,9 +107,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
   ```
   ```zn
   pub fn append(*self, other: List[T]);
-  ```
-  ```zn
-  pub fn swap_remove(*self, index: usize) Option[T];
   ```
   ```zn
   pub fn reverse(*self);
@@ -120,7 +121,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn reserve(*self, additional: usize);
   ```
 
-  **Sort:**
+  **Sorting:**
   ```zn
   pub fn sort[T: Ord](*self);
   ```
@@ -128,16 +129,27 @@ import { Badge, Card } from '@astrojs/starlight/components';
   pub fn sort_by(*self, compare: fn(*const T, *const T) Ordering);
   ```
 
+  **Iteration:**
+  ```zn
+  pub fn iter(*const self) ListIter[T];
+  ```
+  ```zn
+  pub fn iter_mut(*self) ListMutIter[T];
+  ```
+  ```zn
+  pub fn into_iter(self) OwnedListIter[T];
+  ```
+
   ----
 
   **Interfaces:**
-  - `core.ops` : `Drop`, `Clone` (when `T: Copy`), `Eq` (when `T: Eq`), `Index` (`T` when `T: Copy`, `*T` otherwise), `IndexPtr`, `Sliceable`
-  - `core.iter` : `PtrIterator`, `OwnedIterator`
+  - `core.ops` : `Drop`, `Clone` (when `T: Copy`), `Eq` (when `T: Eq`), `Index` (yields `T` when `T: Copy`, `*T` otherwise), `IndexPtr`, `Sliceable`
+  - `core.iter` : `PtrIterator`, `MutPtrIterator`, `OwnedIterator`, `FromIterator`
   - `core.io` : `Debug` (when `T: Debug`)
 </Card>
 
 <Card title="ListIter[T]">
-  Borrowing iterator over `List` elements
+  Borrowing iterator, yields `*const T`. Created by `iter()`.
 
   ----
 
@@ -147,13 +159,33 @@ import { Badge, Card } from '@astrojs/starlight/components';
   len: usize,
   idx: usize,
   ```
+
   ----
+
   **Interfaces:**
-  - `core.iter` : `Iterator`
+  - `core.iter` : `Iterator` (`Item = *const T`)
+</Card>
+
+<Card title="ListMutIter[T]">
+  Mutable borrowing iterator, yields `*T`. Created by `iter_mut()`.
+
+  ----
+
+  **Fields:**
+  ```zn
+  ptr: [*]T,
+  len: usize,
+  idx: usize,
+  ```
+
+  ----
+
+  **Interfaces:**
+  - `core.iter` : `Iterator` (`Item = *T`)
 </Card>
 
 <Card title="OwnedListIter[T]">
-  Owning iterator over `List` elements, yields moves
+  Owning iterator, yields moved values. Created by `into_iter()`.
 
   ----
 
@@ -164,8 +196,54 @@ import { Badge, Card } from '@astrojs/starlight/components';
   idx: usize,
   _capacity: usize,
   ```
+
   ----
+
   **Interfaces:**
-  - `core.iter` : `Iterator`
+  - `core.iter` : `Iterator` (`Item = T`)
   - `core.ops` : `Drop`
 </Card>
+
+## Building from a slice
+
+`List.from` has two overloads. `Copy` elements are copied, `Clone` elements are cloned. A type that is both takes the `Copy` block, which never runs user code:
+
+```zn
+use std.collections.list;
+use std.string;
+
+fn main() {
+  const numbers: [3]i32 = {1, 2, 3};
+  const copied: List[i32] = List.from(numbers[..]);
+
+  const words: [2]String = {String.from("a"), String.from("b")};
+  const cloned: List[String] = List.from(words[..]);
+
+  @println("{} {}", copied.len(), cloned.len());
+}
+```
+
+## Iteration
+
+The three directions yield pointers for borrowing and values for consuming:
+
+```zn
+use std.collections.list;
+
+fn main() {
+  const numbers: [3]i32 = {1, 2, 3};
+  let items: List[i32] = List.from(numbers[..]);
+
+  for (item : items.iter()) {
+    @println("{}", *item);
+  }
+
+  for (item : items.iter_mut()) {
+    *item += 10;
+  }
+
+  for (item : items.into_iter()) {
+    @println("{}", item);
+  }
+}
+```

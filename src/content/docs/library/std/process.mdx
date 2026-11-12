@@ -13,7 +13,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 > use std.process;
 >
 > fn main() {
->   let out = Command.new("echo").arg("hello").output().unwrap();
+>   const out = Command.new("echo").arg("hello").output().unwrap();
 >
 >   @println("status: {}", out.status.success());
 >   @println("stdout: {}", out.stdout.trim_end());
@@ -87,6 +87,11 @@ import { Badge, Card } from '@astrojs/starlight/components';
   **Constructors:**
   ```zn
   pub fn new() Self;
+  ```
+
+  **Methods:**
+  ```zn
+  pub fn next(*self) Option[[]const char];
   ```
 
   **Interfaces:**

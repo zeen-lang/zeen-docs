@@ -11,37 +11,17 @@ import { Badge, Card } from '@astrojs/starlight/components';
 > **Usage Example**
 > ```zn
 > use std.thread;
-> use std.sync;
 >
 > fn main() {
->   let counter = Arc.new(Mutex.new(0));
->
->   let p1 = counter.clone();
->   let p2 = counter.clone();
->
->   let t1 = Thread.spawn(fn() i32 {
->     let guard = p1.get_mut().lock();
->     *guard += 1;
->
->     return *guard;
+>   const handle = Thread.spawn(|| -> i32 {
+>     return 42;
 >   });
 >
->   let t2 = Thread.spawn(fn() i32 {
->     let guard = p2.get_mut().lock();
->     *guard += 1;
->
->     return *guard;
->   });
->
->   let j1 = t1.join();
->   let j2 = t2.join();
->
->   @println("thread 1: {}", j1);
->   @println("thread 2: {}", j2);
->
->   @println("counter: {}", (*counter.get()).into_inner());
+>   @println("{}", handle.join());
 > }
 > ```
+
+The closure runs on a new OS thread, `join` waits for it and returns the closure result. Shared state goes through `Arc` with `Mutex` from [Sync](/library/std/sync/), which this module re-exports.
 
 ## Structures
 <Card title="Thread">
@@ -57,7 +37,7 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   **Methods:**
   ```zn
-  pub fn spawn[T](f: FnOnce() T) JoinHandle[T];
+  pub fn spawn[T, F: CallableOnce() T](f: F) JoinHandle[T];
   ```
   ```zn
   pub fn yield_now();
