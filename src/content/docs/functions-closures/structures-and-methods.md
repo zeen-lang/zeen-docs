@@ -186,7 +186,7 @@ Ties keep the block declared first. Overloads must share one signature and diffe
 
 ## Copy and Drop
 
-A struct is `Copy` when all its fields are, otherwise it is move-only. `implement Copy : Foo {}` forces `Copy` even when a field is move-only, so use it only for types that are safe to copy. A type with an explicit `Drop` cannot be `Copy`.
+A struct is move-only by default, even when every field is `Copy`. `implement Copy : Foo {}` marks it copyable, and assignment then copies the fields instead of moving them. The marker can also declare a struct with move-only fields `Copy`, so use it only where copying is safe. `Copy` and `Drop` do not combine: a type that declares both reports `zeen::typechecker::copy_with_drop`.
 
 ```zn
 struct Tag {

@@ -203,7 +203,7 @@ fn main() {
 
 ## Copy and Drop
 
-The rules match structs. An enum is `Copy` when every payload is `Copy`, otherwise it is move-only. `implement Copy : Foo {}` forces `Copy` even when a payload is move-only. An enum needs a drop when any payload needs one, unless `Drop` is implemented explicitly:
+Enums derive `Copy` on their own: an enum is `Copy` when every payload is `Copy`, and move-only otherwise. `implement Copy : Foo {}` marks an enum with a move-only payload copyable, so use it only where copying is safe. An enum needs a drop when any payload needs one, unless `Drop` is implemented explicitly:
 
 ```zn
 enum Book {
