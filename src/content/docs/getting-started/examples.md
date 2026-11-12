@@ -6,9 +6,8 @@ description: Small code examples
 ## Result and Switch
 ```zn
 fn divide(a: i32, b: i32) Result[i32, String] {
-  if (b == 0) {
+  if (b == 0)
     return Result.Err(String.from("Division by zero"));
-  }
 
   Result.Ok(a / b)
 }
