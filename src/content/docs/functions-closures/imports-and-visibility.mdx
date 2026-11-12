@@ -1,27 +1,48 @@
 ---
 title: Imports and Visibility
-description: Module resolution, use paths, implicit core imports and pub visibility.
+description: Module paths, use imports, packages, visibility and re-exports.
 ---
 
 import { FileTree } from '@astrojs/starlight/components';
 
-Zeen modules are just `.zn` files, joined by the include system. Modules connect with the `use` word: the compiler resolves every import by itself, links modules together and reports collisions (duplicate definitions) with both locations. The project root is the dir of the file the compilation started from (`main.zn` in `zeen main.zn output`):
+Modules are `.zn` files. `use` loads another module and brings its `pub` items into the current module unqualified. The project root is the directory of the entry file.
 
 <FileTree>
 
-- main.zn entry file, its dir is the project root
+- main.zn entry file, its directory is the project root
 - utils/
-  - helpers.zn reachable as `root.utils.helpers` (or from main: `utils.helpers`)
+  - helpers.zn
 
 </FileTree>
 
+`utils/helpers.zn`:
+
+```zn
+pub fn double(x: i32) i32 {
+  return x * 2;
+}
+```
+
+`main.zn`:
+
+```zn
+use utils.helpers;
+
+fn main() {
+  @println("{}", double(2));
+}
+```
+
+An import does not create a namespace. `helpers.double` is not valid, `double` is called directly.
+
 ## Core
-Core library is injected automatically, no `use` needed: `Option`, `Result`, `Copy`, `Drop`, `Display`, `Iterator` and so on are always in scope.
 
-Names declared in `core` are reserved: a custom item with the same name is an error.
+Core modules are implicit, so `Option`, `Result`, `Copy`, `Drop`, `Display`, `Debug` and `Iterator` need no import. Core names are reserved: declaring `struct Option` reports `zeen::resolver::core_reserved`.
 
-## Use
-Dots map to directories, the last segment to a `.zn` file:
+## Use paths
+
+Dots map to directories, and the last segment maps to a `.zn` file:
+
 ```zn
 use std.string;
 use std.c.posix.pthread;
@@ -29,24 +50,65 @@ use std.c.posix.pthread;
 
 The first segment picks the base:
 
-| Prefix | Base |
-|--------|------|
+| Path | Base |
+|---|---|
+| no prefix | directory of the current file |
 | `root` | project root |
-| `super` | parent dir of current file |
-| `std` | std root (`--std`, `$ZEEN_STD` or `~/.zeen/std`) |
-| (none) | dir of current file |
+| `super` | parent directory of the current file |
+| `std` | std root |
+| package name | directory from `--pkg NAME=PATH` |
 
 ```zn
+use utils.helpers;
 use root.utils.helpers;
-use super.library;
+use super.helpers;
+use std.string;
 ```
 
-Mentioning `String` or `List` pulls in `std.string` / `std.collections.list` automatically, no `use` needed. `@format` pulls in `std.string` and fat closures pull in `std.fn` the same way.
+A bare module name falls back to `name/index.zn` when `name.zn` does not exist. `use utils;` and `use utils.index;` load the same file.
+
+Packages connect a name to a directory on the command line:
+
+```sh
+zeen main.zn output --pkg mathpkg=tools/math
+```
+
+`use mathpkg.lib;` then loads `tools/math/lib.zn`, and diagnostics show the module as `mathpkg.lib`.
+
+The std root comes from `--std`, then `ZEEN_STD`, then `~/.zeen/std`, then `share/zeen/std` next to the compiler. A missing std root reports `zeen::resolver::std_not_configured`.
+
+## Prelude
+
+Some std modules load on their own when a program needs them. Mentioning `String` or `List` injects `std.string` or `std.collections.list`, `@format` injects `std.string`, and a fat closure pulls in `std.fn`. The prelude is usage driven, so a program that uses none of them needs no std root.
 
 ## Visibility
-Items are private by default, `pub` opens them for other modules:
+
+Items are private by default. `pub` opens a function, struct, enum, alias, constant, global, field or method to other modules:
+
 ```zn
-pub fn triangulate() { /* ... */ }
+pub fn triangulate() {
+  @println("triangulating");
+}
 ```
 
-Accessing a private item from another module is an error.
+Imports are private too. A module keeps the names it imported, and an importer does not see them. `pub use` re-exports an import:
+
+```zn
+pub use leaf;
+```
+
+With `pub use leaf;` inside `chain/mid.zn`, a module that imports `chain.mid` can call the public items of `chain.leaf`. Without `pub`, those names stay inside `mid`.
+
+A local declaration wins over an imported name. Two modules may also declare the same private name, and importing both is fine.
+
+## Errors
+
+| Situation | Code |
+|---|---|
+| module not found | `zeen::resolver::include_error` |
+| private item used from another module | `zeen::resolver::private_item` |
+| one public name from two imported modules | `zeen::resolver::ambiguous_import` |
+| duplicate declaration in one module | `zeen::resolver::duplicate_definition` |
+| core name redeclared | `zeen::resolver::core_reserved` |
+
+When several modules define `main`, the entry point comes from the root module.
