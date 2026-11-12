@@ -1,0 +1,272 @@
+---
+version: 0.5.0
+date: 2026-11-12
+description: Interfaces, closures and automatic type inference.
+---
+
+This release completes the interface system, redesigns closures around callable bounds and adds bidirectional type inference for locals. It also brings a new array and struct initialization syntax, loop improvements and a diagnostics reference on the website.
+
+## Interfaces
+
+Methods can now live in `implement Type { ... }` blocks instead of the type body. A block carries the owner's generics and bounds, so the same method name can be declared with different bounds or specialized for concrete type arguments. Methods declared in the type body still work.
+
+```zeen
+struct Point {
+  pub x: i32,
+  pub y: i32,
+}
+
+implement Point {
+  pub fn length_squared(*const self) i32 {
+    self.x * self.x + self.y * self.y
+  }
+}
+
+fn main() {
+  let point: Point = .{ .x = 2, .y = 3 };
+
+  @println("{}", point.length_squared());
+}
+```
+
+The same syntax extends to basic types with `implement builtin T { ... }`. Both methods and static functions are supported, along with shaped targets such as `[]T` and `[N]T`:
+
+```zeen
+implement builtin i32 {
+  pub fn is_even(self) bool {
+    self % 2 == 0
+  }
+}
+
+fn main() {
+  let value: i32 = 12;
+
+  @println("{} {}", value.is_even(), i32.max_value());
+}
+```
+
+With the standard library configured, `std.primitives` injects a full set of methods into every module: checked arithmetic (`checked_add`, `checked_mul`), bit operations, `min_value`/`max_value`, float constants (`f64.epsilon()`, `f64.nan()`), and `to_string` on every basic type.
+
+Interfaces themselves gained default method bodies and associated types. A default body is used when the implementation does not provide the method, and an associated type is bound per implementation:
+
+```zeen
+interface Source {
+  alias Item;
+
+  pub fn read(*self) Item;
+}
+
+struct Celsius {
+  degrees: i32,
+}
+
+implement Source : Celsius {
+  alias Item = i32;
+
+  fn read(*self) Item {
+    return self.degrees;
+  }
+}
+
+fn doubled[S: Source](source: *S) i32
+  where S.Item = i32 {
+  return source.read() + source.read();
+}
+
+fn main() {
+  let celsius: Celsius = .{ .degrees = 21 };
+
+  @println("{}", doubled(&celsius));
+}
+```
+
+Projections are written as `Self.Item` or `S.Item`, and a `where` clause can require a bound on the projection (`where S.Item: Marker`) or an exact type (`where S.Item = i32`). Interface arguments are part of an implementation, so one type can implement the same interface several times for different arguments.
+
+## Iterators
+
+`Iterator` is rebuilt on associated types. The implementor declares `alias Item` and one `next` method, and the adapters come from default bodies: `map`, `filter`, `take`, `skip`, `count`, `for_each`, `fold`, `any`, `all`, `last_item`, `nth` and `collect` through `FromIterator`.
+
+```zeen
+use std.collections.list;
+
+fn main() {
+  let numbers = List.new();
+
+  numbers.push(1);
+  numbers.push(2);
+  numbers.push(3);
+  numbers.push(4);
+
+  let even: List[i32] = numbers.iter().filter(|value| (*value) % 2 == 0).collect();
+  let total: i32 = numbers.iter().fold(0, |acc, value| acc + (*value));
+
+  @println("{} {}", even.len(), total);
+}
+```
+
+`List` implements all three directions: `iter` borrows and yields `*const T`, `iter_mut` yields `*T`, and `into_iter` consumes the list and yields owned elements. `List`, `String` and `HashSet` implement `FromIterator`, so `collect` builds them directly.
+
+## Closures
+
+Closure literals use the pipe syntax and their parameters are inferred from the expected type, the body or a sibling operand. A generic parameter can require a callable signature with `Callable` and `CallableOnce`:
+
+```zeen
+fn apply_twice[F: Callable(i32) i32](f: F, value: i32) i32 {
+  f(f(value))
+}
+
+fn main() {
+  let offset: i32 = 5;
+  let shift = |value| value + offset;
+
+  @println("{}", apply_twice(shift, 1));
+}
+```
+
+A closure becomes `Fn` or `FnOnce` depending on how it uses its captures: a closure that only borrows stays `Fn`, a closure that moves a non-copyable capture out becomes `FnOnce`. Plain `fn` pointers, zero capture closures and `Fn` values all satisfy `Callable`, while `FnOnce` only satisfies `CallableOnce`.
+
+## Type inference
+
+Locals infer their type from later usage, not just from the initializer. This also works for generic constructors, so `List.new()` becomes `List[i32]` after the first `push`:
+
+```zeen
+use std.collections.list;
+
+fn main() {
+  let row = 2;
+  let index: u8 = row + 1;
+
+  let numbers = List.new();
+  numbers.push(index);
+
+  @println("{} {}", index, numbers.len());
+}
+```
+
+Two incompatible hints for the same binding report `zeen::typechecker::ambiguous_inference`, and a binding that is never used in a way that fixes its type still needs an annotation. Inference works within one function body.
+
+## Syntax
+
+Arrays are written with braces, with a repeat form for large buffers. Struct values can be built without naming the type when the expected type is known, and `.{ }` is the new void value that replaced `@void()`:
+
+```zeen
+struct Config {
+  pub retries: i32,
+  pub verbose: bool,
+}
+
+fn main() {
+  let numbers = {1, 2, 3};
+  let buffer: [4]u8 = {0; 4};
+  let config: Config = .{ .retries = 3, .verbose = true };
+
+  @println("{} {} {} {}", numbers[0], buffer[0], config.retries, config.verbose);
+}
+```
+
+`while` loops accept an update statement that runs after the body and after `continue`. Loops now have an optional `else` block that runs on natural completion, and labels address an outer loop from inside a nested one:
+
+```zeen
+fn main() {
+  let attempts: i32 = 0;
+
+  retry: while (attempts < 3) : (attempts += 1) {
+    if (attempts == 1) {
+      continue :retry;
+    }
+
+    @println("attempt {}", attempts);
+  } else {
+    @println("done");
+  }
+}
+```
+
+The `?` operator unwraps `Option[T]` and `Result[T, E]` and returns early with `None` or `Err(e)`. The enclosing function has to return the same enum family:
+
+```zeen
+fn half(value: i32) Option[i32] {
+  if (value % 2 != 0) {
+    return Option.None;
+  }
+
+  return Option.Some(value / 2);
+}
+
+fn next_even(value: i32) Option[i32] {
+  let result = half(value)?;
+
+  return Option.Some(result + 1);
+}
+
+fn main() {
+  switch (next_even(10)) {
+    .Some(value) => { @println("{}", value); },
+    .None => { @println("none"); },
+  }
+}
+```
+
+## Unicode
+
+`core.unicode` adds `Rune` and `RuneIter`. Strings stay byte slices, and code points are decoded as needed. `String` gained rune based methods (`push_rune`, `rune_count`, `find_rune`, `split_rune`), `std.json` decodes `\u` escapes into runes, and `std.process` builds Windows UTF-16 arguments through `Rune`.
+
+```zeen
+fn main() {
+  let text: []const char = "héllo";
+  let runes = RuneIter.new(text);
+
+  for (rune : runes) {
+    @println("{}", rune);
+  }
+
+  @println("runes: {}", Rune.count(text));
+}
+```
+
+## Diagnostics
+
+The website has a new Diagnostics section: a reference of every compiler error and warning, grouped by pipeline stage, each with the message, an example and a hint. Every diagnostic now carries a link to its entry, for example `https://zeen-lang.tech/diagnostics/#zeen-parser-expected_token`. Terminals with link support show `(link)` after the error code.
+
+The new `unused_mut` warning reports a `let` binding that is never mutated and suggests `const` instead.
+
+## Fixes
+
+- Arrays and slices print in brace form (`{1, 2, 3}`) through `Debug`, `@print` and `@println`, and `@dbg` prints the whole container.
+- Comparing move-only values no longer moves the operands.
+- Non-ASCII character literals are rejected instead of truncated.
+- Extern calls pass struct arguments by value where the target ABI requires it, small struct returns follow the C ABI, and MSVC links user libraries before `user32`.
+- `std.http` request body and content length parsing are bounded, `String.replace` checks its buffer, and thread spawn cleans up its packet after the call.
+- LSP completion covers methods from `implement` blocks, builtin and primitive methods, associated types, default interface methods, static members, fields in `.{ ... }` and enum variants.
+
+## Breaking Changes
+
+- Array literals use braces now. `[1, 2, 3]` is a parser error that points to `{1, 2, 3}`.
+- `@void()` is removed. Use `.{ }` for the void value, for example `Result.Ok(.{ })`.
+- Closure literals use `|params| expr`. `fn(...) T { ... }` no longer starts a closure.
+- `Iterator[T]` became `Iterator` with `alias Item`, `PtrIterator` and `OwnedIterator` declare `alias Iter`, and `iter` is read only. Use `iter_mut` for `*T` items.
+- `Deref`, `DerefPtr`, `Index`, `IndexPtr` and the operator interfaces use associated types (`Target`, `Output`) instead of extra generic parameters.
+- A `let` binding that is never mutated now triggers `unused_mut`. Switch it to `const`.
+- Non-ASCII character literals are a compile error. Use a string literal or `Rune`.
+- Core interfaces cannot be implemented for builtin types (`implement Copy : builtin i32`), only user interfaces can.
+
+## Pull Requests
+
+* Add implement blocks for structs and enums by @mealet in https://github.com/zeen-lang/zeen/pull/75
+* Add implement builtin blocks for basic Zeen types by @mealet in https://github.com/zeen-lang/zeen/pull/77
+* Implement interface blocks for builtin types by @mealet in https://github.com/zeen-lang/zeen/pull/78
+* New Array and Structure init syntax by @mealet in https://github.com/zeen-lang/zeen/pull/80
+* Add `unused_mut` warning for variables by @mealet in https://github.com/zeen-lang/zeen/pull/84
+* Added update statement to `while` loop by @mealet in https://github.com/zeen-lang/zeen/pull/85
+* Added `else` blocks for loops by @mealet in https://github.com/zeen-lang/zeen/pull/86
+* Added error propagation operator: `?` by @mealet in https://github.com/zeen-lang/zeen/pull/87
+* Added labeled break and continue for loops by @mealet in https://github.com/zeen-lang/zeen/pull/88
+* Added default method bodies in interfaces by @mealet in https://github.com/zeen-lang/zeen/pull/89
+* Added associated alias types, projections and interface arguments by @mealet in https://github.com/zeen-lang/zeen/pull/90
+* Stabilized interfaces and iterators adapters by @mealet in https://github.com/zeen-lang/zeen/pull/91
+* Redesign closures and callable bounds by @mealet in https://github.com/zeen-lang/zeen/pull/94
+* Infer closure and local types automatically by @mealet in https://github.com/zeen-lang/zeen/pull/95
+
+## Full Changelog
+
+https://github.com/zeen-lang/zeen/compare/v0.4.0...v0.5.0
