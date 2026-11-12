@@ -124,6 +124,10 @@ export default defineConfig({
 							label: 'Pointers',
 							slug: 'language-basics/pointers',
 						},
+						{
+							label: 'Builtin Macros',
+							slug: 'language-basics/macros-builtin',
+						},
 					],
 				},
 
@@ -162,10 +166,6 @@ export default defineConfig({
 						{
 							label: 'Imports and Visibility',
 							slug: 'functions-closures/imports-and-visibility',
-						},
-						{
-							label: 'Builtin Macros',
-							slug: 'functions-closures/macros-builtin',
 						},
 						{
 							label: 'Extern',
