@@ -1,98 +1,228 @@
 ---
 title: Variables and Bindings
-description: Mutable let bindings, constants, globals and discarded values.
+description: Mutable let bindings, constants, type inference, globals and discarded values.
 ---
 
-## Explanation
+## Bindings
 
-Variables in Zeen are named data owners: they hold a type and a pointer to owned data. <br/>
-Variables may be left unassigned at initialization, but they cannot be used before initialization.
-By default locals in Zeen are mutable, you can use the `const` modifier to disable mutability.
+A binding owns its data. Every binding has one type, and the value stays alive until the binding goes out of scope.
 
-### Syntax:
+`let` creates a mutable binding, `const` creates one that cannot be changed after initialization:
+
 ```zn
-// mutable
-let identifier: type;
-let identifier: type = value;
-let identifier = value;
+let count = 0;
+count += 1;
 
-// non-mutable
-const identifier: type;
-const identifier: type = value;
-const identifier = value;
+const limit = 100;
 ```
 
-Examples:
+An explicit type annotation is optional:
+
 ```zn
-// Init without value
-let var: i32;
-
-// Init with type and value
-let var: i32 = 123;
-
-// Init with only value
-let var = 123;
+let full: i32 = 123;
+let short = 123;
 ```
+
+A binding can start without a value, but it must be assigned before it is read:
+
+```zn
+let answer: i32;
+
+answer = 42;
+
+@println("{}", answer);
+```
+
+Reading it earlier is `zeen::dataflow::use_of_uninitialized`.
+
+## Type inference
+
+The compiler infers the type of a binding from how the binding is used later. The type is chosen once and applies to every use. Inference never converts a value: `let value = 1; let byte: u8 = value;` makes `value` a `u8`, it does not copy an `i32` into a `u8`.
+
+```zn
+let value = 1;
+let byte: u8 = value;
+
+@println("{} {}", value, byte);
+```
+
+A hint can come from:
+
+- an annotation on another binding,
+- an argument of a function call,
+- a `return` from a function with a known return type,
+- an operand of an arithmetic or comparison expression,
+- an element of an annotated array,
+- a branch of `if` or `switch`,
+- a later assignment, as in `let x; x = 5;`.
+
+A function argument fixes the type:
+
+```zn
+fn take(byte: u8) u8 {
+  return byte + 1;
+}
+
+fn main() {
+  let n = 5;
+
+  @println("{}", take(n));
+}
+```
+
+So does a `return` with a known return type:
+
+```zn
+fn small() u8 {
+  let n = 1;
+
+  return n;
+}
+
+fn main() {
+  @println("{}", small());
+}
+```
+
+So does an operand of another expression:
+
+```zn
+let wide = 1;
+let wide_value: i64 = wide + 2;
+
+@println("{}", wide_value);
+```
+
+An element of an annotated array sets the type of the whole literal:
+
+```zn
+let bytes = {1, 2};
+let packed: [2]u8 = bytes;
+
+@println("{} {}", packed[0], packed[1]);
+```
+
+An `if` branch does the same:
+
+```zn
+let flag = true;
+let result = if (flag) { 1 } else { 2 };
+let byte: u8 = result;
+
+@println("{}", byte);
+```
+
+Inference also works for constants:
+
+```zn
+fn fill(source: []const u8) [3]u8 {
+  let copy: [3]u8 = @uninit();
+
+  copy[0] = source[0];
+  copy[1] = source[1];
+  copy[2] = source[2];
+
+  return copy;
+}
+
+fn main() {
+  const source: [3]u8 = {1, 2, 3};
+  const copy = fill(source[..]);
+
+  @println("{}", copy[0]);
+}
+```
+
+Without a hint a literal keeps its default type: an integer literal becomes `i32`, a float literal becomes `f64`.
+
+```zn
+let count = 1;
+let ratio = 1.5;
+
+@println("{} {}", @typename(typeof count), @typename(typeof ratio));
+```
+
+An explicit annotation wins over every hint. Once a binding is annotated, later uses cannot widen or narrow it:
+
+```zn
+let value: u8 = 1;
+let size: usize = value;
+```
+
+The second line is `zeen::typechecker::mismatch`, because there is no implicit widening.
+
+Two hints that disagree produce `zeen::typechecker::ambiguous_inference`:
+
+```zn
+let value = 1;
+let byte: u8 = value;
+let size: usize = value;
+```
+
+A literal that is inferred into a narrow type is still range checked: `let n = 300; let byte: u8 = n;` reports `zeen::typechecker::int_literal_out_of_range` at the literal.
+
+Inference has limits. A struct field, an enum payload, an index expression and an array to pointer conversion do not feed a hint back into a binding, and globals always need an explicit type. Those cases are covered on the related pages.
 
 ## Globals
 
-Top-level globals need explicit type and value. <br/>
-Syntax:
-```zn
-const NAME: type = value;
-let name: type = value;
-```
+Top-level globals need both an explicit type and an initializer:
 
-Example:
 ```zn
 const MAX: i32 = 100;
 let counter: i32 = 0;
 ```
 
-A global may hold a function: a named function, an `fn` literal or a `Fn` / `FnOnce` returned by a call.
+A global can hold a function value: a named function, an `fn` literal or a `Fn` / `FnOnce` returned by a call.
+
 ```zn
 fn double(x: i32) i32 {
   return x * 2;
 }
 
 let handler: fn(i32) i32 = double;
-let triple: fn(i32) i32 = fn(x: i32) i32 { x * 3 };
+let triple: fn(i32) i32 = |x| x * 3;
 ```
 
 ## Discard
 
-Use `_` to discard value without naming it with variable:
+`let _ = value;` discards the value without binding it. The value is not dropped, so a `Drop` value discarded this way is leaked.
+
 ```zn
-let _ = foo();
+let _ = String.from("not dropped");
 ```
 
-## Detailed Example
+Use a named binding when the value must be released at the end of the scope:
 
-A variable is a pointer to temporary stack-allocated data, existing in the current function context. It provides the means to load,
-change, or remove this data. When the function context ends, all existing data will be freed.
-Pointers are also stack-allocated values, more explanation about pointers you'll find in the related topic.
+```zn
+let _held = String.from("dropped at scope end");
 
-----
+@println("done");
+```
 
-Code:
+## Memory model
+
+A local binding lives on the stack frame of the current function. The frame holds the value, and heap data owned by the value is released when the binding is dropped. When the function returns, the frame is released.
+
 ```zn
 fn main() {
-    let a = 1234;
-    let ptr = &a;
+  let a = 1234;
+  let ptr = &a;
 }
 ```
 
-In simple representation will look like:
+The frame above holds the value `1234` and the pointer `ptr` that refers to it:
 
 ```
-     FN STACK                        
+     FN STACK
     ┌────────┐         ┌──────────────┐
 ┌──►│  1234  │◄────────┤ let a = 1234 │
 │   │────────│         └──────────────┘
-└───┤ 0xADDR │◄──────┐               
+└───┤ 0xADDR │◄──────┐
     │────────│       │ ┌──────────────┐
     │  ....  │       └─│ let ptr = &a │
     │────────│         └──────────────┘
-    │  ....  │                       
-    └────────┘                       
+    │  ....  │
+    └────────┘
 ```
+
+Pointers are values too and live in the same frame. The [Pointers](/language-basics/pointers/) page covers them in detail.
