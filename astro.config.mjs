@@ -257,6 +257,28 @@ export default defineConfig({
 							collapsed: true,
 							items: [
 								{
+									label: 'c/',
+									collapsed: true,
+									items: [
+										{
+											label: 'Overview',
+											slug: 'library/std/c/overview',
+										},
+										{
+											label: 'Libc',
+											slug: 'library/std/c/libc',
+										},
+										{
+											label: 'Posix',
+											slug: 'library/std/c/posix',
+										},
+										{
+											label: 'Windows',
+											slug: 'library/std/c/windows',
+										},
+									],
+								},
+								{
 									label: 'collections/',
 									collapsed: true,
 									items: [
@@ -295,72 +317,6 @@ export default defineConfig({
 											slug: 'library/std/crypto/sha256',
 										},
 									],
-								},
-								{
-									label: 'c/',
-									collapsed: true,
-									items: [
-										{
-											label: 'Overview',
-											slug: 'library/std/c/overview',
-										},
-										{
-											label: 'Libc',
-											slug: 'library/std/c/libc',
-										},
-										{
-											label: 'Posix',
-											slug: 'library/std/c/posix',
-										},
-										{
-											label: 'Windows',
-											slug: 'library/std/c/windows',
-										},
-									],
-								},
-								{
-									label: 'alloc',
-									slug: 'library/std/alloc',
-								},
-								{
-									label: 'env',
-									slug: 'library/std/env',
-								},
-								{
-									label: 'fn',
-									slug: 'library/std/fn',
-								},
-								{
-									label: 'fs',
-									slug: 'library/std/fs',
-								},
-								{
-									label: 'http',
-									slug: 'library/std/http',
-								},
-								{
-									label: 'io',
-									slug: 'library/std/io',
-								},
-								{
-									label: 'json',
-									slug: 'library/std/json',
-								},
-								{
-									label: 'log',
-									slug: 'library/std/log',
-								},
-								{
-									label: 'math',
-									slug: 'library/std/math',
-								},
-								{
-									label: 'net',
-									slug: 'library/std/net',
-								},
-								{
-									label: 'path',
-									slug: 'library/std/path',
 								},
 								{
 									label: 'primitives/',
@@ -423,6 +379,50 @@ export default defineConfig({
 											slug: 'library/std/primitives/bool',
 										},
 									],
+								},
+								{
+									label: 'alloc',
+									slug: 'library/std/alloc',
+								},
+								{
+									label: 'env',
+									slug: 'library/std/env',
+								},
+								{
+									label: 'fn',
+									slug: 'library/std/fn',
+								},
+								{
+									label: 'fs',
+									slug: 'library/std/fs',
+								},
+								{
+									label: 'http',
+									slug: 'library/std/http',
+								},
+								{
+									label: 'io',
+									slug: 'library/std/io',
+								},
+								{
+									label: 'json',
+									slug: 'library/std/json',
+								},
+								{
+									label: 'log',
+									slug: 'library/std/log',
+								},
+								{
+									label: 'math',
+									slug: 'library/std/math',
+								},
+								{
+									label: 'net',
+									slug: 'library/std/net',
+								},
+								{
+									label: 'path',
+									slug: 'library/std/path',
 								},
 								{
 									label: 'process',
