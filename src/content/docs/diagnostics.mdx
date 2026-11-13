@@ -24,6 +24,10 @@ import { diagnostics } from '../../data/diagnostics';
 
 {diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-comptime' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
 
+### Dataflow
+
+{diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-dataflow' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
 ### MIR
 
 {diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-mir' && diagnostic.severity === 'error').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}

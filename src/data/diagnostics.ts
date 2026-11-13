@@ -27,7 +27,7 @@ export const diagnostics: Diagnostic[] = [
     message: 'The parser expected a different token here.',
     help: 'Finish the expression or statement, or remove the stray token.',
     example: `fn main() {
-  const total: i32 = 1 +;
+  const total: i32 = 1
 }`,
   },
   {
@@ -66,9 +66,9 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-parser',
     message: 'The input is not valid Zeen syntax at this position.',
     help: 'Check punctuation, braces and keywords around the reported spot.',
-    example: `fn main() {
-  const = 1;
-}`,
+    example: `fn helper();
+
+fn main() {}`,
   },
   {
     code: 'zeen::parser::unexpected_eof',
@@ -82,10 +82,10 @@ export const diagnostics: Diagnostic[] = [
     code: 'zeen::parser::unknown_expression',
     severity: 'error',
     stage: 'zeen-parser',
-    message: 'The parser cannot build an expression from the tokens at this position.',
-    help: 'Finish the expression, or remove the stray operator or separator.',
+    message: 'The parser cannot build an expression or a top-level declaration from these tokens.',
+    help: 'Finish the expression or declaration, or remove the stray operator or separator.',
     example: `fn main() {
-  const total: i32 = 1 +;
+  const total: i32 = ;
 }`,
   },
   {
@@ -133,8 +133,22 @@ export const diagnostics: Diagnostic[] = [
     severity: 'error',
     stage: 'zeen-resolve',
     message: 'The name is imported from multiple modules and is ambiguous.',
-    help: 'Import only one of the modules, or qualify the name.',
-    example: `use amb.one;\nuse amb.two;\n\nfn main() {
+    help: 'Import only one of the modules, or move one of the items into a separate module.',
+    example: `// one.zn
+pub fn value() i32 {
+  return 1;
+}
+
+// two.zn
+pub fn value() i32 {
+  return 2;
+}
+
+// main.zn
+use one;
+use two;
+
+fn main() {
   @println("{}", value());
 }`,
   },
@@ -166,7 +180,7 @@ export const diagnostics: Diagnostic[] = [
     code: 'zeen::resolver::include_error',
     severity: 'error',
     stage: 'zeen-resolve',
-    message: 'The module could not be found.',
+    message: 'The imported module could not be found or read.',
     help: 'Check the import path, or install the standard library.',
     example: `use missing_module;\n\nfn main() {}`,
   },
@@ -193,7 +207,17 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-resolve',
     message: 'The private item is not accessible from this module.',
     help: 'Mark the item `pub`, or use it only from its defining module.',
-    example: `use utils;\n\nfn main() {\n  @println("{}", secret());\n}`,
+    example: `// utils.zn
+fn secret() i32 {
+  return 1;
+}
+
+// main.zn
+use utils;
+
+fn main() {
+  @println("{}", secret());
+}`,
   },
   {
     code: 'zeen::resolver::unresolved_ident',
@@ -227,7 +251,17 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'The associated type is ambiguous for this base type.',
     help: 'The type has several implementations that declare this associated type.',
-    example: `interface Source {\n  alias Item;\n  pub fn read(*self) Item;\n}\n\nstruct Plain {\n  value: i32,\n}\n\nimplement Source : Plain {\n  alias Item = i32;\n  pub fn read(*self) i32 {\n    return self.value;\n  }\n}\n\nfn main() {}`
+    example: `interface First {
+  alias Item;
+}
+
+interface Second {
+  alias Item;
+}
+
+fn read[T: First + Second](value: T.Item) {}
+
+fn main() {}`
   },
   {
     code: 'zeen::typechecker::ambiguous_inference',
@@ -363,7 +397,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'Cannot implement `Drop` for the struct: it also implements `Copy`.',
     help: '`Copy` types own no resources to release; pick one: `Copy` or `Drop`.',
-    example: `struct Handle {\n  id: i32,\n}\n\nimplement Copy : Handle {}\n\nimplement Drop : Handle {\n  pub fn drop(*self) {\n    @print("");\n  }\n}\n\nfn main() {}`,
+    example: `struct Handle {\n  id: i32,\n}\n\nimplement Copy : Handle {}\n\nimplement Drop : Handle {\n  pub fn drop(self) {}\n}\n\nfn main() {}`,
   },
   {
     code: 'zeen::typechecker::core_interface_impl',
@@ -441,8 +475,8 @@ export const diagnostics: Diagnostic[] = [
     code: 'zeen::typechecker::format_parse_error',
     severity: 'error',
     stage: 'zeen-typecheck',
-    message: 'The format string could not be parsed.',
-    help: 'Check braces and format specifiers in the format string.',
+    message: 'The format string or its arguments do not match.',
+    help: 'Check braces, format specifiers and the number of arguments.',
     example: `fn main() {\n  @println("{", 1);\n}`,
   },
   {
@@ -475,7 +509,6 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'The operator interface is not supported on the provided generic.',
     help: 'Add an interface bound that provides the operator.',
-    example: `fn negate[T](value: T) T {\n  return -value;\n}\n\nfn main() {\n  @println("{}", negate(1));\n}`,
   },
   {
     code: 'zeen::typechecker::implicit_array_to_slice',
@@ -494,6 +527,18 @@ export const diagnostics: Diagnostic[] = [
     example: `fn main() {\n  const value: i32 = 9223372036854775807;\n}`,
   },
   {
+    code: 'zeen::typechecker::invalid_cast',
+    severity: 'error',
+    stage: 'zeen-typecheck',
+    message: 'Invalid type cast: `{from}` -> `{to}`.',
+    help: 'Use `@as` only between compatible concrete types.',
+    example: `fn main() {
+  const value = @as(i32, "hi");
+
+  @println("{}", value);
+}`,
+  },
+  {
     code: 'zeen::typechecker::interface_method_missing',
     severity: 'error',
     stage: 'zeen-typecheck',
@@ -506,8 +551,7 @@ export const diagnostics: Diagnostic[] = [
     severity: 'error',
     stage: 'zeen-typecheck',
     message: 'The interface is not available here.',
-    help: 'Import the module that provides the interface, for example `use std.ops`.',
-    example: `interface Named {\n  pub fn name(*const self) i32;\n}\n\nstruct Tag {\n  id: i32,\n}\n\nfn show[T: Named](value: *const T) {\n  @println("{}", value.name());\n}\n\nfn main() {\n  const p: Tag = .{ .id = 1 };\n  show(&p);\n}`,
+    help: 'Built-in operator interfaces come from `core.ops`, which loads implicitly. Report this diagnostic if it appears.',
   },
   {
     code: 'zeen::typechecker::interface_signature_mismatch',
@@ -531,7 +575,9 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'The macro requires an enum type.',
     help: 'Pass an enum type to `@variantNames`/`@variantCount`.',
-    example: `fn main() {\n  @println("{}", @variantCount(i32));`,
+    example: `fn main() {
+  @println("{}", @variantCount(i32));
+}`,
   },
   {
     code: 'zeen::typechecker::main_not_found',
@@ -658,7 +704,7 @@ export const diagnostics: Diagnostic[] = [
     severity: 'error',
     stage: 'zeen-typecheck',
     message: 'Struct init needs a struct or enum type.',
-    help: 'Use `Type { ... }` or `Type#[Args] { ... }`.',
+    help: 'Use `Type { ... }`, or annotate the value and use `.{ ... }`.',
     example: `fn main() {\n  const value = i32 { .x = 1 };\n\n  @println("{}", value);\n}`,
   },
   {
@@ -675,7 +721,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'Float patterns are not supported in switch.',
     help: 'Compare floats with `if` and `==` instead.',
-    example: `fn main() {\n  const value = 1.5;\n\n  switch (value) {\n    1.5 => @println("half"),\n    _ => @println("other"),\n  }\n}`
+    example: `fn main() {\n  const value = 1;\n\n  switch (value) {\n    1.5 => @println("half"),\n    _ => @println("other"),\n  }\n}`
   },
   {
     code: 'zeen::typechecker::switch_non_exhaustive',
@@ -691,7 +737,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'Or-pattern bindings must share one name.',
     help: 'Use the same binding name in every alternative of the or-pattern.',
-    example: `enum Shape {\n  Empty,\n  Radius: i32,\n  Diam: i32,\n}\n\nfn main() {\n  const shape = Shape.Radius(1);\n\n  switch (shape) {\n    .Radius(r) | .Diam(r) => @println("{}", r),\n    _ => @println("none"),\n  }\n}`
+    example: `enum Shape {\n  Empty,\n  Radius: i32,\n  Diam: i32,\n}\n\nfn main() {\n  const shape = Shape.Radius(1);\n\n  switch (shape) {\n    .Radius(r) | .Diam(d) => @println("{}", d),\n    _ => @println("none"),\n  }\n}`
   },
   {
     code: 'zeen::typechecker::switch_pattern_mismatch',
@@ -761,9 +807,15 @@ export const diagnostics: Diagnostic[] = [
     code: 'zeen::typechecker::unknown_associated_type',
     severity: 'error',
     stage: 'zeen-typecheck',
-    message: 'The associated type is not declared by any interface bound in scope.',
-    help: 'Add the interface that declares it as a bound.',
-    example: `fn read[T]() T.Item { return value; }\n\nfn main() {}`
+    message: 'The associated type is not declared by an interface in scope.',
+    help: 'Declare the alias on the interface, or add the interface that declares it as a bound.',
+    example: `interface Source {
+  pub fn read(*self) i32;
+}
+
+fn read[T: Source](value: T.Item) {}
+
+fn main() {}`
   },
   {
     code: 'zeen::typechecker::unknown_field',
@@ -853,7 +905,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'Cannot move out of the variant: the enum implements `Drop`.',
     help: 'Dropping the partial value would bypass the implementation\'s `drop`.',
-    example: `use std.string;\nstruct Resource {\n  handle: i32,\n}\nimplement Drop : Resource {\n  pub fn drop(self) {}\n}\nenum Val {\n  N,\n  R: Resource,\n}\n\nfn main() {\n  const v = Val.R(Resource { .handle = 1 });\n  const r = v.R;\n}`
+    example: `use std.string;\n\nenum Val {\n  N,\n  R: String,\n}\n\nimplement Drop : Val {\n  pub fn drop(self) {}\n}\n\nfn main() {\n  const v = Val.R(String.from("hi"));\n  const r = v.R;\n}`
   },
   {
     code: 'zeen::typecheck::enum_from_int_forbidden',
@@ -951,7 +1003,13 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-comptime',
     message: 'The comptime step budget or recursion depth was exceeded.',
     help: 'Simplify the comptime computation, or reduce recursion depth.',
-    example: `comptime fn fact(n: i32) i32 {\n  if (n <= 1) { return 1; }\n  return n * fact(n - 1);\n}\n\ncomptime big = fact(100000);\n\nfn main() {}`,
+    example: `comptime fn dive(n: comptime_int) comptime_int {
+  return dive(n + 1);
+}
+
+comptime depth = dive(0);
+
+fn main() {}`,
   },
   {
     code: 'zeen::comptime::panic',
@@ -959,7 +1017,17 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-comptime',
     message: 'Comptime panicked with the given message.',
     help: 'Fix the condition that triggered `@panic` in comptime code.',
-    example: `comptime limit = 10;\n\nif (limit <= 0) {\n  @panic("limit must be positive");\n}\n\nfn main() {}`,
+    example: `comptime fn check(limit: comptime_int) comptime_int {
+  if (limit <= 0) {
+    @panic("limit must be positive");
+  }
+
+  return limit;
+}
+
+comptime limit = check(0);
+
+fn main() {}`,
   },
   {
     code: 'zeen::comptime::runtime_only',
@@ -983,7 +1051,9 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-comptime',
     message: 'A `$()` splice is used outside a quoted expression.',
     help: 'Use `$(...)` only inside `@zeen_type`, `@zeen_expr` or `@zeen_decl`.',
-    example: `fn main() {\n  const x = $(1 + 1);\n}`,
+    example: `fn main() {
+  const value: $(1 + 1) = 0;
+}`,
   },
   {
     code: 'zeen::comptime::type_mismatch',
@@ -991,7 +1061,11 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-comptime',
     message: 'The comptime value has a different type than expected.',
     help: 'Check the types of the comptime operands.',
-    example: `fn main() {\n  const items: [9223372036854775807 * 3]u8 = {0};\n\n  @println("{}", items[0]);\n}`,
+    example: `comptime {
+  @emit(1);
+}
+
+fn main() {}`,
   },
   {
     code: 'zeen::comptime::unresolved_ident',
@@ -1007,13 +1081,15 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-comptime',
     message: 'This construct is not supported in comptime.',
     help: 'Rewrite the construct using supported comptime syntax.',
-    example: `comptime x = { .a = 1, .b = 2 };\n\nfn main() {}`,
+    example: `comptime point = .{ .x = 1, .y = 2 };
+
+fn main() {}`,
   },
 
-  /* ============ Dataflow (warnings) ============ */
+  /* ============ Dataflow (errors and warnings) ============ */
   {
     code: 'zeen::dataflow::aliased_drop',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'Dropping a value copied out of a raw pointer while the source may still own it.',
     help: 'Clone the value, borrow it, or free the source storage first.',
@@ -1021,23 +1097,43 @@ export const diagnostics: Diagnostic[] = [
   },
   {
     code: 'zeen::dataflow::escaping_borrow',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
-    message: 'A borrow escapes the value it was taken from.',
-    help: 'Copy the value out, or keep the borrow within the source\'s lifetime.',
-    example: `fn main() {\n  const data = {1, 2, 3};\n  const view = data[..];\n\n  @println("{}", view.len());\n}`,
+    message: 'Returning a value that borrows a local that is dropped when the function returns.',
+    help: 'The slice or pointer points into this function stack frame. Return an owned value instead.',
+    example: `fn first() []const i32 {
+  const data = {1, 2, 3};
+
+  return data[..];
+}
+
+fn main() {
+  @println("{}", first().len());
+}`,
   },
   {
     code: 'zeen::dataflow::maybe_uninitialized_drop',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'The value may be uninitialized at end of scope, cannot drop it.',
     help: 'Ensure every path initializes the value before the scope ends.',
-    example: `fn main() {\n  let value: i32;\n  if (true) {\n    value = 1;\n  }\n}`,
+    example: `use std.string;
+
+fn maybe(flag: bool) {
+  let text: String;
+
+  if (flag) {
+    text = String.from("hi");
+  }
+}
+
+fn main() {
+  maybe(true);
+}`,
   },
   {
     code: 'zeen::dataflow::move_out_of_drop',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'Cannot move out of a field of a struct that implements `Drop`.',
     help: 'Borrow the field, or restructure so the whole value is not dropped.',
@@ -1085,7 +1181,7 @@ export const diagnostics: Diagnostic[] = [
   },
   {
     code: 'zeen::dataflow::use_after_move',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'Use of a moved value.',
     help: 'The value was moved out; borrow or clone it instead.',
@@ -1093,7 +1189,7 @@ export const diagnostics: Diagnostic[] = [
   },
   {
     code: 'zeen::dataflow::use_of_partially_moved',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'Use of a partially moved struct.',
     help: 'Reinitialize all moved fields before using the struct as a whole.',
@@ -1101,11 +1197,11 @@ export const diagnostics: Diagnostic[] = [
   },
   {
     code: 'zeen::dataflow::use_of_uninitialized',
-    severity: 'warning',
+    severity: 'error',
     stage: 'zeen-dataflow',
     message: 'Use of an uninitialized value.',
     help: 'Initialize the value before using it.',
-    example: `fn main() {\n  const value: i32;\n\n  @println("{}", value);\n}`,
+    example: `fn main() {\n  let value: i32;\n\n  @println("{}", value);\n}`,
   },
 
   /* ============ MIR ============ */
@@ -1123,7 +1219,15 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-mir',
     message: 'A generic parameter is not a value.',
     help: 'Use the parameter in a type position only, not as a runtime value.',
-    example: `fn identity[T](value: T) T {\n  return value;\n}\n\nfn main() {\n  const maker: i32 = identity;\n}`,
+    example: `fn make[T](value: T) T {
+  let _ = T;
+
+  return value;
+}
+
+fn main() {
+  @println("{}", make(1));
+}`,
   },
   {
     code: 'zeen::mir::runtime_fat_coercion',
@@ -1131,7 +1235,6 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-mir',
     message: 'A `Fn` pointer cannot be converted into a fat `Fn`/`FnOnce` value at runtime.',
     help: 'Coerce a closure literal directly instead of storing it in a variable first.',
-    example: `fn take(f: Fn() i32) i32 {\n  return f();\n}\n\nfn main() {\n  const f: Fn() i32 = || -> i32 { return 1; };\n\n  @println("{}", take(f));\n}`,
   },
   {
     code: 'zeen::mir::unused_expression_result',
@@ -1177,6 +1280,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'The array length overflows the supported range.',
     help: 'Use a smaller length, or a slice instead of a fixed array.',
+    example: `fn main() {\n  const items: [9223372036854775807 * 3]u8 = @uninit();\n\n  @println("{}", items.len());\n}`,
   },
   {
     code: 'zeen::typechecker::closure_generic_capture',
@@ -1191,6 +1295,7 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'A function returning `Fn`/`FnOnce` must return the same closure from every path.',
     help: 'Closure return types are inferred from the body and must agree.',
+    example: `use std.string;\n\npub fn pick(flag: bool) FnOnce() String {\n  const kept: String = String.from("kept");\n  const other: String = String.from("other");\n\n  if (flag) {\n    return || -> String { return kept; };\n  }\n\n  return || -> String {\n    @println("{}", other.len());\n\n    return String.from("fallback");\n  };\n}\n\nfn main() {}`,
   },
   {
     code: 'zeen::typechecker::dangling_defid',
@@ -1212,6 +1317,15 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'The type has no implementation for this interface.',
     help: 'Implement the interface for the type.',
+    example: `struct Point {
+  x: i32,
+}
+
+fn main() {
+  const p: Point = .{ .x = 1 };
+
+  @println("{}", p);
+}`,
   },
   {
     code: 'zeen::typechecker::impl_slot_mixed',
@@ -1219,6 +1333,17 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'A generic parameter cannot be nested inside a specialized implement slot.',
     help: 'Restructure the implement block so generics are not nested in the slot.',
+    example: `struct Holder[T] {
+  value: T,
+}
+
+implement[T] Holder[*T] {
+  pub fn pointed(*const self) *T {
+    return self.value;
+  }
+}
+
+fn main() {}`,
   },
   {
     code: 'zeen::typechecker::generic_conflict',
@@ -1233,13 +1358,45 @@ export const diagnostics: Diagnostic[] = [
     stage: 'zeen-typecheck',
     message: 'Cannot move a value through a pointer.',
     help: 'Dereference the value from the pointer: `*EXPR`.',
+    example: `interface Take {
+  pub fn take(self) i32;
+}
+
+struct Value {
+  pub n: i32,
+}
+
+implement Take : Value {
+  pub fn take(self) i32 {
+    return self.n;
+  }
+}
+
+fn read[T: Take](v: *T) i32 {
+  return v.take();
+}
+
+fn main() {
+  const v = Value { .n = 1 };
+
+  @println("{}", read(&v));
+}`,
   },
   {
     code: 'zeen::typecheck::associated_call_on_method',
     severity: 'error',
     stage: 'zeen-typecheck',
     message: 'An associated call was found on an instance method.',
-    help: 'Call the method on an instance, or use the associated form.',
+    help: 'Call the method on a value instead: `value.method()`.',
+    example: `implement builtin i32 {
+  pub fn is_even(*const self) bool {
+    return (*self) % 2 == 0;
+  }
+}
+
+fn main() {
+  @println("{}", i32.is_even());
+}`,
   },
   {
     code: 'zeen::resolver::std_not_configured',
