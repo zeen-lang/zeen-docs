@@ -3,6 +3,25 @@ title: Examples
 description: Small programs that use the language end to end.
 ---
 
+## Hello World
+```zeen
+fn main() {
+  @println("Hello, World!");
+}
+```
+
+## Formatting strings
+
+```zn
+fn greet_message(name: []const char) String {
+  return @format("Hello, {}!", name);
+}
+
+fn main() {
+  @println("{}", greet_message("mealet"));
+}
+```
+
 ## Result and switch
 
 ```zn
@@ -24,20 +43,8 @@ fn main() {
 }
 ```
 
-## Formatting strings
-
-```zn
-fn greet_message(name: []const char) String {
-  return @format("Hello, {}!", name);
-}
-
-fn main() {
-  @println("{}", greet_message("mealet"));
-}
-```
-
 ## Structures
-
+### Functions in bodies
 ```zn
 struct Person {
   pub age: u32,
@@ -65,6 +72,76 @@ fn main() {
 }
 ```
 
+### Functions in implements
+```zeen
+struct Person {
+  pub age: u32,
+}
+
+implement Person {
+  pub fn new(age: u32) Self {
+    Self { .age = age }
+  }
+
+  pub fn birthday(*self) {
+    self.age += 1;
+    @println("Happy Birthday!");
+  }
+
+  pub fn get_age(*const self) u32 {
+    return self.age;
+  }
+}
+
+fn main() {
+  let person = Person.new(26);
+
+  person.birthday();
+
+  @println("Current age: {}", person.get_age());
+}
+```
+
+## Enums
+### Without Payloads
+```zeen
+enum Direction {
+  Up,
+  Down,
+  Left,
+  Right
+}
+
+fn main() {
+  @println("{} - {}", @enumTag(Direction.Up), Direction.Up);
+  @println("{} - {}", @enumTag(Direction.Down), Direction.Down);
+  @println("{} - {}", @enumTag(Direction.Left), Direction.Left);
+  @println("{} - {}", @enumTag(Direction.Right), Direction.Right);
+}
+```
+
+### With Payloads
+```zeen
+enum Data {
+  int: i32,
+  float: f32,
+  payload: {
+    number: usize,
+    name: String,
+  }
+}
+
+fn main() {
+  const data = Data.payload { .number = 0, .name = String.from("mealet") };
+
+  switch (data) {
+    .int(value) => @println("int: {}", value),
+    .float(value) => @println("float: {}", value),
+    .payload(payload) => @println("payload: [{}, {}]", payload.number, payload.name)
+  }
+}
+```
+
 ## Generics
 
 ```zn
@@ -78,65 +155,115 @@ fn main() {
 }
 ```
 
-## Extern functions
+## Vector Example
+```zeen
+use std.c.math;
 
-```zn
-extern fn malloc(usize) *void;
-extern fn free(*void);
-
-fn alloc_me[T](count: usize) *T {
-  return @as(*T, malloc(@sizeof(T) * count));
+struct Vec {
+  pub x: f64,
+  pub y: f64,
 }
 
-fn free_me[T](ptr: *T) {
-  free(@as(*void, ptr));
+implement Vec {
+  pub fn new(x: f64, y: f64) Self {
+    .{ .x = x, .y = y }
+  }
+
+  pub fn length(*const self) f64 {
+    return sqrt(self.x * self.x + self.y * self.y);
+  }
+}
+
+implement Add : Vec {
+  alias Output = Self;
+
+  fn add(self, other: Self) Output {
+      .{
+        .x = self.x + other.x,
+        .y = self.y + other.y
+      }
+  }
+}
+
+implement Display : Vec {
+  fn display[T: StrWriter](*const self, out: *T) void {
+    out.write_str("{");
+
+    out.write_str(
+      @format("{:.2}, {:.2}", self.x, self.y)[..]
+    );
+
+    out.write_str("}");
+  }
 }
 
 fn main() {
-  const pointer = alloc_me#[i32](3);
+  const a = Vec.new(1.0, 2.0);
+  const b = Vec.new(5.0, 4.0);
 
-  *pointer = 123;
-  *(pointer + 1) = 321;
-  *(pointer + 2) = 333;
-
-  @println("{} {} {}", *pointer, *(pointer + 1), *(pointer + 2));
-
-  free_me(pointer);
+  @println("{}", a + b);
 }
 ```
 
-## Iterators
+## C Functions
 
 ```zn
-struct Counter {
-  cur: i32,
-  end: i32,
-
-  pub fn until(end: i32) Self {
-    Self { .cur = 0, .end = end }
-  }
-}
-
-implement Iterator : Counter {
-  alias Item = i32;
-
-  fn next(*self) Option[i32] {
-    if (self.cur < self.end) {
-      const output = self.cur;
-      self.cur += 1;
-
-      return Option.Some(output);
-    }
-
-    return Option.None;
-  }
-}
+use std.c.stdlib;
 
 fn main() {
-  const counter = Counter.until(5);
+    const ptr: *i32 = malloc(@sizeof(i32));
+    *ptr = 123;
 
-  for (i : counter) {
-    @println("{}", i);
+    @println("{}", *ptr);
+
+    free(ptr);
+}
+```
+
+## Iterating
+
+```zn
+fn main() {
+  const array = {1, 2, 3, 4};
+
+  for (elem : array) {
+    @println("{}", elem);
+  }
+}
+```
+```zn
+use std.collections.list;
+
+fn main() {
+  const list = List.from({1, 2, 3, 4}[..]);
+
+  for (elem : list.iter()) {
+    @println("{}", *elem);
+  }
+}
+```
+
+## Comptime Engine
+```zn
+comptime fn array_type(n: comptime_int) zeen_type {
+  return @zeen_type([$(n)]i32);
+}
+
+alias Buffer = array_type(3);
+
+fn main() {
+  const values: Buffer = {1, 2, 3};
+  @println("{}", values[0]);
+}
+```
+
+## Meta
+```zn
+fn main() {
+  comptime {
+    for (field : @fields(String)) {
+      @println("{}", field);
+    }
   }
 }
 ```
