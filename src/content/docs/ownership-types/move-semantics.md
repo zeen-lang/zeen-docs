@@ -3,9 +3,9 @@ title: Move Semantics
 description: One owner per value, Copy types, forced Copy, drops and borrowing.
 ---
 
-Every value has one owner. Moving a value hands ownership to the new place, and the old place becomes invalid. `Copy` types skip this and are duplicated instead. Drops use the same rule, so data is released exactly once.
-
 ## Copy and move
+
+Every value has one owner. Moving a value hands ownership to the new place, and the old place becomes invalid. `Copy` types skip this and are duplicated instead. Drops use the same rule, so data is released exactly once.
 
 Builtin scalars are `Copy`. A copy leaves the source usable:
 
@@ -44,7 +44,7 @@ fn main() {
 }
 ```
 
-```
+```text
 zeen::dataflow::use_after_move
 
   x use of moved value `lang`
@@ -146,7 +146,7 @@ This prints `first second`, then `drop second` and `drop first`. Without an expl
 
 ## Discarding
 
-`let _ = value;` discards a value without dropping it. The bindings `_name` and `_` differ:
+`let _ = value;` discards a value without keeping a name. When the value is an existing binding, moving it into `_` forgets it and no drop runs:
 
 ```zn
 struct Noisy {
@@ -169,7 +169,12 @@ fn main() {
 }
 ```
 
-`leaked` never drops, since `let _ =` releases nothing. `_kept` drops at the end of `main`, printing `drop kept`.
+```text
+done
+drop kept
+```
+
+`leaked` never drops, since `let _ =` releases nothing. `_kept` drops at the end of `main`, printing `drop kept`. A temporary bound to `_` still drops when its scope ends.
 
 Inside a switch, a bare `_` payload binding moves the payload into a dead local and drops it right away. That is a hard error for a payload that needs a drop (`zeen::mir::discard_drop_payload`), so use `&_` to discard by borrow. [Switch](/functions-closures/switch/) covers both forms.
 

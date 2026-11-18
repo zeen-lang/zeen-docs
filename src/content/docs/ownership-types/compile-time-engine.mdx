@@ -211,8 +211,7 @@ comptime {
   }
 }
 
-fn main() {
-}
+fn main() {}
 ```
 
 A `Field` record holds `index`, `name` and `ty`. A `Variant` record holds `index`, `name` and `payload`, which is `none` or `value`. Reflection macros work only inside comptime. `@variantNames` and `@variantCount` are runtime macros, covered on [Builtin Macros](/language-basics/macros-builtin/).
@@ -240,8 +239,14 @@ A comptime value is one of:
 - an array of the above
 - `void`, as a return type
 
-Runtime types such as `i32`, `f64` or `String` are rejected in comptime signatures and local annotations (`zeen::comptime::runtime_type`). `@uninit` reports `zeen::comptime::runtime_only`, and `@void()` is gone entirely. Only the empty `.{ }` form is evaluated at comptime.
+Runtime types such as `i32`, `f64` or `String` are rejected in comptime signatures and local annotations with `zeen::comptime::runtime_type`. `@uninit` reports `zeen::comptime::runtime_only` with the message `` `@uninit` is not available in comptime``. `@void()` has been removed (`zeen::typechecker::void_macro_removed`) and only the empty `.{ }` form is evaluated at comptime.
 
 ## Limits
 
-The interpreter has a step budget and a recursion depth limit. Exceeding either one is a compile error with the code `zeen::comptime::limit_exceeded`.
+The interpreter has a step budget and a recursion depth limit. Exceeding either one is a compile error with the code `zeen::comptime::limit_exceeded`:
+
+```text
+zeen::comptime::limit_exceeded
+
+  × comptime evaluation depth limit exceeded
+```

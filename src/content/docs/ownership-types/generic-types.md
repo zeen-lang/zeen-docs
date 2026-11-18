@@ -33,7 +33,7 @@ Box[i32]
 Box[f64]
 ```
 
-In a value position a static method usually infers the arguments. An explicit form exists when inference is not enough:
+An explicit type argument in `#[...]` pins inference when it is not enough:
 
 ```zn
 struct Box[T] {
@@ -103,7 +103,7 @@ Block order in the file does not matter, and the methods are visible across the 
 
 ## Bounds
 
-A bound restricts which types pass. A concrete argument must implement the interface. A generic argument must declare the bound in scope:
+A bound restricts which types pass. A concrete argument must implement the interface:
 
 ```zn
 fn min[T: Ord](a: T, b: T) T {
@@ -169,7 +169,7 @@ fn main() {
 
 ## Where
 
-A `where` clause holds the bounds of a long signature. It starts on its own line, indented two spaces below the signature:
+A `where` clause holds the bounds of a long signature. It starts on its own line:
 
 ```zn
 fn first[T](items: []const T) T
@@ -179,7 +179,7 @@ fn first[T](items: []const T) T
 }
 ```
 
-With two or more clauses the keyword stands alone and each clause gets four spaces:
+With two or more clauses the keyword stands alone and each clause is indented:
 
 ```zn
 fn pair_up[T, E](left: T, right: E) T
@@ -252,7 +252,7 @@ fn main() {
 }
 ```
 
-When nothing pins the generic argument, the binding needs an annotation. Without one the compiler reports `zeen::typechecker::cannot_infer_generic`.
+When nothing pins the generic argument, the binding needs an annotation. Without one the compiler reports `zeen::typechecker::cannot_infer_generic`:
 
 ```zn
 struct Slot[T] {
@@ -265,6 +265,20 @@ implement[T] Slot[T] {
   }
 }
 
+fn main() {
+  const slot = Slot.empty();
+}
+```
+
+```text
+zeen::typechecker::cannot_infer_generic
+
+  × cannot infer `T` generic type
+```
+
+An annotation pins it:
+
+```zn
 fn main() {
   const slot: Slot[i32] = Slot.empty();
 
