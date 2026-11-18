@@ -1,6 +1,7 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { getCollection, render } from 'astro:content';
+import Icon from '../../components/Icon.astro';
 
 export async function getStaticPaths() {
   const releases = await getCollection(
@@ -34,7 +35,8 @@ const isLatest = latest.id === release.id;
 >
   <article class="zn-changelog">
     <a class="zn-back" href="/changelog/">
-      <span aria-hidden="true">←</span> All releases
+      <Icon name="arrow_back" size={16} />
+      All releases
     </a>
 
     <div class="zn-release-meta">
@@ -64,20 +66,20 @@ const isLatest = latest.id === release.id;
 
 <style is:global>
   main:has(.zn-changelog) > .content-panel > .sl-container {
-    max-width: 52rem;
+    max-width: 48rem;
   }
 
   main:has(.zn-changelog) > .content-panel:first-child h1 {
     margin: 0;
-    font-size: clamp(34px, 4vw, 44px);
+    font-size: clamp(34px, 4vw, 48px);
     line-height: 1.1;
     font-weight: 500;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     color: var(--sl-color-white);
   }
 
   .zn-changelog {
-    padding-top: 1.5rem;
+    padding-top: 1.75rem;
     padding-bottom: 4rem;
   }
 
@@ -85,45 +87,52 @@ const isLatest = latest.id === release.id;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-family: var(--zn-mono);
-    font-size: 12px;
-    line-height: 18px;
-    color: var(--sl-color-gray-3);
+    height: 32px;
+    margin-left: -10px;
+    padding: 0 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--sl-color-gray-2);
     text-decoration: none;
-    transition: color var(--zn-fast) var(--zn-ease);
+    transition:
+      background-color var(--zn-fast) var(--zn-ease),
+      color var(--zn-fast) var(--zn-ease);
   }
 
   .zn-back:hover {
+    background-color: rgb(244 244 245 / 0.06);
     color: var(--sl-color-gray-1);
   }
 
   .zn-back:focus-visible {
-    outline: 2px solid var(--sl-color-accent-high);
-    outline-offset: 3px;
-    border-radius: 2px;
+    outline: 2px solid var(--zn-primary);
+    outline-offset: 2px;
   }
 
   .zn-release-meta {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 24px;
-    font-family: var(--zn-mono);
-    font-size: 12px;
-    line-height: 18px;
-    color: var(--sl-color-gray-4);
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 20px;
+    color: var(--sl-color-gray-3);
   }
 
   .zn-release-latest {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 1px 8px;
-    border: 1px solid rgb(147 219 182 / 0.24);
+    height: 24px;
+    padding: 0 10px;
     border-radius: 999px;
-    font-size: 11px;
-    line-height: 16px;
-    color: var(--sl-color-accent-high);
+    background-color: var(--zn-primary-soft);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 500;
+    color: var(--zn-primary-high);
   }
 
   .zn-release-latest::before {
@@ -131,7 +140,7 @@ const isLatest = latest.id === release.id;
     width: 5px;
     height: 5px;
     border-radius: 999px;
-    background-color: var(--sl-color-accent-high);
+    background-color: var(--zn-primary);
   }
 
   .zn-release-lead {
@@ -143,12 +152,13 @@ const isLatest = latest.id === release.id;
   }
 
   .zn-rule {
-    margin: 28px 0 32px;
+    margin: 28px 0 0;
     border: 0;
     border-top: 1px solid var(--zn-hairline);
   }
 
   .zn-release-content {
+    padding-top: 24px;
     color: var(--sl-color-gray-2);
     font-size: 15px;
     line-height: 26px;
@@ -159,12 +169,13 @@ const isLatest = latest.id === release.id;
   }
 
   .zn-release-content h2 {
-    margin: 40px 0 12px;
+    margin: 44px 0 12px;
     font-size: 24px;
     line-height: 32px;
     font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--sl-color-gray-1);
+    letter-spacing: -0.015em;
+    color: var(--sl-color-white);
+    scroll-margin-top: 6rem;
   }
 
   .zn-release-content h3 {
@@ -173,6 +184,7 @@ const isLatest = latest.id === release.id;
     line-height: 26px;
     font-weight: 500;
     color: var(--sl-color-gray-1);
+    scroll-margin-top: 6rem;
   }
 
   .zn-release-content p,
@@ -181,20 +193,60 @@ const isLatest = latest.id === release.id;
     line-height: 26px;
   }
 
+  .zn-release-content ul,
+  .zn-release-content ol {
+    padding-left: 1.4em;
+  }
+
+  .zn-release-content li + li {
+    margin-top: 4px;
+  }
+
+  .zn-release-content strong {
+    font-weight: 500;
+    color: var(--sl-color-gray-1);
+  }
+
   .zn-release-content a {
     color: var(--sl-color-accent-high);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 
+  .zn-release-content a:hover {
+    color: var(--zn-primary);
+  }
+
   .zn-release-content code:not(:where(.expressive-code code)) {
-    padding: 1px 5px;
+    padding: 1px 6px;
     border: 1px solid var(--zn-hairline);
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: var(--zn-surface-raised);
     font-family: var(--zn-mono);
     font-size: 0.86em;
     color: var(--sl-color-gray-1);
+  }
+
+  .zn-release-content .expressive-code {
+    --ec-brdRad: 9px;
+  }
+
+  .zn-release-content .expressive-code .copy button {
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .zn-release-content .expressive-code .copy button div {
+    background-color: rgb(244 244 245 / 0.12);
+    opacity: 0;
+  }
+
+  .zn-release-content .expressive-code .copy button::before {
+    border-color: transparent;
+  }
+
+  .zn-release-content .expressive-code .copy button:hover div {
+    opacity: 1;
   }
 
   .zn-release-content .expressive-code pre {
@@ -205,11 +257,20 @@ const isLatest = latest.id === release.id;
   @media (max-width: 50rem) {
     .zn-changelog {
       padding-top: 1rem;
-      padding-bottom: 2rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .zn-release-lead {
+      font-size: 16px;
+      line-height: 25px;
     }
 
     .zn-rule {
-      margin: 24px 0;
+      margin-top: 24px;
+    }
+
+    .zn-release-content h2 {
+      margin-top: 36px;
     }
   }
 </style>
