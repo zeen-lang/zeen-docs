@@ -3,23 +3,48 @@ title: Constructs
 description: Calls, blocks, conditionals and loops, including loop updates, else branches and labels.
 ---
 
+Statements run in order inside a function body. This page covers the shapes a statement can take: calling something, grouping statements in a block, branching with `if`, looping with `while` and `for`, and leaving early with `return`, `break` and `continue`.
+
 ## Calls
 
 A call names a callee and passes arguments in parentheses:
 
 ```zn
-foo("hello");
-@println("hello");
-Foo.new("hello");
-instance.method("hello");
+fn greet(name: []const char) {
+  @println("hello, {}", name);
+}
+
+fn main() {
+  greet("world");
+}
 ```
 
-A call is an expression when the callee returns a value. A function value is called the same way:
+A call is an expression when the callee returns a value:
 
 ```zn
-const func: fn(i32) void = foo;
+fn double(x: i32) i32 {
+  return x * 2;
+}
 
-func(123);
+fn main() {
+  const twice = double(21);
+
+  @println("{}", twice);
+}
+```
+
+Constructors and methods use the same parentheses: `Person.new("ada")` calls a function inside an `implement` block, `person.name()` calls a method on a value. [Structures and Methods](/functions-closures/structures-and-methods/) covers both. A function value is called the same way:
+
+```zn
+fn foo(x: i32) void {
+  @println("{}", x);
+}
+
+fn main() {
+  const func: fn(i32) void = foo;
+
+  func(123);
+}
 ```
 
 ## Blocks
@@ -27,52 +52,62 @@ func(123);
 A block groups statements:
 
 ```zn
-{
-  let a = 1;
-  let b = 2;
+fn main() {
+  {
+    const a = 1;
+    const b = 2;
 
-  @println("{}", a + b);
+    @println("{}", a + b);
+  }
+
+  @println("done");
 }
 ```
 
-A block is not a general value. Inside an expression a leading `{` is an array literal, so `let a = { 123 };` builds a one element array. A function body is the exception: its trailing expression is the return value, and an explicit `return` works as well.
+Braces carry a second meaning in Zeen. In statement position `{ ... }` is a block, and in expression position it starts an array literal, so a block cannot be used as a value: `const a = { 123 };` builds a one element array. The function body is the only place where the last expression becomes the return value.
 
-The trailing semicolon after `if`, `while`, `for`, `switch` or a bare block is optional inside a block.
+The semicolon after a block statement is optional. `if`, `while`, `for`, `switch` and a bare `{ ... }` do not need a `;`, and this page never writes one.
 
 ## Conditions
 
-`if` takes a condition and a body:
+`if` takes a condition in parentheses and a body:
 
 ```zn
-if (condition) {
-  statements
+fn main() {
+  const a = 5;
+
+  if (a == 5) {
+    @println("five");
+  } else if (a == 6) {
+    @println("six");
+  } else {
+    @println("other");
+  }
 }
 ```
 
-The body can be one statement, and `else` adds the alternative:
+The body can be a single statement without braces, and `else` adds the alternative:
 
 ```zn
-if (a == 5) @println("five") else @println("other");
+fn main() {
+  const a = 5;
+
+  if (a == 5) @println("five") else @println("other");
+}
 ```
 
-`if` is an expression, so it can produce a value. A chain of conditions uses `else if`:
+`if` is an expression when both branches produce a value:
 
 ```zn
 fn main() {
   const a = 5;
   const conditional = if (a == 5) 123 else 321;
 
-  if (conditional == 123) {
-    @println("first");
-  } else if (conditional == 321) {
-    @println("second");
-  } else {
-    @println("other");
-  };
+  @println("{}", conditional);
 }
 ```
 
-`switch` is the multi-branch counterpart. [Switch](/functions-closures/switch/) covers patterns, ranges and enum arms.
+`switch` is the multi-branch counterpart for more than two cases. [Switch](/functions-closures/switch/) covers patterns, ranges and enum arms.
 
 ## `while`
 
@@ -86,7 +121,7 @@ fn main() {
     @println("{}", i);
 
     i += 1;
-  };
+  }
 }
 ```
 
@@ -100,14 +135,14 @@ fn main() {
   while (i < 6) : (i += 1) {
     if (i == 2) {
       continue;
-    };
+    }
 
     if (i == 5) {
       break;
-    };
+    }
 
     sum += i;
-  };
+  }
 
   @println("{} {}", i, sum);
 }
@@ -125,15 +160,17 @@ The update is one assignment, compound assignment or expression without a semico
 fn main() {
   for (i : 0..=5) {
     @println("{}", i);
-  };
+  }
 }
 ```
 
 `0..5` stops before the right bound and `0..=5` includes it. A bare integer walks the range up to that value:
 
 ```zn
-for (i : 5) {
-  @println("{}", i);
+fn main() {
+  for (i : 5) {
+    @println("{}", i);
+  }
 }
 ```
 
@@ -145,7 +182,7 @@ fn main() {
 
   for (x : items) {
     @println("{}", x);
-  };
+  }
 }
 ```
 
@@ -162,10 +199,10 @@ fn main() {
     if (x == target) {
       @println("found");
       break;
-    };
+    }
   } else {
     @println("not found");
-  };
+  }
 }
 ```
 
@@ -183,19 +220,19 @@ fn main() {
     for (j : 0..3) {
       if (j == 1) {
         continue :outer;
-      };
+      }
 
       if (i == 2) {
         break :outer;
-      };
+      }
 
       @println("{} {}", i, j);
-    };
-  };
+    }
+  }
 }
 ```
 
-`continue :outer` on a `while` runs that loop's update, and on a `for` it moves to the next element. An unlabeled `break` or `continue` targets the nearest loop.
+`continue :outer` on a `while` runs that loop's update, and on a `for` it moves to the next element. An unlabeled `break` or `continue` targets the nearest loop. Duplicate labels on nested loops are `zeen::typechecker::duplicate_loop_label`, and an unknown one is `zeen::typechecker::unknown_loop_label`.
 
 ## Program flow
 
@@ -205,6 +242,10 @@ fn main() {
 fn answer() i32 {
   return 123 + 321 * 2;
 }
+
+fn main() {
+  @println("{}", answer());
+}
 ```
 
 A function whose body ends with an expression returns that expression, so the same function can drop the keyword:
@@ -212,6 +253,10 @@ A function whose body ends with an expression returns that expression, so the sa
 ```zn
 fn answer() i32 {
   123 + 321 * 2
+}
+
+fn main() {
+  @println("{}", answer());
 }
 ```
 
@@ -222,14 +267,14 @@ fn main() {
   for (i : 10) {
     if (i == 6) {
       break;
-    };
+    }
 
     if (i == 2) {
       continue;
-    };
+    }
 
     @println("{}", i);
-  };
+  }
 }
 ```
 

@@ -1,9 +1,9 @@
 ---
 title: Builtin Macros
-description: Compiler macros for casts, sizes, printing, panics, enums and comptime.
+description: Compiler macros for casts, sizes, printing, panics and enums.
 ---
 
-Compiler macros use `@name(...)` syntax and are built into the compiler.
+A macro is written `@name(...)` and handled by the compiler itself. It is not a function: no import provides it, it cannot be redefined, and its arguments are checked with rules that a function signature cannot express. `@as` reads a type as its first argument, `@sizeof` accepts a type or a value and `@panic` takes a format string, which is why these live outside the ordinary call syntax.
 
 ## Values and types
 
@@ -18,7 +18,7 @@ fn main() {
 }
 ```
 
-Pointers and function values cast between each other through `@as`. Enum casts follow the rules on [Enums](/functions-closures/enums/): an int to a value-carrying enum is not allowed.
+Pointers and function values cast between each other through `@as`. Enum casts follow the rules on [Enums](/functions-closures/enums/): an integer becomes an empty enum value, while a variant that carries a payload cannot be built that way.
 
 `@sizeof(T)` and `@alignof(T)` give the size and alignment of a type. Both return `usize` at runtime and `comptime_int` in comptime:
 
@@ -41,7 +41,9 @@ fn main() {
 }
 ```
 
-`@uninit()` produces an uninitialized value of the expected type. Fill it before reading, since reading a field that was never written is undefined behavior:
+`@typename(typeof value)` is the usual way to ask what the compiler inferred for a binding.
+
+`@uninit()` produces an uninitialized value of the expected type. Fill every field before reading, since a read of a field that was never written is undefined behavior:
 
 ```zn
 struct Pair {
@@ -65,6 +67,8 @@ fn main() {
 }
 ```
 
+The expected type comes from the annotation, so `@uninit()` needs one. It exists for cases a literal cannot express, such as a large array filled field by field.
+
 ## Printing
 
 | Macro | Returns | Behavior |
@@ -74,17 +78,17 @@ fn main() {
 | `@format(fmt, ...)` | `String` | builds a heap string |
 | `@dbg(expr)` | the value of `expr` | prints `[file:line]> \`expr\` = value` in Debug builds |
 
-The format string has to be a literal. `@dbg` prints nothing in Release and returns the value unchanged. [Printing and Formatting](/language-basics/printing-formatting/) covers the specifiers and the `Display` and `Debug` interfaces.
+The format string has to be a literal, because the specifiers are checked at compile time. `@dbg` prints nothing in Release and returns the value unchanged. [Printing and Formatting](/language-basics/printing-formatting/) covers the specifiers and the `Display` and `Debug` interfaces.
 
 ## Panics
 
-`@panic(fmt, ...)` stops the program with a message and has the `never` type. The message takes the same literal format string as `@println`. `@unreachable()` and `@todo()` panic with fixed messages:
+`@panic(fmt, ...)` stops the program with a message and has the `never` type. The message takes the same literal format string as `@println`:
 
 ```zn
 fn check(value: i32) i32 {
   if (value < 0) {
     @panic("negative value: {}", value);
-  };
+  }
 
   return value;
 }
@@ -94,7 +98,7 @@ fn main() {
 }
 ```
 
-`@unreachable()` reports `entered unreachable code`. `@todo()` reports `not implemented yet`.
+`@unreachable()` reports `entered unreachable code` and `@todo()` reports `not implemented yet`. Both have the `never` type, so they fit in a branch that would otherwise need to return a value.
 
 ## Enums
 
@@ -113,133 +117,13 @@ fn main() {
 }
 ```
 
-`@variantNames` and `@variantCount` work on enums with payloads as well as empty ones.
-
-## Void
-
-`@void()` no longer exists and reports `zeen::typechecker::void_macro_removed`. Use `.{ }` for a void value or an empty struct initialization:
-
-```zn
-fn log() void {
-  return .{ };
-}
-
-fn main() {
-  log();
-}
+```text
+1 3
+{"red", "green", "blue"}
 ```
 
-`Result.Ok(.{ })` builds the success side of `Result[void, E]`.
+`@variantNames` and `@variantCount` work on enums with payloads as well as empty ones. [Enums](/functions-closures/enums/) covers the tag representation.
 
-## Comptime macros
+## Compile-time macros
 
-| Macro | Returns |
-|---|---|
-| `@zeen_type(T)` | `zeen_type`, a captured type |
-| `@zeen_expr(expr)` | `zeen_expr`, a captured expression |
-| `@zeen_decl(decl)` | `zeen_decl`, a captured declaration |
-| `@emit(decl)` | `void`, emits a captured declaration |
-| `@fresh_name(prefix)` | `comptime_str`, a unique name |
-| `@fields(T)` | array of `Field` records |
-| `@variants(T)` | array of `Variant` records |
-| `@typeInfo(T)` | `comptime_str`, `struct` or `enum` |
-| `@hasField(T, name)` | `bool` |
-| `@fieldType(T, name)` | the field type |
-
-A captured type works as an alias, and `$(...)` splices comptime values into the captured syntax:
-
-```zn
-comptime fn array_type(n: comptime_int) zeen_type {
-  return @zeen_type([$(n)]i32);
-}
-
-alias Buffer = array_type(3);
-
-fn main() {
-  const values: Buffer = {1, 2, 3};
-
-  @println("{}", values[1]);
-}
-```
-
-`@zeen_expr` captures an expression that `$(...)` later inserts into code:
-
-```zn
-comptime fn twice(n: comptime_int) zeen_expr {
-  return @zeen_expr($(n) + $(n));
-}
-
-comptime Captured = @zeen_expr(1 + 2);
-
-fn main() {
-  const sum = $(Captured);
-  const four = $(twice(2));
-
-  @println("{} {}", sum, four);
-}
-```
-
-`@zeen_decl` captures a declaration, `@emit` splices it into the enclosing declaration scope, and `@fresh_name` mints a new name:
-
-```zn
-comptime fn named_struct(name: comptime_str) zeen_decl {
-  @zeen_decl(
-    pub struct $(name) {
-      pub value: i32
-    }
-  );
-}
-
-comptime {
-  @emit(named_struct("Alpha"));
-
-  for (i : 0..2) {
-    let name = @fresh_name("Item");
-
-    @emit(@zeen_decl(
-      pub struct $(name) {
-        pub index: i32
-      }
-    ));
-  }
-}
-
-fn main() {
-  const alpha = Alpha { .value = 10 };
-  const second = Item_1 { .index = 2 };
-
-  @println("{} {}", alpha.value, second.index);
-}
-```
-
-Reflection macros read a type at comptime:
-
-```zn
-struct Point {
-  pub x: i32,
-  pub y: i64,
-}
-
-enum Shape {
-  empty,
-  circle: f64,
-}
-
-comptime {
-  @println("{}", @typeInfo(Point));
-  @println("{} {}", @hasField(Point, "x"), @fieldType(Point, "y"));
-
-  for (field : @fields(Point)) {
-    @println("{}: {}", field.name, field.ty);
-  }
-
-  for (variant : @variants(Shape)) {
-    @println("{} {}", variant.name, variant.payload);
-  }
-}
-
-fn main() {
-}
-```
-
-A `Field` record holds `index`, `name` and `ty`. A `Variant` record holds `index`, `name` and `payload`, where `payload` is `none` or `value`.
+A second group runs only inside comptime code and produces types, expressions or declarations: `@zeen_type`, `@zeen_expr`, `@zeen_decl`, `@emit`, `@fresh_name`, and the reflection macros `@fields`, `@variants`, `@typeInfo`, `@hasField` and `@fieldType`. Outside comptime they report `zeen::typechecker::unknown_macro`. [Compile Time Engine](/ownership-types/compile-time-engine/) covers them with the interpreter that runs them.

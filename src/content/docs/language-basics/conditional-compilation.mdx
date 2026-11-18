@@ -3,20 +3,27 @@ title: Conditional Compilation
 description: Target and mode directives for declarations, statements and expressions.
 ---
 
-Directives pick code by target and mode. They work at three levels: declarations, statements and expressions. Non-matching branches never reach resolve and typecheck.
+A directive keeps code for one target or one build mode and removes the rest. The preprocessor runs before the resolver, so a branch that does not match never reaches name resolution or typechecking. Code for another platform can name functions and types that do not exist on this one.
 
 ## Directives
-| Directive | Values | Description |
-|-----------|--------|-------------|
-| `@os` | `linux`, `windows`, `darwin`, `freebsd`, `android`, `wasip1` | Target OS |
-| `@arch` | `x86_64`, `aarch64`, `i686`, `wasm32`, `wasm64` | Target CPU |
-| `@env` | `gnu`, `musl`, `msvc`, `android` | Target environment |
-| `@target` | full triple | Exact target triple |
-| `@family` | `unix`, `windows`, `wasm` | Platform family |
-| `@debug` | none | Debug mode |
-| `@release` | none | Release mode |
 
-Values with `|` mean OR. Directives chain with `else`:
+| Directive | Values |
+|---|---|
+| `@os` | `linux`, `darwin`, `windows`, `freebsd`, `android`, `wasip1`, `unknown` |
+| `@arch` | `x86_64`, `aarch64`, `i686`, `wasm32` |
+| `@env` | `gnu`, `musl`, `msvc` |
+| `@target` | the full triple, such as `x86_64-unknown-linux-gnu` |
+| `@family` | `unix`, `windows`, `wasm` |
+| `@debug`, `@release` | no value |
+
+The values come straight from the target triple. `wasm32-unknown-wasip1` reports `@os[wasip1]` and `wasm32-unknown-unknown` reports `@os[unknown]`; both report `@arch[wasm32]` and `@family[wasm]`. `@target` matches the whole triple, which is the way to separate two targets that share the other values. `@debug` and `@release` follow `--mode` and take no brackets.
+
+Several values in one bracket are alternatives, separated by `|` or a comma.
+
+## Declarations
+
+A directive wraps declarations and takes an `else` chain:
+
 ```zn
 @os[linux] {
   fn platform() i32 {
@@ -33,35 +40,63 @@ else {
     return 3;
   }
 }
-```
 
-Statements flatten inline, expressions pick a branch value:
-```zn
-@os[linux] {
-  @println("linux");
+fn main() {
+  @println("{}", platform());
 }
-
-let threads = @debug { 1 } else { 8 };
 ```
 
-## Variables
-`@var[...]` becomes a literal for the current target:
+The bare `else` catches every target the earlier blocks did not match. The chain stops at the first match, and exactly one `platform` reaches the resolver, so the other two never conflict with it.
 
-| Variable | Literal |
-|----------|---------|
-| `@var[os]` | string |
-| `@var[arch]` | string |
-| `@var[env]` | string |
-| `@var[target]` | string |
-| `@var[family]` | string |
-| `@var[debug]` | bool |
-| `@var[release]` | bool |
+## Statements and expressions
+
+Inside a function a directive wraps statements, and the matching block is spliced in place:
 
 ```zn
 fn main() {
-  let os = @var[os];
-  let arch = @var[arch];
+  @os[linux] {
+    @println("linux");
+  }
 
-  @println("You're on: {} {}", os, arch);
+  @os[windows] {
+    @println("windows");
+  }
 }
 ```
+
+An expression directive chooses a value, which suits a constant that differs per mode:
+
+```zn
+fn main() {
+  const threads = @debug { 1 } else { 8 };
+
+  @println("{}", threads);
+}
+```
+
+The brackets stay empty for `@debug` and `@release`, and both forms accept `else`.
+
+## Values
+
+`@var[...]` becomes a literal for the current build, so a program can report what it was compiled for:
+
+```zn
+fn main() {
+  const os = @var[os];
+  const arch = @var[arch];
+  const release = @var[release];
+
+  @println("{} {} release={}", os, arch, release);
+}
+```
+
+| Variable | Becomes |
+|---|---|
+| `@var[os]`, `@var[arch]`, `@var[env]`, `@var[family]`, `@var[target]` | a string literal, `[]const char` |
+| `@var[debug]`, `@var[release]` | `bool` |
+
+The values follow the same table as the directives. `@var[target]` is the full triple, so it can go into a log line without a separate per-target constant.
+
+## In the standard library
+
+The C bindings in `std.c` rely on these directives, because a libc struct or constant rarely has the same shape on two systems. A declaration block picks the Linux layout, the Darwin layout or the FreeBSD layout, and only one of them is compiled. [std.c overview](/library/std/c/overview/) lists the modules, and [Linking](/toolchain/linking/) covers the `--target` flag that selects the triple in the first place.
