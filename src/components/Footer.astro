@@ -17,7 +17,11 @@ const repo = `${org}/zeen`;
 
 	<div class="zn-footer__bottom">
 		<p class="zn-footer__brand">
-			<span>Zeen</span>
+			<a class="zn-footer__home" href="/">
+				<img src="/Zeen.png" alt="" width="18" height="18" />
+				<span>Zeen</span>
+			</a>
+
 			<a class="zn-footer__license" href={`${repo}/blob/main/LICENSE`}>Apache 2.0</a>
 		</p>
 
@@ -37,7 +41,7 @@ const repo = `${org}/zeen`;
 		margin-top: 2.5rem;
 		padding-top: 1.5rem;
 		border-top: 1px solid var(--zn-hairline);
-		font-size: var(--sl-text-sm);
+		font-size: 13px;
 		color: var(--sl-color-gray-3);
 	}
 
@@ -66,48 +70,90 @@ const repo = `${org}/zeen`;
 	.zn-footer__brand {
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 12px;
 		margin: 0;
-		font-family: var(--zn-mono);
-		font-size: 12px;
-		line-height: 18px;
-		color: var(--sl-color-gray-3);
 	}
 
-	.zn-footer__license {
-		color: var(--sl-color-gray-3);
+	.zn-footer__home {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		height: 26px;
+		/* optical: the wordmark's caps sit low against the licence pill */
+		transform: translateY(-1px);
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 20px;
+		color: var(--sl-color-gray-1);
 		text-decoration: none;
 		transition: color var(--zn-fast) var(--zn-ease);
 	}
 
+	.zn-footer__home:hover {
+		color: var(--sl-color-white);
+	}
+
+	.zn-footer__home img {
+		display: block;
+		width: 18px;
+		height: 18px;
+	}
+
+	.zn-footer__license {
+		display: inline-flex;
+		align-items: center;
+		height: 26px;
+		padding: 0 10px;
+		border: 1px solid var(--zn-hairline-strong);
+		border-radius: 999px;
+		font-family: var(--zn-mono);
+		font-size: 11px;
+		line-height: 1;
+		color: var(--sl-color-gray-3);
+		text-decoration: none;
+		transition:
+			background-color var(--zn-fast) var(--zn-ease),
+			border-color var(--zn-fast) var(--zn-ease),
+			color var(--zn-fast) var(--zn-ease);
+	}
+
 	.zn-footer__license:hover {
-		color: var(--sl-color-gray-2);
+		background-color: rgb(244 244 245 / 0.06);
+		border-color: rgb(244 244 245 / 0.24);
+		color: var(--sl-color-gray-1);
 	}
 
 	.zn-footer__links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px 20px;
-		font-family: var(--zn-mono);
-		font-size: 12px;
-		line-height: 18px;
+		gap: 4px;
 	}
 
 	.zn-footer__links a {
-		color: var(--sl-color-gray-3);
+		display: inline-flex;
+		align-items: center;
+		height: 32px;
+		padding: 0 10px;
+		border-radius: 8px;
+		font-size: 13px;
+		line-height: 20px;
+		color: var(--sl-color-gray-2);
 		text-decoration: none;
-		transition: color var(--zn-fast) var(--zn-ease);
+		transition:
+			background-color var(--zn-fast) var(--zn-ease),
+			color var(--zn-fast) var(--zn-ease);
 	}
 
 	.zn-footer__links a:hover {
+		background-color: rgb(244 244 245 / 0.06);
 		color: var(--sl-color-gray-1);
 	}
 
+	.zn-footer__home:focus-visible,
 	.zn-footer__license:focus-visible,
 	.zn-footer__links a:focus-visible {
-		outline: 2px solid var(--sl-color-accent-high);
-		outline-offset: 3px;
-		border-radius: 2px;
+		outline: 2px solid var(--zn-primary);
+		outline-offset: 2px;
 	}
 
 	@media (max-width: 50rem) {
@@ -115,6 +161,13 @@ const repo = `${org}/zeen`;
 			align-items: flex-start;
 			flex-direction: column;
 			gap: 12px;
+		}
+
+		.zn-footer__links {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			width: 100%;
+			gap: 2px;
 		}
 	}
 </style>

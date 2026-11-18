@@ -1,21 +1,27 @@
 ---
 import CopyButton from './CopyButton.astro';
+import Icon from './Icon.astro';
 import { latestRelease } from '../lib/release';
 
 const version = await latestRelease();
 const releaseUrl = `https://github.com/zeen-lang/zeen/releases/tag/${version}`;
 ---
 
-<div class="zn-install">
-	<div class="zn-install__meta">
-		<a class="zn-install__version" href={releaseUrl}>{version}</a>
-		<span class="zn-install__dot" aria-hidden="true"></span>
-		<a class="zn-install__changelog" href="/changelog/">See Changelog</a>
+<section class="zn-install">
+	<div class="zn-install__head">
+		<Icon name="terminal" size={20} class="zn-install__icon" />
+		<h2 class="zn-install__title">Quick installation</h2>
+
+		<div class="zn-install__meta">
+			<a class="zn-chip" href={releaseUrl}>{version}</a>
+			<a class="zn-install__changelog" href="/changelog/">
+				Changelog
+				<Icon name="chevron_right" size={16} />
+			</a>
+		</div>
 	</div>
 
 	<div class="zn-install__row">
-		<span class="zn-marker" aria-hidden="true">›</span>
-
 		<div class="zn-install__body">
 			<div class="zn-install__command" data-install-command="unix">
 				<code id="install-unix">curl -fsSL https://github.com/zeen-lang/zeen/releases/latest/download/install.sh | sh</code>
@@ -28,7 +34,7 @@ const releaseUrl = `https://github.com/zeen-lang/zeen/releases/tag/${version}`;
 
 		<CopyButton target="#install-unix" label="Copy install command" />
 	</div>
-</div>
+</section>
 
 <script is:inline>
 	(() => {
@@ -39,6 +45,6 @@ const releaseUrl = `https://github.com/zeen-lang/zeen/releases/tag/${version}`;
 		if (!unix || !windows || !button) return;
 		unix.parentElement.hidden = true;
 		windows.parentElement.hidden = false;
-		button.dataset.copyTarget = '#install-windows';
+		button.setAttribute('data-copy-target', '#install-windows');
 	})();
 </script>

@@ -74,10 +74,10 @@ pub fn fail_test() {
 }`;
 
 const examples = [
-	{ id: 'result', label: 'Result And Switch', code: resultCode },
-	{ id: 'comptime', label: 'Comptime Engine', code: comptimeCode },
+	{ id: 'result', label: 'Result and switch', code: resultCode },
+	{ id: 'comptime', label: 'Comptime', code: comptimeCode },
 	{ id: 'json', label: 'Parse JSON', code: jsonCode },
-	{ id: 'zora', label: 'Zora Tests', code: zoraCode },
+	{ id: 'zora', label: 'Zora tests', code: zoraCode },
 ];
 
 const panels = await Promise.all(
@@ -90,7 +90,6 @@ const panels = await Promise.all(
 
 <figure class="zn-window">
 	<div class="zn-window__bar">
-		<span class="zn-marker" aria-hidden="true">›</span>
 		<div class="zn-tabs" role="tablist" aria-label="Code examples" data-code-tabs>
 			{examples.map((example, index) => (
 				<button

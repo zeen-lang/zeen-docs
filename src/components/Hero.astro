@@ -1,5 +1,6 @@
 ---
 import CodeWindow from './CodeWindow.astro';
+import Icon from './Icon.astro';
 import InstallLine from './InstallLine.astro';
 
 const { data } = Astro.locals.starlightRoute.entry;
@@ -15,10 +16,20 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 				{actions.map(({ text, link, attrs: extra = {} }, index) => (
 					<a
 						href={link}
-						class:list={['zn-btn', index === 0 ? 'zn-btn--primary' : 'zn-btn--secondary']}
+						class:list={['zn-btn', index === 0 ? 'zn-btn--filled' : 'zn-btn--outlined']}
 						{...extra}
 					>
-						{text}
+						{index === 0 ? (
+							<>
+								{text}
+								<Icon name="arrow_forward" size={18} />
+							</>
+						) : (
+							<>
+								<Icon name="github" size={17} />
+								{text}
+							</>
+						)}
 					</a>
 				))}
 			</div>
@@ -26,8 +37,9 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 	</div>
 
 	<CodeWindow />
-	<InstallLine />
 </section>
+
+<InstallLine />
 
 <script>
 	const flashCopied = (button) => {

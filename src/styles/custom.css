@@ -24,11 +24,18 @@
 	--sl-color-black: #101113;
 
 	/* surfaces and lines */
-	--zn-surface: #151618;
-	--zn-surface-raised: #1a1b1e;
-	--zn-surface-deep: #0c0d0f;
-	--zn-hairline: rgb(244 244 245 / 0.08);
-	--zn-hairline-strong: rgb(244 244 245 / 0.14);
+	--zn-surface: #16181b;
+	--zn-surface-raised: #1c1f23;
+	--zn-surface-deep: #101214;
+	--zn-hairline: rgb(244 244 245 / 0.09);
+	--zn-hairline-strong: rgb(244 244 245 / 0.16);
+
+	/* accent */
+	--zn-primary: #4edea3;
+	--zn-primary-hover: #75f2bd;
+	--zn-primary-high: #a6f5d0;
+	--zn-primary-soft: rgb(78 222 163 / 0.14);
+	--zn-on-primary: #043224;
 
 	--zn-mono: var(--sl-font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 

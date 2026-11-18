@@ -3,11 +3,11 @@ title: Zeen
 head:
   - tag: title
     content: Zeen
-description: A statically typed compiling programming language with move semantics
+description: A compiled systems language with move semantics, comptime and native LLVM output
 template: splash
 hero:
-  title: Zero-cost Efficient Execution Natively
-  tagline: A statically typed compiling programming language with move semantics
+  title: Move semantics for systems code
+  tagline: Zeen compiles to native code with LLVM. The comptime engine runs during the build, and there is no borrow checker or garbage collector.
   actions:
     - text: Read the docs
       link: /getting-started/introduction/
@@ -15,28 +15,42 @@ hero:
       link: https://github.com/zeen-lang/zeen
 ---
 
+import Icon from '../../components/Icon.astro';
+
 <section class="zn-features">
-	<h2 class="zn-eyebrow"><span class="zn-marker" aria-hidden="true">#</span> Features</h2>
+	<h2 class="zn-features__title">Language features</h2>
 
 	<div class="zn-feature-grid">
-		<article class="zn-card">
-			<h3 class="zn-card__title">Native Performance</h3>
-			<p class="zn-card__body">Built on LLVM, compiles to optimized native code - delivering the performance you expect from a systems language.</p>
+		<article class="zn-feature-card">
+			<div class="zn-feature-card__head">
+				<Icon name="speed" size={22} class="zn-feature-card__icon" />
+				<h3 class="zn-feature-card__title">Native performance</h3>
+			</div>
+			<p class="zn-feature-card__body">Built on LLVM, Zeen compiles to optimized native code with the performance you expect from a systems language.</p>
 		</article>
 
-		<article class="zn-card">
-			<h3 class="zn-card__title">Freedom to Build</h3>
-			<p class="zn-card__body">No unnecessary restrictions. Zeen gives you direct control over your data, memory and program flow.</p>
+		<article class="zn-feature-card">
+			<div class="zn-feature-card__head">
+				<Icon name="tune" size={22} class="zn-feature-card__icon" />
+				<h3 class="zn-feature-card__title">Direct control</h3>
+			</div>
+			<p class="zn-feature-card__body">No unnecessary restrictions. Zeen gives you direct control over your data, memory and program flow.</p>
 		</article>
 
-		<article class="zn-card">
-			<h3 class="zn-card__title">Move Semantics</h3>
-			<p class="zn-card__body">Explicit ownership with move semantics provides predictable memory management without a garbage collector or hidden runtime overhead.</p>
+		<article class="zn-feature-card">
+			<div class="zn-feature-card__head">
+				<Icon name="swap_horiz" size={22} class="zn-feature-card__icon" />
+				<h3 class="zn-feature-card__title">Move semantics</h3>
+			</div>
+			<p class="zn-feature-card__body">Ownership moves between bindings and drops run where the value dies. Memory is released predictably, with no garbage collector and no borrow checker.</p>
 		</article>
 
-		<article class="zn-card">
-			<h3 class="zn-card__title">Compile Time</h3>
-			<p class="zn-card__body">The comptime engine runs constants, functions, blocks and structs during compilation and substitutes the results, with reflection over your own types.</p>
+		<article class="zn-feature-card">
+			<div class="zn-feature-card__head">
+				<Icon name="data_object" size={22} class="zn-feature-card__icon" />
+				<h3 class="zn-feature-card__title">Compile time</h3>
+			</div>
+			<p class="zn-feature-card__body">Constants, functions, blocks and structs run during the build. The comptime engine splices their results into the program.</p>
 		</article>
 	</div>
 </section>
