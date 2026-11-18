@@ -3,24 +3,33 @@ header.header {
 	border-bottom: 1px solid var(--zn-hairline);
 }
 
-site-search button {
+site-search button[data-open-modal] {
+	width: 100%;
 	height: 36px;
+	padding-inline: 12px;
 	border: 1px solid var(--zn-hairline);
 	border-radius: 999px;
 	background-color: var(--zn-surface);
+	gap: 8px;
+	color: var(--sl-color-gray-2);
+	font-size: 13px;
 	transition:
 		border-color var(--zn-fast) var(--zn-ease),
 		background-color var(--zn-fast) var(--zn-ease);
 }
 
-site-search button:hover {
+site-search button[data-open-modal]:hover {
 	border-color: var(--zn-hairline-strong);
 	background-color: var(--zn-surface-raised);
 }
 
-site-search button:focus-visible {
+site-search button[data-open-modal]:focus-visible {
 	outline: 2px solid var(--zn-primary);
 	outline-offset: 2px;
+}
+
+site-search button[data-open-modal] > svg {
+	color: var(--sl-color-gray-3);
 }
 
 site-search dialog {
@@ -57,11 +66,28 @@ site-search .dialog-frame {
 	border-radius: 10px;
 }
 
-site-search kbd {
-	border: 1px solid var(--zn-hairline);
-	border-radius: 6px;
-	background-color: var(--zn-surface-raised);
+site-search button[data-open-modal] > kbd {
+	gap: 3px;
+	padding: 0;
+	border: 0;
+	background: none;
 	box-shadow: none;
+}
+
+site-search button[data-open-modal] > kbd > kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 21px;
+	height: 21px;
+	padding: 0 5px;
+	border: 1px solid var(--zn-hairline-strong);
+	border-radius: 5px;
+	background-color: var(--zn-surface-raised);
+	color: var(--sl-color-gray-2);
+	font-family: var(--zn-mono);
+	font-size: 11px;
+	line-height: 1;
 }
 
 .sidebar-pane {
