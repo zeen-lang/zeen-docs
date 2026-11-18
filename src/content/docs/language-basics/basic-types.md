@@ -1,9 +1,9 @@
 ---
 title: Basic Types
-description: Integer, float, bool, char and void types, typeof, casts and builtin methods.
+description: Integer, float, bool, char and void types, casts, typeof and builtin methods.
 ---
 
-Zeen has 16 builtin types: signed and unsigned integers, two floats, `bool`, `char`, `void` and `never`.
+Every value in Zeen has a type, and most of the time the compiler infers it from the literal or from the binding. This page lists the types built into the language, the conversions between them and the methods that every builtin value already has. Structs, enums and generics come later; everything here works without imports.
 
 ## Integer types
 
@@ -15,16 +15,33 @@ Zeen has 16 builtin types: signed and unsigned integers, two floats, `bool`, `ch
 | 64-bit | `i64` | `u64` |
 | pointer-sized | `isize` | `usize` |
 
-An integer literal defaults to `i32` when nothing else fixes its type. A literal that does not fit the target type is `zeen::typechecker::int_literal_out_of_range` instead of a silent truncation:
+An integer literal defaults to `i32` when nothing else fixes its type. A literal that does not fit the target type is rejected with [`zeen::typechecker::int_literal_out_of_range`](/getting-started/compiler-errors/) instead of being truncated silently:
 
 ```zn
-let small: u8 = @as(u8, 200);
-let wide: i64 = @as(i64, small);
+fn main() {
+  const small: u8 = @as(u8, 200);
+  const wide: i64 = @as(i64, small);
 
-@println("{} {}", small, wide);
+  @println("{} {}", small, wide);
+}
 ```
 
-There is no implicit widening between integer types. `let value: u8 = 1; let size: usize = value;` reports `zeen::typechecker::mismatch`, so the conversion needs an annotation on the literal or `@as`.
+There is no implicit widening between integer types. A `u8` does not become a `usize` on its own:
+
+```zn
+fn main() {
+  const value: u8 = 1;
+  const size: usize = value;
+}
+```
+
+```text
+zeen::typechecker::mismatch
+
+  × expected type `usize`, but found `u8`
+```
+
+The conversion needs `@as(usize, value)`, or the literal can be annotated directly when the value is known at compile time.
 
 ## Float types
 
@@ -44,7 +61,7 @@ A float literal defaults to `f64`. Floating point comparison follows IEEE rules:
 | `void` | No value |
 | `never` | Never returns, as in `@panic` |
 
-`char` holds a single byte, so a literal outside ASCII is `zeen::typechecker::non_ascii_char` and gets a help to use a string literal. Text and code points go through `[]const char` and [Rune](/library/core/unicode/).
+`char` holds a single byte, so a literal outside ASCII is [`zeen::typechecker::non_ascii_char`](/getting-started/compiler-errors/) and gets a help to use a string literal. Text and code points go through `[]const char` and [Rune](/library/core/unicode/).
 
 `void` has one value, written `.{ }`. The old `@void()` macro is gone and reports `zeen::typechecker::void_macro_removed`:
 
@@ -78,7 +95,7 @@ fn main() {
 
 ## Casts
 
-An implicit cast happens without `@as`. It covers:
+Some conversions happen without a cast, because they cannot lose information or change representation:
 
 | From | To |
 |------|----|
@@ -90,7 +107,7 @@ An implicit cast happens without `@as`. It covers:
 | `Fn` | `FnOnce` |
 | `never` | any type |
 
-Everything else needs `@as`:
+Everything else needs `@as(T, expr)`, which is a compiler macro rather than a function call. It produces a value of type `T` from `expr` and leaves the representation unchanged unless the types differ in width:
 
 | From | To |
 |------|----|
@@ -115,6 +132,22 @@ fn main() {
 }
 ```
 
+The first argument is a type, the second a value, and both are checked before the program runs. `@as` between two integer types keeps the low bits, so a value that does not fit is truncated:
+
+```zn
+fn main() {
+  const wrapped = @as(u8, 300);
+
+  @println("{}", wrapped);
+}
+```
+
+```text
+44
+```
+
+That differs from a literal assigned to a `u8`, which is rejected at compile time. `@as` is the explicit request to reinterpret the bits, and it does exactly that. A cast between unrelated types is `zeen::typechecker::invalid_cast`. [Builtin Macros](/language-basics/macros-builtin/) covers the remaining macros.
+
 `@as` between pointers and integers keeps the address:
 
 ```zn
@@ -132,7 +165,7 @@ A cast to an enum works only for an enum with no payloads. `@as(i32, some_enum)`
 
 ## Builtin methods
 
-Every builtin type implements the `core.ops` interfaces, so their methods are callable directly and resolve without an `implement` block.
+Every builtin type implements the interfaces in `core.ops`, so their methods are callable directly and need no `implement` block. An interface groups a method with an operator: `Eq` gives `eq` and `==`, `Add` gives `add` and `+`. [Interfaces](/functions-closures/interfaces/) explains them; for now it is enough to know the method names exist on `i32`, `f64`, `char` and the rest.
 
 | Interface | Method | Result |
 |-----------|--------|--------|
@@ -153,7 +186,7 @@ fn main() {
 }
 ```
 
-`cmp` returns `core.ops.Ordering`, which works in a `switch`:
+`cmp` returns `Ordering`, a core enum with the variants `Less`, `Equal` and `Greater`. `switch` reads it like any other enum:
 
 ```zn
 fn main() {
@@ -175,11 +208,13 @@ A literal receiver works too: `4.eq(&5)`, `1.5.add(2.5)`. The methods follow the
 The methods accept a pointer receiver, so the hash of a pointer is the hash of its value:
 
 ```zn
-const a: i32 = 5;
-const b: i32 = 5;
-const p: *const i32 = &a;
+fn main() {
+  const a: i32 = 5;
+  const b: i32 = 5;
+  const p: *const i32 = &a;
 
-@println("{} {}", p.eq(&b), p.hash() == a.hash());
+  @println("{} {}", p.eq(&b), p.hash() == a.hash());
+}
 ```
 
 They work in generic code with the matching bound:
@@ -192,4 +227,4 @@ fn same[T: Eq](a: *const T, b: *const T) bool {
 
 An own method in an `implement builtin` block with the same name takes priority, and core interfaces cannot be reimplemented for builtin types. [Builtin Blocks](/functions-closures/implement-builtin/) covers both.
 
-Numbers, `char` and `bool` also get std methods such as `count_ones`, `sqrt` and `to_string` from the `std.primitives` modules.
+Numbers, `char` and `bool` also get std methods such as `count_ones`, `sqrt` and `to_string` from the `std.primitives` modules. Those modules are injected into every module, so the methods need no import.

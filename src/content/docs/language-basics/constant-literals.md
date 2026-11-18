@@ -3,7 +3,7 @@ title: Constant Literals
 description: Literals for integers, floats, booleans, chars, bytes, strings and arrays.
 ---
 
-A literal writes compile time data straight into the source. Zeen has integer, float, boolean, char, byte char, string, raw string and array literals.
+A literal writes compile time data straight into the source. Zeen has integer, float, boolean, char, byte char, string, raw string and array literals. The examples print their results with `@println`, a compiler macro covered in [Builtin Macros](/language-basics/macros-builtin/).
 
 ## Integer literals
 
@@ -19,7 +19,7 @@ fn main() {
 }
 ```
 
-All six lines hold `1000`. An integer literal defaults to `i32`. The context sets the real type, and the value has to fit it:
+All five lines hold `1000`. An integer literal defaults to `i32`. The context sets the real type, and the value has to fit it:
 
 ```zn
 fn main() {
@@ -36,6 +36,12 @@ A value that does not fit the target type is rejected instead of truncated:
 fn main() {
   const too_big: i32 = 9223372036854775807;
 }
+```
+
+```text
+zeen::typechecker::int_literal_out_of_range
+
+  × integer literal `9223372036854775807` does not fit into `i32`
 ```
 
 A literal that does not parse into `i64` at all fails earlier, in the parser.
@@ -79,6 +85,8 @@ fn main() {
   @println("{:?} {:?}", letter, digit);
 }
 ```
+
+`{:?}` is the debug format specifier, which prints a char together with its quotes. [Printing and Formatting](/language-basics/printing-formatting/) lists the rest of the specifiers.
 
 A non-ASCII char literal is rejected, since one byte cannot hold it. Use `Rune` from `core.unicode` for code points.
 
@@ -142,4 +150,4 @@ fn main() {
 }
 ```
 
-The old bracket form `[1, 2, 3]` is a syntax error. `[0]T` does not exist, an array always holds at least one element.
+Arrays always hold at least one element; `[0]T` is rejected. [Arrays, Slices and Ranges](/language-basics/arrays-slices-ranges/) covers indexing, slicing and the brace rule that decides between an array and a block.

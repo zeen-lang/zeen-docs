@@ -1,42 +1,34 @@
 ---
-title: Zeen Modules
-description: Source files as modules, code levels and project layout.
+title: Modules
+description: A source file is a module, and the entry file is the root.
 ---
 
-## Modules
-Modules in Zeen are just source code files with a `.zn` extension. The name of the module is just the file name without extension (no extra declarations required).
+A module is one `.zn` file. There is no `module` keyword and nothing to declare inside the file: the file name is the module name, without the extension. A file at `utils/helpers.zn` is the module `utils.helpers` for anyone who imports it.
 
-Mostly module can look like this:
+The file passed to the compiler is the root module, and its directory becomes the project root, the base for every relative `use` path. When several modules define `main`, the compiler takes it from the root module.
+
+## What a module holds
+
+A module holds declarations: functions, structs, enums, aliases, constants, globals, interfaces and `implement` blocks. Declarations hold statements, and statements hold expressions.
+
 ```zn
 fn main() {
-  let calculation = 2 + 2 * 2;
+  const calculation = 2 + 2 * 2;
 
   @println("Result: {}", calculation);
 }
 ```
 
-Code separates into 3 different levels:
-1. Declarations - top level code description (functions, structures, interfaces, etc.)
-2. Statements - members of declarations, contains executable sequence (annotations, assigns, calls, etc.)
-3. Expressions - little elements of data operating (like arithmetic, comparison, literals annotation, etc.)
+`fn main` is a declaration, `const calculation = ...` is a statement and `2 + 2 * 2` is an expression. The same shapes appear in every module, whether it runs or only provides functions for others.
 
-We can split up our previous code with these levels:
-```zn
-// Declarations Level
+## Directories as modules
 
-// `main` is a function declaration
-fn main() {
-  // Statements Level
+A directory can stand for its own module. `use utils;` loads `utils/index.zn` when no `utils.zn` file exists, so a folder with an `index.zn` behaves like a single module with the folder's name. `use utils.index;` reaches the same file.
 
-  // annotation statement
-  let calculation = 2 + 2 * 2 /* value expression */;
+## Reachability
 
-  // macro call,
-  // 2 expressions arguments: string literal, variable reference
-  @println("Result: {}", calculation);
-}
-```
+The compiler reads the root module and follows `use` declarations from there. A `.zn` file that nothing imports is never parsed, so leaving a draft module in the tree costs nothing until an import mentions it.
 
-## Project Setup
-Use the Zeen package manager - Zora. <br/>
-See examples and more info in: [Package Manager](/toolchain/package-manager/)
+## Next
+
+[Imports and Visibility](/language-basics/imports-and-visibility/) covers `use` paths, the prelude and `pub`. A project with dependencies should start from [Package Manager](/toolchain/package-manager/), which writes the manifest and passes resolved packages to the compiler.
