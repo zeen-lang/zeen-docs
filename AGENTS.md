@@ -42,6 +42,16 @@ Expressive Code variables are set on `:root` and on `.expressive-code[data-theme
 
 Landing sections run in a 78rem container. The changelog list uses 56rem, release pages 48rem, and docs keep the Starlight default. Long prose over 48rem gets too wide to read comfortably, so check line length before widening a page.
 
+### Documentation shell
+
+`src/styles/docs.css` covers the parts Starlight owns: header, search, sidebar, right-hand table of contents, prose, code frames, cards, steps, file tree, tabs, badges, asides and the previous/next links. It is registered in `astro.config.mjs` under `customCss`, so it applies to every page, the landing page and the changelog included.
+
+- Sidebar rows are 13px links with an 8px radius; the current page gets a mint-tinted pill instead of Starlight's solid accent block.
+- Search and the mobile table of contents reuse the 36px pill from the site buttons.
+- Heading anchor icons are fixed at 20px with a 6px gap, so they do not grow with the heading font size.
+- Markdown code blocks sit on `--zn-surface`; inside a card they drop to `--zn-surface-deep` to stay distinct from the card surface.
+- Library pages are Starlight `Card` components: 16px radius, 20/22px padding, 17px title and 14px body.
+
 ### Checks
 
 Run `bun run build`, then `impeccable detect dist/<page>/index.html`; there is no Chromium here, so scan built HTML instead of a URL. Look at the result in headless Firefox at 320, 390, 768 and 1440. `.impeccable/config.json` holds one file-scoped ignore: code listings inside diagnostic cards repeat identifiers, which the repeated-text rule reads as UI copy.
