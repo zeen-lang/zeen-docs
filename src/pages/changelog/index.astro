@@ -107,7 +107,7 @@ const releases = (await getCollection(
 
   .zn-release {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
     margin: 0;
     padding: 18px 20px 18px 24px;
@@ -192,6 +192,7 @@ const releases = (await getCollection(
 
   .zn-release__arrow {
     flex: none;
+    margin-top: 4px;
     color: var(--sl-color-gray-4);
     transition:
       color var(--zn-fast) var(--zn-ease),
@@ -229,6 +230,25 @@ const releases = (await getCollection(
     .zn-release__version {
       font-size: 16px;
       line-height: 24px;
+    }
+  }
+  @media (max-width: 24rem) {
+    .zn-release__head {
+      gap: 6px 8px;
+    }
+
+    .zn-release__version {
+      font-size: 15px;
+    }
+
+    .zn-release__latest {
+      height: 22px;
+      padding: 0 8px;
+      font-size: 11px;
+    }
+
+    .zn-release__date {
+      font-size: 12px;
     }
   }
 </style>
