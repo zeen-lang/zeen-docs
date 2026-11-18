@@ -56,6 +56,44 @@ Landing sections run in a 78rem container. The changelog list uses 56rem, releas
 
 Run `bun run build`, then `impeccable detect dist/<page>/index.html`; there is no Chromium here, so scan built HTML instead of a URL. Look at the result in headless Firefox at 320, 390, 768 and 1440. `.impeccable/config.json` holds one file-scoped ignore: code listings inside diagnostic cards repeat identifiers, which the repeated-text rule reads as UI copy.
 
+## Library pages
+
+`library/std` and `library/core` hold reference pages. A page lists what the module makes public: structures, enums, constants, interfaces and free functions that enter scope when the reader imports it. Explanation of a topic stays in the guide chapters, and a card links there when a reader needs it.
+
+Every page opens with the same header:
+
+```mdx
+---
+title: Time
+description: Durations, monotonic timestamps and thread sleep.
+---
+
+import { Badge, Card } from '@astrojs/starlight/components';
+
+**Module:** <Badge text="std.time" variant="note" size="medium" /> <br/>
+**Source:** [std/time.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/time.zn) <br/>
+```
+
+The badge text is the import path. `Source` points at the file under `lib/std/src/` or `lib/core/` on GitHub.
+
+After the header comes one of three openings:
+
+- Straight to `## Structures`, `## Enums`, `## Constants`, `## Interfaces` or `## Functions` when the module has nothing worth demonstrating (`core/reflection`).
+- A short paragraph and one `zn` example before the headings (`std/string`).
+- A `> **Usage Example**` blockquote holding one `zn` block (`std/testing`, `std/http`). Keep it to the smallest program that shows the module in use, and add a `text` block only when the output is not obvious.
+
+Headings are `##`, plural and sentence case: `## Structures`, `## Functions`, `## Ops`. One `Card` per public item. The title is the declared name with its generic parameters (`Option[T]`, `List[T]`). The card body opens with a one-sentence description, then `----`, then the declaration.
+
+Inside a card, each signature sits in its own `zn` block and keeps `pub`, parameter names and the return type. Group signatures under a bold label when a card has more than one category:
+
+- `**Fields:**` for struct fields, `**Variants:**` for enums, `**Constants:**` for values.
+- `**Constructors:**`, `**Named Constructors:**`, `**Getters:**`, `**Setters:**`, `**Methods:**`, `**Inspection:**`, `**Extraction:**`, `**Combinators:**` for methods.
+- `----` before `**Interfaces:**`, then one line per interface as `core.ops` : `Copy`.
+
+Declarations carry no bodies. Follow the page you edit for trailing semicolons and other small details. Function-only modules can list signatures without cards under a `## Functions` heading (`std/testing`).
+
+Keep guide material out of a reference page. A concept that needs a paragraph belongs in a guide chapter, and the card links to that chapter.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
