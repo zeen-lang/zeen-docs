@@ -1,7 +1,6 @@
 ---
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 import { getCollection } from 'astro:content';
-import Icon from '../../components/Icon.astro';
 
 const releases = (await getCollection(
   'changelog',
@@ -34,31 +33,15 @@ const releases = (await getCollection(
       {releases.map((release, index) => (
         <li class="zn-releases__item">
           <a class="zn-release" href={`/changelog/${release.id}/`}>
-            <div class="zn-release__body">
-              <div class="zn-release__head">
-                <h2 class="zn-release__version">v{release.data.version}</h2>
+            <div class="zn-release__head">
+              <h2 class="zn-release__version">v{release.data.version}</h2>
 
-                {index === 0 && <span class="zn-release__latest">Latest</span>}
-
-                <time
-                  class="zn-release__date"
-                  datetime={release.data.date.toISOString()}
-                >
-                  {release.data.date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    timeZone: 'UTC',
-                  })}
-                </time>
-              </div>
-
-              {release.data.description && (
-                <p class="zn-release__lead">{release.data.description}</p>
-              )}
+              {index === 0 && <span class="zn-release__latest">Latest</span>}
             </div>
 
-            <Icon name="arrow_forward" size={18} class="zn-release__arrow" />
+            {release.data.description && (
+              <p class="zn-release__lead">{release.data.description}</p>
+            )}
           </a>
         </li>
       ))}
@@ -106,11 +89,9 @@ const releases = (await getCollection(
   }
 
   .zn-release {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
+    display: block;
     margin: 0;
-    padding: 18px 20px 18px 24px;
+    padding: 18px 24px;
     border: 1px solid var(--zn-hairline);
     border-radius: 16px;
     background-color: var(--zn-surface);
@@ -131,16 +112,10 @@ const releases = (await getCollection(
     outline-offset: 2px;
   }
 
-  .zn-release__body {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-
   .zn-release__head {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 8px 10px;
+    gap: 10px;
   }
 
   .zn-release__version {
@@ -175,13 +150,6 @@ const releases = (await getCollection(
     background-color: var(--zn-primary);
   }
 
-  .zn-release__date {
-    margin-left: auto;
-    font-size: 13px;
-    line-height: 20px;
-    color: var(--sl-color-gray-3);
-  }
-
   .zn-release__lead {
     margin: 8px 0 0;
     max-width: 68ch;
@@ -190,23 +158,8 @@ const releases = (await getCollection(
     color: var(--sl-color-gray-2);
   }
 
-  .zn-release__arrow {
-    flex: none;
-    margin-top: 4px;
-    color: var(--sl-color-gray-4);
-    transition:
-      color var(--zn-fast) var(--zn-ease),
-      transform var(--zn-fast) var(--zn-ease);
-  }
-
-  .zn-release:hover .zn-release__arrow {
-    color: var(--zn-primary);
-    transform: translateX(2px);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .zn-release,
-    .zn-release__arrow {
+    .zn-release {
       transition: none;
     }
   }
@@ -230,25 +183,6 @@ const releases = (await getCollection(
     .zn-release__version {
       font-size: 16px;
       line-height: 24px;
-    }
-  }
-  @media (max-width: 24rem) {
-    .zn-release__head {
-      gap: 6px 8px;
-    }
-
-    .zn-release__version {
-      font-size: 15px;
-    }
-
-    .zn-release__latest {
-      height: 22px;
-      padding: 0 8px;
-      font-size: 11px;
-    }
-
-    .zn-release__date {
-      font-size: 12px;
     }
   }
 </style>
