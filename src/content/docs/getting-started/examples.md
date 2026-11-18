@@ -1,16 +1,23 @@
 ---
-title: Examples
-description: Small programs that use the language end to end.
+title: Code Examples
+description: Complete programs, one per language feature.
 ---
 
+Each listing compiles as written. The topic pages explain the details behind them.
+
 ## Hello World
-```zeen
+
+The smallest program: one function and one macro.
+
+```zn
 fn main() {
   @println("Hello, World!");
 }
 ```
 
 ## Formatting strings
+
+`@format` builds a heap `String` from a format string and its arguments.
 
 ```zn
 fn greet_message(name: []const char) String {
@@ -23,6 +30,8 @@ fn main() {
 ```
 
 ## Result and switch
+
+A function that reports failure in its return type. `switch` reads both cases.
 
 ```zn
 use std.string;
@@ -44,36 +53,10 @@ fn main() {
 ```
 
 ## Structures
-### Functions in bodies
+
+Fields plus methods in an `implement` block. Methods can also live in the struct body; [Structures and Methods](/functions-closures/structures-and-methods/) covers both forms.
+
 ```zn
-struct Person {
-  pub age: u32,
-
-  pub fn new(age: u32) Self {
-    Self { .age = age }
-  }
-
-  pub fn birthday(*self) {
-    self.age += 1;
-    @println("Happy Birthday!");
-  }
-
-  pub fn get_age(*const self) u32 {
-    return self.age;
-  }
-}
-
-fn main() {
-  let person = Person.new(26);
-
-  person.birthday();
-
-  @println("Current age: {}", person.get_age());
-}
-```
-
-### Functions in implements
-```zeen
 struct Person {
   pub age: u32,
 }
@@ -102,9 +85,11 @@ fn main() {
 }
 ```
 
-## Enums
-### Without Payloads
-```zeen
+## Enums without payloads
+
+Variants that carry nothing but their tag. `@enumTag` reads the tag as `u8`.
+
+```zn
 enum Direction {
   Up,
   Down,
@@ -115,13 +100,14 @@ enum Direction {
 fn main() {
   @println("{} - {}", @enumTag(Direction.Up), Direction.Up);
   @println("{} - {}", @enumTag(Direction.Down), Direction.Down);
-  @println("{} - {}", @enumTag(Direction.Left), Direction.Left);
-  @println("{} - {}", @enumTag(Direction.Right), Direction.Right);
 }
 ```
 
-### With Payloads
-```zeen
+## Enums with payloads
+
+Variants that carry data. `switch` moves the payload into the arm.
+
+```zn
 enum Data {
   int: i32,
   float: f32,
@@ -144,6 +130,8 @@ fn main() {
 
 ## Generics
 
+A generic function bounded by `Display`, so it accepts any printable value.
+
 ```zn
 fn print_this[T: Display](value: T) {
   @println("printed: {}", value);
@@ -155,8 +143,11 @@ fn main() {
 }
 ```
 
-## Vector Example
-```zeen
+## Operator overloading
+
+`implement Add` makes `+` work on a struct, and `Output` names the type of the result. [Interfaces](/functions-closures/interfaces/) explains interface blocks and `Display`.
+
+```zn
 use std.c.math;
 
 struct Vec {
@@ -205,7 +196,13 @@ fn main() {
 }
 ```
 
-## C Functions
+```text
+{6.00, 6.00}
+```
+
+## C functions
+
+`std.c` binds the C standard library. The pointer is freed by hand, because C does not know about Zeen drops.
 
 ```zn
 use std.c.stdlib;
@@ -222,6 +219,8 @@ fn main() {
 
 ## Iterating
 
+`for` walks an array directly, and a container through its iterator.
+
 ```zn
 fn main() {
   const array = {1, 2, 3, 4};
@@ -231,6 +230,7 @@ fn main() {
   }
 }
 ```
+
 ```zn
 use std.collections.list;
 
@@ -243,7 +243,10 @@ fn main() {
 }
 ```
 
-## Comptime Engine
+## Compile-time types
+
+A compile-time function that builds a type. `array_type(3)` becomes `[3]i32` before the program exists. [Compile Time Engine](/ownership-types/compile-time-engine/) covers the three comptime levels.
+
 ```zn
 comptime fn array_type(n: comptime_int) zeen_type {
   return @zeen_type([$(n)]i32);
@@ -257,15 +260,32 @@ fn main() {
 }
 ```
 
-## Meta
+## Compile-time reflection
+
+A `comptime` block runs while the program is built. Its output lands in the build log, not in the program.
+
 ```zn
+struct User {
+  name: String,
+  age: u32,
+}
+
 fn main() {
   comptime {
-    for (field : @fields(String)) {
-      @println("{}", field);
+    @println("fields of User:");
+    for (field : @fields(User)) {
+      @println("  {}", field.name);
     }
   }
+
+  @println("program runs");
 }
+```
+
+```text
+[comptime][main.zn:7] fields of User:
+[comptime][main.zn:7]   name
+[comptime][main.zn:7]   age
 ```
 
 More examples live in the topic pages.

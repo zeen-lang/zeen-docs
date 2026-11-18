@@ -5,10 +5,9 @@ description: Zora, the Zeen package manager and build system.
 
 import { Aside, FileTree } from '@astrojs/starlight/components';
 
-**Zora** is the Zeen package manager. <br/>
-Ships as the `zora` binary in each release.
+**Zora** builds projects, resolves git dependencies and runs the test suite. It ships as the `zora` binary in each release and needs no network setup beyond git.
 
-## Project Layout
+## Project layout
 
 <FileTree>
   - my-project
@@ -20,14 +19,15 @@ Ships as the `zora` binary in each release.
     - dist/ build output
 </FileTree>
 
-## Quick Start
+## Quick start
 
-Create and run new project:
 ```bash
 zora new hello
 cd hello
 zora run
 ```
+
+`zora new` writes the manifest, a `Zora.lock` and a `src/main.zn` that prints a line. `zora init` does the same in the directory you are already in. Both take `--lib` to create a library package instead of a binary.
 
 ## Commands
 
@@ -45,13 +45,15 @@ zora run
 | `zora clean` | `--global` | Remove build artifacts and caches |
 | `zora deps-map` | | Print the dependency sources map |
 
+Two flags work on every subcommand: `--no-color` and `--manifest-path <PATH>`, which points at a `Zora.toml` outside the current directory and defaults to searching the parent directories.
+
 ## Manifest
 
 ```toml
 [package]
 name = "hello"
 version = "0.0.0"
-zeen = "^0.5.0"
+zeen = "^0.6.0"
 type = "bin"
 description = "A small Zeen program"
 
@@ -76,13 +78,15 @@ math = { git = "https://github.com/mealet/math", rev = "dev" }
 | Field | Description |
 |-------|-------------|
 | `name` | Package name, also the default output name |
-| `version` | Package version (semver) |
-| `zeen` | Required compiler version, a semver requirement |
+| `version` | Package version |
+| `zeen` | Required compiler version |
 | `type` | `bin`, `lib/static` or `lib/dynamic` |
 | `description` | Optional package description |
 | `authors` | Optional author list |
 | `repository` | Optional repository URL |
 | `license` | Optional license identifier |
+
+Both version fields follow semver: `1.4.2` is major, minor and patch, and a caret range such as `^0.6.0` accepts any `0.6.x` release but not `0.7.0`. Zora compares `zeen` against `zeen --version` before the build and stops when the installed compiler falls outside the range.
 
 ### `[build]`
 
@@ -97,7 +101,7 @@ math = { git = "https://github.com/mealet/math", rev = "dev" }
 
 Each entry maps a package name to a git source: a bare URL or a `{ git, rev }` pair. `rev` may be a commit, tag or branch. Dependencies are resolved into `Zora.lock`, which pins every one to a commit.
 
-### Platform Sections
+### Platform sections
 
 `[build]` accepts per-platform sub-tables. Selector values use the same vocabulary as the compiler directives (`@os`, `@arch`, `@env`, `@family`, `@target`):
 
@@ -115,7 +119,7 @@ Precedence, first match wins: `target`, `arch`, `env`, `os`, `family`.
 
 The example above links `raylib` twice on purpose: the base table carries it, and each platform override repeats it together with the platform libraries. A missing repeat would drop it, since Linux and Windows override sections replace the base table.
 
-### Native Dependencies
+### Native dependencies
 
 Link directives from the package and its dependencies, transitively, are collected into `Zora.lock` and passed to the compiler at build time.
 
@@ -123,7 +127,7 @@ A consumer of a library that declares `link` (for example `zora add .../zaylib`)
 
 A relative `link-dir` inside a dependency resolves against that dependency checkout.
 
-The lockfile format is version 3 now. It records the build spec, platform sections included. Older lockfiles are re-resolved automatically on the next `zora build` or `zora check`.
+The lockfile records the build spec, platform sections included. When the manifest or the compiler version changes, the next `zora build` or `zora check` re-resolves it.
 
 ## Dependencies
 
@@ -134,15 +138,28 @@ zora remove math
 zora update
 ```
 
-Resolved dependencies are handed to the compiler through `--pkg`, so `use greeting;` works inside `src/`.
+Resolved dependencies reach the compiler as `--pkg` arguments, with the package name mapped to its `src` directory:
 
-## Build Output
+```bash
+zeen src/main.zn out --pkg greeting=/home/you/.zora/git/checkouts/1a2b3c/9f8e7d/src
+```
+
+After that, `use greeting;` works anywhere the compiler looks, and a module inside the package is `use greeting.<module>;`. `zora deps-map` prints the same mapping without building:
+
+```text
+greeting=/home/you/.zora/git/checkouts/1a2b3c/9f8e7d/src
+math=/home/you/.zora/git/checkouts/44ff01/0ac9be/src
+```
+
+The project itself is passed to the compiler the same way, under its `[package] name`. A project without dependencies prints nothing.
+
+## Build output
 
 ```bash
 zora build --release
 ```
 
-| Mode | Output Dir |
+| Mode | Output dir |
 |------|------------|
 | `Debug` | `dist/debug/<name>` |
 | `Release` | `dist/release/<name>` |
@@ -155,22 +172,14 @@ Builds are cached: when the inputs did not change, `zora build` skips the compil
 
 ### Libraries
 
-| Library Type | Output File |
+| Library type | Output file |
 |--------------|-------------|
 | `lib/static` | `libNAME.a`, `NAME.lib` (MSVC) |
 | `lib/dynamic` | `libNAME.so`, `NAME.dll` (Windows), `libNAME.dylib` (macOS) |
 
 ## Testing
 
-Create new test files:
-
-<FileTree>
-  - my-project
-    - tests
-      - add.zn tests file
-</FileTree>
-
-Define public tests functions:
+Test files live in `tests/`. Zora scans each file for two attributes, written as doc comments:
 
 ```zn
 use std.testing;
@@ -191,14 +200,34 @@ pub fn fail_test() {
 }
 ```
 
-And run tests:
+`/// @test` marks the function that follows it as a test. The marker has to be a doc comment because it sits in ordinary Zeen source and the compiler ignores it, while Zora reads the file as text and finds the exact line. The function must be `pub`, or Zora stops with an error naming the file and line.
+
+`/// @should-fail` inverts the result: the test passes when the program exits with a non-zero code, which is what a panic or a failed `assert_eq` produces. It is the way to test that a panic happens, or that an error path is reached.
+
+`assert_eq` and the other assertions come from `std.testing`.
+
 ```bash
 zora test
 ```
-```
+
+```text
 Tests from `tests/add.zn`:
   test add.add_test ... [OK]
   test add.fail_test ... [OK]
 
 Tests 2 passed in 0.06s
 ```
+
+Each test compiles into its own binary, with the package root on the include path, so a test file imports project code by package name:
+
+```zn
+use std.testing;
+use calc.math;
+
+/// @test
+pub fn triple_test() {
+  assert_eq(triple(2), 6);
+}
+```
+
+A single file cannot be selected: `zora test` runs every test in every file under `tests/`. Use `--manifest-path` to point at another project, or comment out tests while iterating. Compile errors are reported per test, with the compiler output under the failing line.

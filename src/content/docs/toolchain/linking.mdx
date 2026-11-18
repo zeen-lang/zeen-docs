@@ -1,27 +1,66 @@
 ---
 title: Linking
-description: Linker selection per target, overrides and output suffixes.
+description: What the linker does, how the compiler picks one, and what to do when the link step fails.
 ---
 
-The object file from codegen links into a binary with a toolchain picked by the target.
+Code generation ends with an object file. That file is not a program: it holds machine code with names still unresolved, references to `malloc`, to the C startup routine, to math functions, and to any native library the code calls. Making those names concrete and packing everything into one executable is the linker's job. The compiler does not link by itself; it runs a C toolchain and passes the object file along.
 
-## Selection
-| Target | Toolchain |
+That split explains most link errors. A missing `Copy` is a compiler error and stops before this step. A missing `gcc` or a missing `-lm` gets as far as the linker and fails there.
+
+## How the toolchain is picked
+
+The choice depends on the target triple, and the compiler tries candidates in order until one answers on `PATH`.
+
+On Linux with the gnu environment it looks for the distribution alias first, for example `x86_64-linux-gnu-gcc`. This alias knows where the system libraries and the startup files are, which a plain `gcc` does not always get right on a cross setup. If the alias is absent and the target matches the host, it tries `cc`, then `gcc`, then `clang`, and picks the first that exists. If nothing local fits, it falls back to `clang -target <triple>`, which needs a clang that supports the target.
+
+Musl targets look for `x86_64-linux-musl-gcc` or `musl-gcc` and link statically. MinGW targets look for `<arch>-w64-mingw32-gcc`. Android uses the NDK found through `ANDROID_NDK_HOME` or `ANDROID_NDK_ROOT`. Wasm uses `wasm-ld` and allows undefined symbols, so a missing libc function becomes an import instead of an error. MSVC targets use `link.exe` from Visual Studio.
+
+| Target | Candidates, in order |
 |---|---|
-| gnu family | gcc alias for the triple, such as `x86_64-linux-gnu-gcc` |
-| host equals target | native `cc` or `gcc` |
-| anything else | `clang -target <triple>` |
-| Windows MSVC | `link.exe`, only on Windows |
-| Wasm | `wasm-ld --allow-undefined` |
+| `x86_64-unknown-linux-gnu` | `x86_64-linux-gnu-gcc`, native `cc`/`gcc`/`clang`, `clang -target` |
+| `x86_64-unknown-linux-musl` | `x86_64-linux-musl-gcc`, `musl-gcc`, native `cc`/`gcc`/`clang`, `clang -target` |
+| `x86_64-pc-windows-gnu` | `x86_64-w64-mingw32-gcc`, native `gcc`/`cc`, `clang -target` |
+| `*-pc-windows-msvc` | `link.exe` with the Windows SDK |
+| `wasm32-unknown-unknown` | `wasm-ld` |
+| anything else | native `cc`/`gcc`/`clang`, then `clang -target` |
 
-The linker probes the gcc family alias first, then falls back to `clang`. Wasm turns missing symbols into imports because of `--allow-undefined`.
+## When the build does not link
+
+The report has a different shape from a compiler error: no `zeen::` code, a `[Error]: Linker failed` line and the linker's own message underneath.
+
+**No toolchain at all.** The compiler could not find a single candidate:
+
+```text
+[Error]: Linker failed (object linker: `gcc`)
+
+failed to spawn linker `gcc`: No such file or directory (os error 2)
+```
+
+Install a C toolchain, or point `--linker-path` at one that exists.
+
+**MSVC outside Windows.** The MSVC target needs Microsoft's `link.exe` and the Windows SDK, and the compiler says so instead of guessing:
+
+```text
+MSVC target `x86_64-pc-windows-msvc` requires MSVC tools and the Windows SDK, which are only available on Windows; install MinGW-w64 and use `--target x86_64-pc-windows-gnu` instead
+```
+
+On Linux and macOS, build the same program with the gnu target and the MinGW cross compiler.
+
+**Missing atomics.** `std.sync` and `std.ptr` lower to atomic builtins. An older gcc driver may not link them by default, and the linker fails on `__atomic_fetch_add_8`. The compiler retries the link once with `-latomic` when it sees that symbol, so the retry is invisible unless the second attempt also fails. Then install `libatomic` for the target.
+
+**Missing native library.** A call through `extern fn` needs the library at link time, not only at runtime. Add `--link <LIB>` and, when the library lives outside the default paths, `--link-dir <PATH>`.
 
 ## Overrides
-| Flag | Effect |
-|------|--------|
-| `--linker-path <program>` | override detected linker |
-| `--link <LIB>` | append `-l<LIB>` (gcc, clang) or `<LIB>.lib` (MSVC) |
-| `--link-dir <PATH>` | append `-L<PATH>` (gcc, clang) or `/LIBPATH:<PATH>` (MSVC) |
-| `extern link "file.c"` | append after object, skipped with warning on object-only toolchains |
 
-Output suffix follows the target: `.exe` on Windows, `.wasm` on Wasm.
+| Flag | Effect |
+|---|---|
+| `--linker-path <program>` | use this program instead of the detected linker |
+| `--link <LIB>` | append `-l<LIB>` for gcc and clang, `<LIB>.lib` for MSVC |
+| `--link-dir <PATH>` | append `-L<PATH>` for gcc and clang, `/LIBPATH:<PATH>` for MSVC |
+| `extern link "<file>"` | compile and append a C source file after the object, skipped with a warning for object-only output |
+
+`extern link` lives in the source, so the file travels with the program. [Extern](/functions-closures/extern/) shows it with a C helper. The other three flags belong to the build command, because they describe the machine.
+
+## Output suffixes
+
+The target decides the suffix: `.exe` on Windows, `.wasm` on wasm, no suffix on Linux and macOS. `--emit OBJ` follows the same rule for the object file, `.obj` on Windows.

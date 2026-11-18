@@ -1,80 +1,93 @@
 ---
 title: Editors Plugins
-description: Use Zeen with your editor
+description: Connect Zeen to VS Code and Neovim, and run the language server in any other editor.
 ---
 
 import { Card, Steps, LinkCard } from '@astrojs/starlight/components'
 
-## Plugins
+## Language server first
+
+The editor plugins are thin clients. All the work, diagnostics, completion, hover and formatting, happens in `zeen-lsp`, which ships in every release archive next to the compiler. Install Zeen from [Installation](/getting-started/installation/) and check that the binary answers:
+
+```bash
+zeen-lsp --version
+```
+
+A plugin that starts but shows no diagnostics usually cannot find `zeen-lsp` on `PATH`.
+
 <Card title="Visual Studio Code" icon="vscode">
-    Plugin repository: [zeen-vscode](https://github.com/zeen-lang/zeen-vscode)
-        
+    Extension: [zeen-vscode](https://github.com/zeen-lang/zeen-vscode)
+
     <Steps>
-    1. Make sure you have `zeen-lsp` installed (shipped with every Zeen release).
-    2. Search or install from link [Zeen](https://marketplace.visualstudio.com/items?itemName=mealet.zeen) extensions.
+    1. Open the Marketplace page [Zeen](https://marketplace.visualstudio.com/items?itemName=mealet.zeen) and press Install.
+    2. Open a `.zn` file. The extension starts `zeen-lsp` from `PATH` and diagnostics appear in the Problems panel.
     </Steps>
 </Card>
+
 <Card title="Neovim / Vim" icon="vim">
-    Plugin repository: [zeen-nvim](https://github.com/zeen-lang/zeen-nvim)
-    
+    Plugin: [zeen-nvim](https://github.com/zeen-lang/zeen-nvim)
+
     <Steps>
-    1. Make sure you have `zeen-lsp` installed (shipped with every Zeen release).
-    2. Install `zeen-lsp` plugin for Neovim:
-        **Lazy:**
-        ```lua
-        return {
-            "zeen-lang/zeen-nvim"
-        }
-        ```
-        With settings:
-        ```lua
-        return {
-            "zeen-lang/zeen-nvim",
+    1. Add the plugin with the manager you already use.
 
-            opts = {
-                cmd = { "zeen-lsp" },
-                root_markers = {
-                    ".git",
-                    "Zora.toml",
-                    "Zora.lock",
-                },
-                inlay_hints = true,
-            },
+       lazy.nvim:
+       ```lua
+       return {
+         "zeen-lang/zeen-nvim",
 
-            config = function(_, opts)
-                require("zeen-lsp").setup(opts)
-            end,
-        }
-        ```
+         opts = {
+           cmd = { "zeen-lsp" },
+           root_markers = {
+             ".git",
+             "Zora.toml",
+             "Zora.lock",
+           },
+           inlay_hints = true,
+         },
 
-        **Packer:**
-        ```lua
-        use({
-            "zeen-lang/zeen-nvim",
-            config = function()
-                require("zeen-lsp").setup()
-            end,
-        })
-        ```
+         config = function(_, opts)
+           require("zeen-lsp").setup(opts)
+         end,
+       }
+       ```
 
-        **Vim-plug:**
-        ```vim
-        Plug 'zeen-lang/zeen-nvim'
-        
-        require("zeen-lsp").setup()
-        ```
+       packer.nvim:
+       ```lua
+       use({
+         "zeen-lang/zeen-nvim",
+         config = function()
+           require("zeen-lsp").setup()
+         end,
+       })
+       ```
 
-    3. Restart Neovim and run `:Lazy` command
+       vim-plug needs a Lua line after the `Plug` declaration, because `require` is Lua:
+       ```vim
+       Plug 'zeen-lang/zeen-nvim'
+
+       lua require("zeen-lsp").setup()
+       ```
+
+    2. Restart Neovim. With lazy.nvim, `:Lazy` shows the plugin and its state; it is not needed to load it.
+
+    3. Open a `.zn` file. Hover, completion and diagnostics come from `zeen-lsp`.
     </Steps>
+
+    `root_markers` tells the server where a project starts. `.git` covers a plain checkout; `Zora.toml` and `Zora.lock` appear when a directory is a [package](/toolchain/package-manager/), and the server then resolves `use` paths from that root.
 </Card>
 
-## Language Server
+<Card title="Syntax highlighting" icon="seti:config">
+    Tree-sitter grammar for editors that read one: [zeen-treesitter](https://github.com/zeen-lang/zeen-treesitter). The VS Code extension and the Neovim plugin bundle their own grammar, so this repository matters only for other editors.
+</Card>
 
-If your favourite editor is not supported you can use **Zeen LSP**. <br/>
-It ships as the `zeen-lsp` binary in each release. <br/>
+## Any other editor
+
+The server speaks standard LSP over stdin and stdout, so any client that accepts an external command works.
 
 <LinkCard
   title = "Zeen LSP"
   href="https://github.com/zeen-lang/zeen/tree/main/lsp"
   description="Language server source code on GitHub"
 />
+
+Point the client at `zeen-lsp` and open a `.zn` file. The server reads the same language as the compiler, and it looks for the standard library in `ZEEN_STD` and then `~/.zeen/std`. Those are the only two places it checks: a release install keeps std in `~/.local/share/zeen/std`, so export `ZEEN_STD` if diagnostics cannot find `use std.*` while the terminal build works.
