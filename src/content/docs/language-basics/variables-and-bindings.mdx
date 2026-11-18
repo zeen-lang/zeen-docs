@@ -3,13 +3,11 @@ title: Variables and Bindings
 description: Mutable let bindings, constants, type inference, globals and discarded values.
 ---
 
-A binding gives a name to a value. This page covers how a binding is declared, how the compiler decides its type, how long the value lives and what happens when a value is discarded on purpose.
+A binding gives a name to a value. It owns its data, has one type, and stays alive until it goes out of scope.
 
 ## Bindings
 
-A binding owns its data. Every binding has one type, and the value stays alive until the binding goes out of scope.
-
-`let` creates a mutable binding, `const` creates one that cannot be changed after initialization:
+`let` creates a mutable binding, `const` creates one that cannot change after initialization:
 
 ```zn
 fn main() {
@@ -49,7 +47,7 @@ Reading it earlier is `zeen::dataflow::use_of_uninitialized`, one of the checks 
 
 ## Type inference
 
-The compiler infers the type of a binding from how the binding is used later. The type is chosen once and applies to every use. Inference never converts a value: `let value = 1; let byte: u8 = value;` makes `value` a `u8`, it does not copy an `i32` into a `u8`.
+The compiler infers a binding's type from how the binding is used later. The type is chosen once and applies to every use, and inference never converts a value: `let value = 1; let byte: u8 = value;` makes `value` a `u8`, it does not copy an `i32` into a `u8`.
 
 :::caution[The binding type is fixed by later use]
 The type of a binding can be decided by a line that comes after it, and that type then holds for the whole function. Rust and C fix the type at the declaration, so this is the first habit to unlearn.
@@ -87,54 +85,17 @@ zeen::typechecker::ambiguous_inference
 Write `let value: usize = 1;` when two consumers disagree.
 :::
 
-A hint can come from:
+A hint can come from anywhere the value meets a known type:
 
-- an annotation on another binding,
-- an argument of a function call,
-- a `return` from a function with a known return type,
-- an operand of an arithmetic or comparison expression,
-- an element of an annotated array,
-- a branch of `if` or `switch`,
-- a later assignment, as in `let x; x = 5;`.
-
-A function argument fixes the type:
-
-```zn
-fn take(byte: u8) u8 {
-  return byte + 1;
-}
-
-fn main() {
-  let n = 5;
-
-  @println("{}", take(n));
-}
-```
-
-So does a `return` with a known return type:
-
-```zn
-fn small() u8 {
-  let n = 1;
-
-  return n;
-}
-
-fn main() {
-  @println("{}", small());
-}
-```
-
-So does an operand of another expression:
-
-```zn
-fn main() {
-  let wide = 1;
-  let wide_value: i64 = wide + 2;
-
-  @println("{}", wide_value);
-}
-```
+| Hint | Example |
+|---|---|
+| annotation on another binding | `let value = 1; let byte: u8 = value;` |
+| argument of a function call | `take(n)`, where `take` takes a `u8` |
+| `return` from a function with a known return type | `fn small() u8 { let n = 1; return n; }` |
+| operand of an arithmetic or comparison expression | `let wide = 1; let wide_value: i64 = wide + 2;` |
+| element of an annotated array | `let bytes = {1, 2}; let packed: [2]u8 = bytes;` |
+| branch of `if` or `switch` | `let result = if (flag) 1 else 2; let byte: u8 = result;` |
+| later assignment | `let x; x = 5;` |
 
 An element of an annotated array sets the type of the whole literal:
 
@@ -147,19 +108,7 @@ fn main() {
 }
 ```
 
-An `if` branch does the same:
-
-```zn
-fn main() {
-  let flag = true;
-  let result = if (flag) 1 else 2;
-  let byte: u8 = result;
-
-  @println("{}", byte);
-}
-```
-
-Inference works through `@uninit()` as well. `@uninit()` produces a value of the annotated type without writing it, which lets a function fill an array field by field:
+Inference works through `@uninit()` as well. It produces a value of the annotated type without writing it, so a function can fill an array field by field:
 
 ```zn
 fn fill(source: []const u8) [3]u8 {
@@ -182,7 +131,7 @@ fn main() {
 
 Reading the value before it is written is undefined behavior. [Builtin Macros](/language-basics/macros-builtin/) covers `@uninit` and the rest of the macros.
 
-Without a hint a literal keeps its default type: an integer literal becomes `i32`, a float literal becomes `f64`.
+Without a hint a literal keeps its default type: `i32` for an integer, `f64` for a float.
 
 ```zn
 fn main() {
@@ -193,7 +142,7 @@ fn main() {
 }
 ```
 
-An explicit annotation wins over every hint. Once a binding is annotated, later uses cannot widen or narrow it, because there is no implicit widening between integer types:
+An explicit annotation wins over every hint, and there is no implicit widening between integer types, so later uses cannot widen or narrow it:
 
 ```zn
 fn main() {
@@ -202,9 +151,9 @@ fn main() {
 }
 ```
 
-The second line is `zeen::typechecker::mismatch`. A literal that is inferred into a narrow type is still range checked: `let n = 300; let byte: u8 = n;` reports `zeen::typechecker::int_literal_out_of_range` at the literal.
+The second line is `zeen::typechecker::mismatch`. A literal inferred into a narrow type is still range checked: `let n = 300; let byte: u8 = n;` reports `zeen::typechecker::int_literal_out_of_range` at the literal.
 
-Inference has limits. A struct field, an enum payload, an index expression and an array to pointer conversion do not feed a hint back into a binding, and globals always need an explicit type. Those cases are covered on the related pages.
+Inference has limits: a struct field, an enum payload, an index expression and an array to pointer conversion do not feed a hint back into a binding, and globals always need an explicit type.
 
 ## Globals
 
@@ -238,7 +187,7 @@ Globals are initialized before `main` runs. Mutable globals are checked for cycl
 
 ## Discard
 
-`let _ = value;` discards the value without binding it. The value is not dropped, so a `Drop` value discarded this way is leaked:
+`let _ = value;` discards the value without binding it. Nothing is dropped, so a `Drop` value discarded this way leaks:
 
 ```zn
 fn main() {
@@ -246,9 +195,9 @@ fn main() {
 }
 ```
 
-`String` is the heap string from [std.string](/library/std/string/), and its buffer is owned by the value. [Move Semantics](/ownership-types/move-semantics/) explains what `Drop` means and when it runs.
+`String` is the heap string from [std.string](/library/std/string/), and its buffer belongs to the value. [Move Semantics](/ownership-types/move-semantics/) explains `Drop`.
 
-Use a named binding when the value must be released at the end of the scope:
+Name the binding when the value must be released at the end of the scope:
 
 ```zn
 fn main() {
@@ -258,11 +207,11 @@ fn main() {
 }
 ```
 
-The leading underscore is a convention with one effect: the compiler does not warn about the binding being unused. `_held` still drops at the end of the scope, while a bare `_` drops nothing. Name a value `_held` or `_ignored` when the drop matters and the name does not.
+The leading underscore only silences the unused warning. `_held` still drops at the end of the scope, while a bare `_` drops nothing.
 
 ## Memory model
 
-A local binding lives on the stack frame of the current function. The frame holds the value, and heap data owned by the value is released when the binding is dropped. When the function returns, the frame is released.
+A local binding lives in the stack frame of the current function, and the heap data it owns is released when the binding is dropped. The frame goes away when the function returns.
 
 ```zn
 fn main() {

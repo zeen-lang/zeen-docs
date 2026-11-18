@@ -71,22 +71,9 @@ fn main() {
 }
 ```
 
-In statement position they start a block when the content is statements, which is how a scope groups code:
+In statement position the content is statements, so `{ ... }` starts a block instead. [Constructs](/language-basics/constructs/) shows the block form.
 
-```zn
-fn main() {
-  {
-    const a = 1;
-    const b = 2;
-
-    @println("{}", a + b);
-  }
-}
-```
-
-A bare comma separated list written as a statement is an array literal whose value is thrown away, and the compiler reports `zeen::mir::unused_expression_result`. Bind the array or leave the braces out.
-
-The `[1, 2, 3]` form from older versions is a parser error that points at `{ ... }`.
+A bare comma separated list written as a statement is an array literal whose value is thrown away, and the compiler reports `zeen::mir::unused_expression_result`. Bind the array or leave the braces out. The `[1, 2, 3]` form from older versions is a parser error that points at `{ ... }`.
 
 ### Bounds
 

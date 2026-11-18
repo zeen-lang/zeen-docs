@@ -3,7 +3,7 @@ title: Basic Types
 description: Integer, float, bool, char and void types, casts, typeof and builtin methods.
 ---
 
-Every value in Zeen has a type, and most of the time the compiler infers it from the literal or from the binding. This page lists the types built into the language, the conversions between them and the methods that every builtin value already has. Structs, enums and generics come later; everything here works without imports.
+Every value in Zeen has a type, and most of the time the compiler infers it. These are the types built into the language, the conversions between them and the methods every builtin value already has. Structs, enums and generics come later; everything here works without imports.
 
 ## Integer types
 
@@ -165,16 +165,11 @@ A cast to an enum works only for an enum with no payloads. `@as(i32, some_enum)`
 
 ## Builtin methods
 
-Every builtin type implements the interfaces in `core.ops`, so their methods are callable directly and need no `implement` block. An interface groups a method with an operator: `Eq` gives `eq` and `==`, `Add` gives `add` and `+`. [Interfaces](/functions-closures/interfaces/) explains them; for now it is enough to know the method names exist on `i32`, `f64`, `char` and the rest.
+Every builtin type implements the interfaces in `core.ops`, so their methods are callable directly and need no `implement` block. The method follows the operator: `eq` and `==`, `cmp` and the ordering operators, `add` and `+`, and so on. [Operators](/language-basics/operators/) maps each one. `Hash` is the exception with no operator behind it:
 
 | Interface | Method | Result |
 |-----------|--------|--------|
-| `Eq` | `eq(*const self, *const Self)` | `bool`, same as `==` |
-| `Ord` | `cmp(*const self, *const Self)` | `Ordering`, same as the ordering operators |
 | `Hash` | `hash(*const self)` | `u64` |
-| `Add` ... `Mod` | `add`/`sub`/`mul`/`div`/`mod` | the same as the operator |
-| `BitAnd` ... `BitShr` | `bit_and`/`bit_or`/`bit_xor`/`bit_shl`/`bit_shr` | the same as the operator |
-| `Neg`, `Not`, `BitNot` | `neg`/`not`/`bit_not` | the same as the operator |
 
 ```zn
 fn main() {

@@ -217,20 +217,4 @@ fn main() {
 }
 ```
 
-A name before the loop labels it, and `break :name` or `continue :name` address it from nested loops:
-
-```zn
-fn main() {
-  outer: for (i : 3) {
-    for (j : 3) {
-      if (j == 1) {
-        continue :outer;
-      };
-
-      @println("{} {}", i, j);
-    };
-  }
-}
-```
-
-Labels also work on `while`, covered on [Constructs](/language-basics/constructs/).
+A name before the loop labels it, and `break :name` or `continue :name` address it from nested loops. [Constructs](/language-basics/constructs/) shows labels on both loop forms.

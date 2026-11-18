@@ -3,7 +3,7 @@ title: Constructs
 description: Calls, blocks, conditionals and loops, including loop updates, else branches and labels.
 ---
 
-Statements run in order inside a function body. This page covers the shapes a statement can take: calling something, grouping statements in a block, branching with `if`, looping with `while` and `for`, and leaving early with `return`, `break` and `continue`.
+Statements run in order inside a function body and take one of these shapes: a call, a block, an `if`, a loop, or an early exit with `return`, `break` or `continue`.
 
 ## Calls
 
@@ -148,9 +148,9 @@ fn main() {
 }
 ```
 
-The order is condition, body, update, condition again. `continue` jumps to the update, `break` leaves the loop and skips it, and a normal end of the body also reaches the update.
+The order is condition, body, update, condition again. `continue` jumps to the update, `break` leaves the loop and skips it, and a normal end of the body reaches it too.
 
-The update is one assignment, compound assignment or expression without a semicolon. A declaration, `return`, `break`, `continue`, `if`, loop, `switch`, `comptime`, `fn` or block is `zeen::parser::unsupported_action`. The update sees the variables of the loop header, but not `let` bindings from the body.
+The update is one assignment, compound assignment or expression without a semicolon. A declaration, `return`, `break`, `continue`, `if`, loop, `switch`, `comptime`, `fn` or block reports `zeen::parser::unsupported_action`. It sees the variables from the loop header, not `let` bindings from the body.
 
 ## `for`
 

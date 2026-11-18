@@ -3,32 +3,40 @@ title: Operators
 description: Binary, unary and overloadable operators with their interfaces.
 ---
 
-Operators are syntax that dispatches to a method. Every builtin type already has the methods behind `+`, `==` and the rest, so arithmetic works out of the box. A struct gets the same operators once it implements the matching interface, which is how `a + b` can mean something for a vector type. The interfaces themselves are covered in [Interfaces](/functions-closures/interfaces/).
+Operators are syntax that dispatches to a method. Every builtin type already has the methods behind `+`, `==` and the rest, so arithmetic works out of the box. A struct gets the same operators once it implements the matching interface, which is how `a + b` can mean something for a vector type. [Interfaces](/functions-closures/interfaces/) covers the interfaces themselves.
 
-## Binary operators
+## Operators and methods
 
-| Operator | Interface | Description |
-|----------|-----------|-------------|
-| `+` | `Add` | addition |
-| `-` | `Sub` | subtraction |
-| `*` | `Mul` | multiplication |
-| `/` | `Div` | division, a zero divisor panics |
-| `%` | `Mod` | remainder, a zero divisor panics |
-| `==` | `Eq` | equality |
-| `!=` | `Eq` | negated equality |
-| `<` | `Ord` | left is less than right |
-| `>` | `Ord` | left is greater than right |
-| `<=` | `Ord` | left is less than or equal to right |
-| `>=` | `Ord` | left is greater than or equal to right |
-| `&&` | - | logical AND |
-| `\|\|` | - | logical OR |
-| `&` | `BitAnd` | bitwise AND |
-| `\|` | `BitOr` | bitwise OR |
-| `^` | `BitXor` | bitwise XOR |
-| `<<` | `BitShl` | shift left |
-| `>>` | `BitShr` | shift right |
+| Operator | Interface | Method | Notes |
+|---|---|---|---|
+| `+` | `Add` | `add` | addition |
+| `-` | `Sub` | `sub` | subtraction |
+| `*` | `Mul` | `mul` | multiplication |
+| `/` | `Div` | `div` | division, a zero divisor panics |
+| `%` | `Mod` | `mod` | remainder, a zero divisor panics |
+| `==` | `Eq` | `eq` | equality |
+| `!=` | `Eq` | `eq` | negated equality |
+| `<` | `Ord` | `cmp` | less than |
+| `>` | `Ord` | `cmp` | greater than |
+| `<=` | `Ord` | `cmp` | less than or equal |
+| `>=` | `Ord` | `cmp` | greater than or equal |
+| `&&` | - | - | logical AND, short-circuit |
+| `\|\|` | - | - | logical OR, short-circuit |
+| `&` | `BitAnd` | `bit_and` | bitwise AND |
+| `\|` | `BitOr` | `bit_or` | bitwise OR |
+| `^` | `BitXor` | `bit_xor` | bitwise XOR |
+| `<<` | `BitShl` | `bit_shl` | shift left |
+| `>>` | `BitShr` | `bit_shr` | shift right |
+| `-EXPR` | `Neg` | `neg` | negation |
+| `!EXPR` | `Not` | `not` | logical NOT |
+| `~EXPR` | `BitNot` | `bit_not` | bitwise NOT |
+| `*EXPR` | `Deref` | `deref` | read through a pointer |
+| `*EXPR = value` | `DerefPtr` | `deref_ptr` | write through a pointer |
+| `EXPR[index]` | `Index` | `index` | indexing |
+| `EXPR[index] = value` | `IndexPtr` | `index_ptr` | indexed write |
+| `&EXPR` | - | - | address of a place, yields `*T` |
 
-`&&` and `||` short-circuit: the right side is skipped when the left side already decides the result.
+`&&`, `||` and address-of `&` have no overload. Short-circuit means the right side is skipped when the left side already decides the result:
 
 ```zn
 fn side(tag: []const char, value: bool) bool {
@@ -43,7 +51,7 @@ fn main() {
 }
 ```
 
-Only the third line prints `right`, because the first two stop at the left operand. This makes a guard such as `ptr != nullptr && *ptr == 1` safe.
+Only the third line prints `right`. A guard such as `ptr != nullptr && *ptr == 1` depends on that.
 
 Signed and unsigned integers wrap on overflow. `/` and `%` panic on a zero divisor in Debug, and a float division by zero yields infinity.
 
@@ -103,104 +111,11 @@ fn main() {
 }
 ```
 
-Floats keep their IEEE behavior for the operators: a NaN makes every comparison `false`, while `Ord::cmp` treats it as `Equal`.
+Floats keep their IEEE behavior: a NaN makes every comparison `false`, while `Ord::cmp` treats it as `Equal`.
 
 ## Overloading
 
-An operator dispatches to an interface method when the left operand is a struct, enum or generic parameter with that bound:
-
-| Operator | Interface | Method |
-|----------|-----------|--------|
-| `+` | `Add` | `add` |
-| `-` | `Sub` | `sub` |
-| `*` | `Mul` | `mul` |
-| `/` | `Div` | `div` |
-| `%` | `Mod` | `mod` |
-| `==` `!=` | `Eq` | `eq` |
-| `<` `>` `<=` `>=` | `Ord` | `cmp` |
-| `&` | `BitAnd` | `bit_and` |
-| `\|` | `BitOr` | `bit_or` |
-| `^` | `BitXor` | `bit_xor` |
-| `<<` | `BitShl` | `bit_shl` |
-| `>>` | `BitShr` | `bit_shr` |
-| `-EXPR` | `Neg` | `neg` |
-| `!EXPR` | `Not` | `not` |
-| `~EXPR` | `BitNot` | `bit_not` |
-| `*EXPR` | `Deref` | `deref` |
-| `*EXPR = value` | `DerefPtr` | `deref_ptr` |
-| `EXPR[index]` | `Index` | `index` |
-| `EXPR[index] = value` | `IndexPtr` | `index_ptr` |
-
-The arithmetic interfaces take a parameter for the right-hand side, and `Output` for the result. Both are part of the contract:
-
-```zn
-struct Meters {
-  pub value: f64,
-}
-
-implement Add[Meters] : Meters {
-  alias Output = Meters;
-
-  fn add(self, other: Meters) Meters {
-    return .{ .value = self.value + other.value };
-  }
-}
-
-implement Mul[f64] : Meters {
-  alias Output = Meters;
-
-  fn mul(self, scale: f64) Meters {
-    return .{ .value = self.value * scale };
-  }
-}
-
-fn main() {
-  const a: Meters = .{ .value = 1.5 };
-  const b: Meters = .{ .value = 2.5 };
-
-  @println("{} {}", (a + b).value, (a * 2.0).value);
-}
-```
-
-`Add[Meters]` names the right-hand side type, so `a + b` is accepted only when `b` is a `Meters`. `Mul[f64]` accepts a float on the right and still returns `Meters`. `Add`, `Sub`, `Mul`, `Div` and `Mod` default `Output` to `Self`, which is why the alias can be left out when the result type matches. `Index` and the rest have no default, and the implementation must name `Output`.
-
-`Index` and `IndexPtr` cover reading and writing through `[]` on a custom type:
-
-```zn
-struct Grid {
-  pub cells: [4]i32,
-}
-
-implement Index : Grid {
-  alias Output = i32;
-
-  fn index(*const self, i: usize) i32 {
-    return self.cells[i];
-  }
-}
-
-implement IndexPtr : Grid {
-  alias Output = i32;
-
-  fn index_ptr(*self, i: usize) *i32 {
-    return &self.cells[i];
-  }
-}
-
-fn main() {
-  let grid: Grid = .{ .cells = {1, 2, 3, 4} };
-
-  @println("{}", grid[2]);
-
-  grid[2] = 9;
-
-  @println("{}", grid[2]);
-}
-```
-
-`&&`, `||` and `&` as address-of have no overload. Binary `&` still dispatches to `BitAnd`.
-
-### A worked example
+An operator dispatches to the interface method when the left operand is a struct, enum or generic parameter with that bound. The arithmetic interfaces take the right-hand side as a parameter, and `Output` as the result:
 
 ```zn
 struct Vector {
@@ -236,17 +151,47 @@ fn main() {
 }
 ```
 
-`implement Copy : Vector {}` matters here. `+` takes its left operand by value, so without `Copy` the expression moves `a`, and the next line reports `zeen::dataflow::use_after_move`. Marking the struct `Copy` makes each operator call take a copy instead. [Move Semantics](/ownership-types/move-semantics/) explains when that is safe and when it hides a real move.
+`Add[Vector]` names the right-hand side type, so `a + b` is accepted only when `b` is a `Vector`. `Mul[f64]` takes a float and still returns a `Vector`. `Add`, `Sub`, `Mul`, `Div` and `Mod` default `Output` to `Self`, so the alias can be left out when the result type matches; `Index` and the rest have no default and must name it.
 
-## Unary operators
+`implement Copy : Vector {}` matters here: `+` takes its left operand by value, so without `Copy` the expression moves `a` and the next line reports `zeen::dataflow::use_after_move`. Marking the struct `Copy` makes each operator call take a copy instead. [Move Semantics](/ownership-types/move-semantics/) explains when that is safe and when it hides a real move.
 
-| Operator | Interface | Description |
-|----------|-----------|-------------|
-| `-EXPR` | `Neg` | negate |
-| `!EXPR` | `Not` | logical NOT |
-| `~EXPR` | `BitNot` | bitwise NOT |
-| `*EXPR` | `Deref` | dereference a pointer |
-| `&EXPR` | - | address of a place, yields `*T` |
+## Indexing
+
+`Index` and `IndexPtr` cover reading and writing through `[]` on a custom type:
+
+```zn
+struct Grid {
+  pub cells: [4]i32,
+}
+
+implement Index : Grid {
+  alias Output = i32;
+
+  fn index(*const self, i: usize) i32 {
+    return self.cells[i];
+  }
+}
+
+implement IndexPtr : Grid {
+  alias Output = i32;
+
+  fn index_ptr(*self, i: usize) *i32 {
+    return &self.cells[i];
+  }
+}
+
+fn main() {
+  let grid: Grid = .{ .cells = {1, 2, 3, 4} };
+
+  @println("{}", grid[2]);
+
+  grid[2] = 9;
+
+  @println("{}", grid[2]);
+}
+```
+
+## Unary
 
 ```zn
 fn main() {
