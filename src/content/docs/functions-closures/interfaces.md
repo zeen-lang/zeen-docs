@@ -1,5 +1,5 @@
 ---
-title: User Interfaces
+title: Interfaces
 description: Declaring interfaces, implementing them with inherent methods, bounding generics and implementing interfaces for builtin types.
 ---
 

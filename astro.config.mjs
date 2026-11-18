@@ -55,18 +55,10 @@ export default defineConfig({
 				{
 					label: 'Getting Started',
 					items: [
-						{
-							label: 'Introduction',
-							slug: 'getting-started/introduction',
-						},
-						{
-							label: 'Installation',
-							slug: 'getting-started/installation',
-						},
-						{
-							label: 'Examples',
-							slug: 'getting-started/examples',
-						},
+						{ label: 'Introduction', slug: 'getting-started/introduction' },
+						{ label: 'Installation', slug: 'getting-started/installation' },
+						{ label: 'Code Examples', slug: 'getting-started/examples' },
+						{ label: 'Compiler Errors', slug: 'getting-started/compiler-errors' },
 					],
 				},
 
@@ -74,18 +66,10 @@ export default defineConfig({
 				{
 					label: 'Toolchain',
 					items: [
-						{
-							label: 'Compiler',
-							slug: 'toolchain/compiler',
-						},
-						{
-							label: 'Editors Plugins',
-							slug: 'toolchain/editors-plugins',
-						},
-						{
-							label: 'Package Manager',
-							slug: 'toolchain/package-manager',
-						},
+						{ label: 'Compiler', slug: 'toolchain/compiler' },
+						{ label: 'Linking', slug: 'toolchain/linking' },
+						{ label: 'Editors Plugins', slug: 'toolchain/editors-plugins' },
+						{ label: 'Package Manager', slug: 'toolchain/package-manager' },
 					],
 				},
 
@@ -93,42 +77,18 @@ export default defineConfig({
 				{
 					label: 'Language Basics',
 					items: [
-						{
-							label: 'Zeen Modules',
-							slug: 'language-basics/zeen-modules',
-						},
-						{
-							label: 'Basic Types',
-							slug: 'language-basics/basic-types',
-						},
-						{
-							label: 'Constant Literals',
-							slug: 'language-basics/constant-literals',
-						},
-						{
-							label: 'Variables and Bindings',
-							slug: 'language-basics/variables-and-bindings',
-						},
-						{
-							label: 'Operators',
-							slug: 'language-basics/operators',
-						},
-						{
-							label: 'Constructs',
-							slug: 'language-basics/constructs',
-						},
-						{
-							label: 'Arrays, Slices and Ranges',
-							slug: 'language-basics/arrays-slices-ranges',
-						},
-						{
-							label: 'Pointers',
-							slug: 'language-basics/pointers',
-						},
-						{
-							label: 'Builtin Macros',
-							slug: 'language-basics/macros-builtin',
-						},
+						{ label: 'Modules', slug: 'language-basics/zeen-modules' },
+						{ label: 'Imports and Visibility', slug: 'language-basics/imports-and-visibility' },
+						{ label: 'Basic Types', slug: 'language-basics/basic-types' },
+						{ label: 'Constant Literals', slug: 'language-basics/constant-literals' },
+						{ label: 'Variables and Bindings', slug: 'language-basics/variables-and-bindings' },
+						{ label: 'Operators', slug: 'language-basics/operators' },
+						{ label: 'Constructs', slug: 'language-basics/constructs' },
+						{ label: 'Arrays, Slices and Ranges', slug: 'language-basics/arrays-slices-ranges' },
+						{ label: 'Pointers', slug: 'language-basics/pointers' },
+						{ label: 'Builtin Macros', slug: 'language-basics/macros-builtin' },
+						{ label: 'Printing and Formatting', slug: 'language-basics/printing-formatting' },
+						{ label: 'Conditional Compilation', slug: 'language-basics/conditional-compilation' },
 					],
 				},
 
@@ -136,42 +96,15 @@ export default defineConfig({
 				{
 					label: 'Functions & Closures',
 					items: [
-						{
-							label: 'Functions',
-							slug: 'functions-closures/functions',
-						},
-						{
-							label: 'Closures',
-							slug: 'functions-closures/closures',
-						},
-						{
-							label: 'Structures and Methods',
-							slug: 'functions-closures/structures-and-methods',
-						},
-						{
-							label: 'Builtin Blocks',
-							slug: 'functions-closures/implement-builtin',
-						},
-						{
-							label: 'Enums',
-							slug: 'functions-closures/enums',
-						},
-						{
-							label: 'Switch',
-							slug: 'functions-closures/switch',
-						},
-						{
-							label: 'Type Aliases',
-							slug: 'functions-closures/type-aliases',
-						},
-						{
-							label: 'Imports and Visibility',
-							slug: 'functions-closures/imports-and-visibility',
-						},
-						{
-							label: 'Extern',
-							slug: 'functions-closures/extern',
-						},
+						{ label: 'Functions', slug: 'functions-closures/functions' },
+						{ label: 'Closures', slug: 'functions-closures/closures' },
+						{ label: 'Structures and Methods', slug: 'functions-closures/structures-and-methods' },
+						{ label: 'Interfaces', slug: 'functions-closures/interfaces' },
+						{ label: 'Enums', slug: 'functions-closures/enums' },
+						{ label: 'Switch', slug: 'functions-closures/switch' },
+						{ label: 'Type Aliases', slug: 'functions-closures/type-aliases' },
+						{ label: 'Extern', slug: 'functions-closures/extern' },
+						{ label: 'Builtin Blocks', slug: 'functions-closures/implement-builtin' },
 					],
 				},
 
@@ -179,38 +112,12 @@ export default defineConfig({
 				{
 					label: 'Ownership & Types',
 					items: [
-						{
-							label: 'Stack and Heap',
-							slug: 'ownership-types/stack-and-heap',
-						},
-						{
-							label: 'Move Semantics',
-							slug: 'ownership-types/move-semantics',
-						},
-						{
-							label: 'Generic Types',
-							slug: 'ownership-types/generic-types',
-						},
-						{
-							label: 'User Interfaces',
-							slug: 'ownership-types/user-interfaces',
-						},
-						{
-							label: 'Compiler Interfaces',
-							slug: 'ownership-types/compiler-interfaces',
-						},
-						{
-							label: 'Printing and Formatting',
-							slug: 'ownership-types/printing-formatting',
-						},
-						{
-							label: 'Iterators',
-							slug: 'ownership-types/iterators',
-						},
-						{
-							label: 'Compile Time Engine',
-							slug: 'ownership-types/compile-time-engine',
-						},
+						{ label: 'Stack and Heap', slug: 'ownership-types/stack-and-heap' },
+						{ label: 'Move Semantics', slug: 'ownership-types/move-semantics' },
+						{ label: 'Generic Types', slug: 'ownership-types/generic-types' },
+						{ label: 'Iterators', slug: 'ownership-types/iterators' },
+						{ label: 'Compiler Interfaces', slug: 'ownership-types/compiler-interfaces' },
+						{ label: 'Compile Time Engine', slug: 'ownership-types/compile-time-engine' },
 					],
 				},
 
@@ -223,38 +130,14 @@ export default defineConfig({
 							label: 'core',
 							collapsed: true,
 							items: [
-								{
-									label: 'io',
-									slug: 'library/core/io',
-								},
-								{
-									label: 'iter',
-									slug: 'library/core/iter',
-								},
-								{
-									label: 'ops',
-									slug: 'library/core/ops',
-								},
-								{
-									label: 'option',
-									slug: 'library/core/option',
-								},
-								{
-									label: 'reflection',
-									slug: 'library/core/reflection',
-								},
-								{
-									label: 'result',
-									slug: 'library/core/result',
-								},
-								{
-									label: 'slice',
-									slug: 'library/core/slice',
-								},
-								{
-									label: 'unicode',
-									slug: 'library/core/unicode',
-								},
+								{ label: 'io', slug: 'library/core/io' },
+								{ label: 'iter', slug: 'library/core/iter' },
+								{ label: 'ops', slug: 'library/core/ops' },
+								{ label: 'option', slug: 'library/core/option' },
+								{ label: 'reflection', slug: 'library/core/reflection' },
+								{ label: 'result', slug: 'library/core/result' },
+								{ label: 'slice', slug: 'library/core/slice' },
+								{ label: 'unicode', slug: 'library/core/unicode' },
 							],
 						},
 						{
@@ -265,228 +148,76 @@ export default defineConfig({
 									label: 'c/',
 									collapsed: true,
 									items: [
-										{
-											label: 'Overview',
-											slug: 'library/std/c/overview',
-										},
-										{
-											label: 'Libc',
-											slug: 'library/std/c/libc',
-										},
-										{
-											label: 'Posix',
-											slug: 'library/std/c/posix',
-										},
-										{
-											label: 'Windows',
-											slug: 'library/std/c/windows',
-										},
+										{ label: 'Overview', slug: 'library/std/c/overview' },
+										{ label: 'Libc', slug: 'library/std/c/libc' },
+										{ label: 'Posix', slug: 'library/std/c/posix' },
+										{ label: 'Windows', slug: 'library/std/c/windows' },
 									],
 								},
 								{
 									label: 'collections/',
 									collapsed: true,
 									items: [
-										{
-											label: 'list',
-											slug: 'library/std/collections/list',
-										},
-										{
-											label: 'map',
-											slug: 'library/std/collections/map',
-										},
-										{
-											label: 'set',
-											slug: 'library/std/collections/set',
-										},
+										{ label: 'list', slug: 'library/std/collections/list' },
+										{ label: 'map', slug: 'library/std/collections/map' },
+										{ label: 'set', slug: 'library/std/collections/set' },
 									],
 								},
 								{
 									label: 'crypto/',
 									collapsed: true,
 									items: [
-										{
-											label: 'base64',
-											slug: 'library/std/crypto/base64',
-										},
-										{
-											label: 'hash',
-											slug: 'library/std/crypto/hash',
-										},
-										{
-											label: 'rand',
-											slug: 'library/std/crypto/rand',
-										},
-										{
-											label: 'sha256',
-											slug: 'library/std/crypto/sha256',
-										},
+										{ label: 'base64', slug: 'library/std/crypto/base64' },
+										{ label: 'hash', slug: 'library/std/crypto/hash' },
+										{ label: 'rand', slug: 'library/std/crypto/rand' },
+										{ label: 'sha256', slug: 'library/std/crypto/sha256' },
 									],
 								},
 								{
 									label: 'primitives/',
 									collapsed: true,
 									items: [
-										{
-											label: 'i8',
-											slug: 'library/std/primitives/i8',
-										},
-										{
-											label: 'i16',
-											slug: 'library/std/primitives/i16',
-										},
-										{
-											label: 'i32',
-											slug: 'library/std/primitives/i32',
-										},
-										{
-											label: 'i64',
-											slug: 'library/std/primitives/i64',
-										},
-										{
-											label: 'isize',
-											slug: 'library/std/primitives/isize',
-										},
-										{
-											label: 'u8',
-											slug: 'library/std/primitives/u8',
-										},
-										{
-											label: 'u16',
-											slug: 'library/std/primitives/u16',
-										},
-										{
-											label: 'u32',
-											slug: 'library/std/primitives/u32',
-										},
-										{
-											label: 'u64',
-											slug: 'library/std/primitives/u64',
-										},
-										{
-											label: 'usize',
-											slug: 'library/std/primitives/usize',
-										},
-										{
-											label: 'f32',
-											slug: 'library/std/primitives/f32',
-										},
-										{
-											label: 'f64',
-											slug: 'library/std/primitives/f64',
-										},
-										{
-											label: 'char',
-											slug: 'library/std/primitives/char',
-										},
-										{
-											label: 'bool',
-											slug: 'library/std/primitives/bool',
-										},
+										{ label: 'i8', slug: 'library/std/primitives/i8' },
+										{ label: 'i16', slug: 'library/std/primitives/i16' },
+										{ label: 'i32', slug: 'library/std/primitives/i32' },
+										{ label: 'i64', slug: 'library/std/primitives/i64' },
+										{ label: 'isize', slug: 'library/std/primitives/isize' },
+										{ label: 'u8', slug: 'library/std/primitives/u8' },
+										{ label: 'u16', slug: 'library/std/primitives/u16' },
+										{ label: 'u32', slug: 'library/std/primitives/u32' },
+										{ label: 'u64', slug: 'library/std/primitives/u64' },
+										{ label: 'usize', slug: 'library/std/primitives/usize' },
+										{ label: 'f32', slug: 'library/std/primitives/f32' },
+										{ label: 'f64', slug: 'library/std/primitives/f64' },
+										{ label: 'char', slug: 'library/std/primitives/char' },
+										{ label: 'bool', slug: 'library/std/primitives/bool' },
 									],
 								},
-								{
-									label: 'alloc',
-									slug: 'library/std/alloc',
-								},
-								{
-									label: 'env',
-									slug: 'library/std/env',
-								},
-								{
-									label: 'fn',
-									slug: 'library/std/fn',
-								},
-								{
-									label: 'fs',
-									slug: 'library/std/fs',
-								},
-								{
-									label: 'http',
-									slug: 'library/std/http',
-								},
-								{
-									label: 'io',
-									slug: 'library/std/io',
-								},
-								{
-									label: 'json',
-									slug: 'library/std/json',
-								},
-								{
-									label: 'log',
-									slug: 'library/std/log',
-								},
-								{
-									label: 'math',
-									slug: 'library/std/math',
-								},
-								{
-									label: 'net',
-									slug: 'library/std/net',
-								},
-								{
-									label: 'path',
-									slug: 'library/std/path',
-								},
-								{
-									label: 'process',
-									slug: 'library/std/process',
-								},
-								{
-									label: 'ptr',
-									slug: 'library/std/ptr',
-								},
-								{
-									label: 'string',
-									slug: 'library/std/string',
-								},
-								{
-									label: 'sync',
-									slug: 'library/std/sync',
-								},
-								{
-									label: 'testing',
-									slug: 'library/std/testing',
-								},
-								{
-									label: 'thread',
-									slug: 'library/std/thread',
-								},
-								{
-									label: 'time',
-									slug: 'library/std/time',
-								},
+								{ label: 'alloc', slug: 'library/std/alloc' },
+								{ label: 'env', slug: 'library/std/env' },
+								{ label: 'fn', slug: 'library/std/fn' },
+								{ label: 'fs', slug: 'library/std/fs' },
+								{ label: 'http', slug: 'library/std/http' },
+								{ label: 'io', slug: 'library/std/io' },
+								{ label: 'json', slug: 'library/std/json' },
+								{ label: 'log', slug: 'library/std/log' },
+								{ label: 'math', slug: 'library/std/math' },
+								{ label: 'net', slug: 'library/std/net' },
+								{ label: 'path', slug: 'library/std/path' },
+								{ label: 'process', slug: 'library/std/process' },
+								{ label: 'ptr', slug: 'library/std/ptr' },
+								{ label: 'string', slug: 'library/std/string' },
+								{ label: 'sync', slug: 'library/std/sync' },
+								{ label: 'testing', slug: 'library/std/testing' },
+								{ label: 'thread', slug: 'library/std/thread' },
+								{ label: 'time', slug: 'library/std/time' },
 							],
 						},
 					],
 				},
 
-				// Build & Targets
-				{
-					label: 'Build & Targets',
-					items: [
-						{
-							label: 'Linking',
-							slug: 'toolchain/linking',
-						},
-						{
-							label: 'Conditional Compilation',
-							slug: 'toolchain/conditional-compilation',
-						},
-					],
-				},
-
-				{
-					label: 'Diagnostics',
-					link: '/diagnostics/',
-				},
-
-				// Changelog
-				{
-					label: 'Changelog',
-					link: '/changelog/',
-				}
+				{ label: 'Diagnostics', link: '/diagnostics/' },
+				{ label: 'Changelog', link: '/changelog/' },
 			],
 		}),
 	],

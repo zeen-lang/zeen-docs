@@ -74,7 +74,7 @@ fn main() {
 | `@format(fmt, ...)` | `String` | builds a heap string |
 | `@dbg(expr)` | the value of `expr` | prints `[file:line]> \`expr\` = value` in Debug builds |
 
-The format string has to be a literal. `@dbg` prints nothing in Release and returns the value unchanged. [Printing and Formatting](/ownership-types/printing-formatting/) covers the specifiers and the `Display` and `Debug` interfaces.
+The format string has to be a literal. `@dbg` prints nothing in Release and returns the value unchanged. [Printing and Formatting](/language-basics/printing-formatting/) covers the specifiers and the `Display` and `Debug` interfaces.
 
 ## Panics
 

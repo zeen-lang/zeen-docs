@@ -237,6 +237,6 @@ fn main() {
 }
 ```
 
-The target grammar is the same as in an `implement builtin` block, and an empty interface block picks up a matching inherent method from one. [User Interfaces](/ownership-types/user-interfaces/) covers bounds, static interface methods and the `duplicate_impl` rule.
+The target grammar is the same as in an `implement builtin` block, and an empty interface block picks up a matching inherent method from one. [User Interfaces](/functions-closures/interfaces/) covers bounds, static interface methods and the `duplicate_impl` rule.
 
 Core interfaces such as `Add`, `Eq` or `Hash` are already provided for builtin types, so `implement Add : builtin i32` reports `zeen::typechecker::core_interface_impl`.
