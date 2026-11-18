@@ -1,7 +1,9 @@
 ---
-// Fades and lifts [data-reveal] blocks in when they enter the viewport and back
-// out when they leave it. The hidden state lives behind the .zn-reveal class, so
-// without this script (or with reduced motion) everything stays visible.
+// Fades and lifts [data-reveal] blocks in as they come up from the bottom, and
+// plays that back only when they slide off the bottom again (scrolling up), so
+// nothing re-appears while the reader scrolls back. The hidden state lives behind
+// the .zn-reveal class, so without this script (or with reduced motion)
+// everything stays visible.
 ---
 
 <script>
@@ -21,7 +23,12 @@
 		const observer = new IntersectionObserver(
 			(entries) => {
 				for (const entry of entries) {
-					entry.target.classList.toggle('is-revealed', entry.isIntersecting);
+					if (entry.isIntersecting) {
+						entry.target.classList.add('is-revealed');
+					} else if (entry.boundingClientRect.top > 0) {
+						// Left through the bottom edge, so the reader is scrolling back up.
+						entry.target.classList.remove('is-revealed');
+					}
 				}
 			},
 			{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 },

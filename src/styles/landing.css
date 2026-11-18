@@ -502,6 +502,17 @@
 	color: var(--sl-color-gray-2);
 }
 
+[data-has-hero] .zn-flow__lead a {
+	color: var(--sl-color-gray-1);
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, var(--zn-primary) 45%, transparent);
+	text-underline-offset: 3px;
+}
+
+[data-has-hero] .zn-flow__lead a:hover {
+	color: var(--zn-primary);
+}
+
 [data-has-hero] .zn-flow__steps {
 	margin: 36px 0 0;
 	padding: 0;
@@ -610,13 +621,12 @@
 	color: var(--zn-primary);
 }
 
-[data-has-hero] .zn-flow__shot {
-	display: grid;
-	place-items: center;
+[data-has-hero] .zn-flow__video {
+	display: block;
+	width: 100%;
+	height: auto;
 	aspect-ratio: 16 / 9;
-	font-family: var(--zn-mono);
-	font-size: 13px;
-	color: var(--sl-color-gray-4);
+	background-color: var(--zn-surface-deep);
 }
 
 /* motion */

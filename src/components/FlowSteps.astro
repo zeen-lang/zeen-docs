@@ -1,7 +1,11 @@
 ---
 import { highlightZeen } from '../lib/highlight';
+import runPoster from '../assets/run-poster.jpg';
+import runVideo from '../assets/run.mp4';
 
-const program = `use zaylib.core;
+const program = `// \`zaylib\` is a raylib library bindings for Zeen.
+
+use zaylib.core;
 
 use zaylib.enums;
 use zaylib.types;
@@ -55,8 +59,10 @@ const lines = await highlightZeen(program);
 ---
 
 <section class="zn-flow">
-	<h2 class="zn-flow__title">From a new project to a running window</h2>
-	<p class="zn-flow__lead">The package manager, Zora, takes a project from scaffold to a running binary.</p>
+	<h2 class="zn-flow__title">Application Example</h2>
+	<p class="zn-flow__lead">
+		Simple application example using <a href="https://www.raylib.com/">raylib</a>
+	</p>
 
 	<ol class="zn-flow__steps">
 		<li class="zn-flow__step" data-reveal>
@@ -122,7 +128,14 @@ const lines = await highlightZeen(program);
 
 					<figure class="zn-window">
 						<div class="zn-window__bar"><span class="zn-flow__file">Simple Application — 800 × 450</span></div>
-						<div class="zn-flow__shot">demo.gif</div>
+						<video
+							class="zn-flow__video"
+							src={runVideo}
+							poster={runPoster.src}
+							controls
+							preload="metadata"
+							playsinline
+						></video>
 					</figure>
 				</div>
 			</article>
