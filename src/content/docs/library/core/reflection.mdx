@@ -10,11 +10,10 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
 ## Structures
 <Card title="Field">
-  One field of a struct type
+  One field of a struct type.
 
   ----
 
-  **Fields:**
   ```zn
   comptime struct Field {
     index: comptime_int,
@@ -25,13 +24,10 @@ import { Badge, Card } from '@astrojs/starlight/components';
 </Card>
 
 <Card title="Variant">
-  One variant of an enum type
-
-  Payload kinds: `none`, `value`, `struct`
+  One variant of an enum type. `payload` is `none`, `value` or `struct`.
 
   ----
 
-  **Fields:**
   ```zn
   comptime struct Variant {
     index: comptime_int,

@@ -87,10 +87,16 @@ Headings are `##`, plural and sentence case: `## Structures`, `## Functions`, `#
 Inside a card, each signature sits in its own `zn` block and keeps `pub`, parameter names and the return type. Group signatures under a bold label when a card has more than one category:
 
 - `**Fields:**` for struct fields, `**Variants:**` for enums, `**Constants:**` for values.
-- `**Constructors:**`, `**Named Constructors:**`, `**Getters:**`, `**Setters:**`, `**Methods:**`, `**Inspection:**`, `**Extraction:**`, `**Combinators:**` for methods.
+- `**Constructors:**`, `**Named Constructors:**`, `**Getters:**`, `**Setters:**`, `**Methods:**`, `**Inspection:**`, `**Extraction:**`, `**Combinators:**` for methods. Domain groups such as `**Mutations:**` or `**Sorting:**` work when they describe the methods better.
 - `----` before `**Interfaces:**`, then one line per interface as `core.ops` : `Copy`.
 
-Declarations carry no bodies. Follow the page you edit for trailing semicolons and other small details. Function-only modules can list signatures without cards under a `## Functions` heading (`std/testing`).
+Declarations carry no bodies. Follow the page you edit for trailing semicolons and other small details. Function-only modules can list signatures without cards under a `## Functions` heading (`std/testing`). Omit a `Fields` or `Methods` group when the item has none; do not leave a placeholder comment.
+
+Three page types vary from the type cards:
+
+- Builtin type pages (`std/primitives/*`) use `## Methods` and one card named after the type, such as `i32`.
+- C bindings group a double function and its `f` twin in one card titled by category (`std/math`).
+- Index pages that span several C headers (`std/c`) keep one heading per header and list the symbols in prose. Their `Source` points at the directory tree rather than a file.
 
 Keep guide material out of a reference page. A concept that needs a paragraph belongs in a guide chapter, and the card links to that chapter.
 

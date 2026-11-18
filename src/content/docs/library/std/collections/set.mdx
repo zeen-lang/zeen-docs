@@ -92,23 +92,3 @@ fn main() {
   pub key: T,
   ```
 </Card>
-
-## Results
-
-`insert` returns `true` when the value was new, `remove` returns `true` when it was present:
-
-```zn
-use std.collections.set;
-use std.string;
-
-fn main() {
-  let names: HashSet[String] = HashSet.new();
-
-  @println("{}", names.insert(String.from("zeen")));
-  @println("{}", names.insert(String.from("zeen")));
-
-  const key: String = String.from("zeen");
-
-  @println("{} {}", names.contains(&key), names.remove(&key));
-}
-```

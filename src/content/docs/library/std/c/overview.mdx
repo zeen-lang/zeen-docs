@@ -6,6 +6,7 @@ description: Layout of the std.c bindings and platform type selection.
 import { Badge } from '@astrojs/starlight/components';
 
 **Module:** <Badge text="std.c" variant="note" size="medium" /> <br/>
+**Source:** [std/c/](https://github.com/zeen-lang/zeen/tree/main/lib/std/src/c) <br/>
 
 `std.c` holds thin `extern` bindings to the platform. Headers map straight to `std.c.<name>`, platform types derive through preprocessor `@os`/`@arch` in `types.zn`:
 ```zn

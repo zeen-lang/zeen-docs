@@ -111,32 +111,3 @@ fn main() {
   pub fn value_const_ptr(*const self) *const V;
   ```
 </Card>
-
-## Lookup and mutation
-
-`get` returns a borrow into the bucket, never a copy. `insert` returns the value it displaced:
-
-```zn
-use std.collections.map;
-use std.string;
-
-fn main() {
-  let counts: HashMap[String, i32] = HashMap.new();
-  const previous = counts.insert(String.from("zeen"), 1);
-
-  @println("{}", previous.is_none());
-
-  const key: String = String.from("zeen");
-
-  switch (counts.get_mut(&key)) {
-    .Some(value) => {
-      *value = *value + 1;
-    },
-    .None => {},
-  }
-
-  @println("{}", *counts.get(&key).unwrap());
-}
-```
-
-`remove` hands back the value, `remove_entry` hands back the whole entry so the key leaves with it.

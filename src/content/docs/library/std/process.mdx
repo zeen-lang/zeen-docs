@@ -19,16 +19,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
 >   @println("stdout: {}", out.stdout.trim_end());
 > }
 > ```
->
-> ```zn
-> use std.process;
->
-> fn main() {
->   for (arg : Process.args_iter()) {
->     @println("{}", arg);
->   }
-> }
-> ```
 
 ## Enums
 <Card title="Stdio">
@@ -49,12 +39,6 @@ import { Badge, Card } from '@astrojs/starlight/components';
 <Card title="Process">
   OS process: arguments, working directory and exit
 
-  ----
-
-  **Fields:**
-  ```zn
-  // No Fields
-  ```
   ----
 
   **Methods:**

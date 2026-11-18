@@ -8,6 +8,8 @@ import { Badge, Card } from '@astrojs/starlight/components';
 **Module:** <Badge text="std.thread" variant="note" size="medium" /> <br/>
 **Source:** [std/thread.zn](https://github.com/zeen-lang/zeen/blob/main/lib/std/src/thread.zn) <br/>
 
+The closure runs on a new OS thread, `join` waits for it and returns the closure result. Shared state goes through `Arc` with `Mutex` from [Sync](/library/std/sync/), which this module re-exports.
+
 > **Usage Example**
 > ```zn
 > use std.thread;
@@ -21,18 +23,10 @@ import { Badge, Card } from '@astrojs/starlight/components';
 > }
 > ```
 
-The closure runs on a new OS thread, `join` waits for it and returns the closure result. Shared state goes through `Arc` with `Mutex` from [Sync](/library/std/sync/), which this module re-exports.
-
 ## Structures
 <Card title="Thread">
   OS thread spawning and joining
 
-  ----
-
-  **Fields:**
-  ```zn
-  // No Fields
-  ```
   ----
 
   **Methods:**

@@ -6,6 +6,7 @@ description: Bindings for libc types, stdio, stdlib, string and math headers.
 import { Badge } from '@astrojs/starlight/components';
 
 **Module:** <Badge text="std.c" variant="note" size="medium" /> <br/>
+**Source:** [std/c/](https://github.com/zeen-lang/zeen/tree/main/lib/std/src/c) <br/>
 
 ## types
 Platform-dependent aliases via preprocessor. Core: `c_char`, `c_schar`, `c_uchar`, `c_short`, `c_ushort`, `c_int`, `c_uint`, `c_long`, `c_ulong`, `c_longlong`, `c_ulonglong`, `c_float`, `c_double`, `c_size_t`, `c_ptrdiff_t`, `c_intptr_t`, `c_uintptr_t`, `c_ssize_t`, `c_wchar_t`, `c_pid_t`, `c_uid_t` and others.
@@ -20,7 +21,7 @@ Platform-dependent aliases via preprocessor. Core: `c_char`, `c_schar`, `c_uchar
 `memcpy`, `memset`, `memcmp`, `strlen`, `strcpy`, `strcmp`, `strstr` family.
 
 ## math
-Re-exported through `std.math` - see there. Raw in `std.c.math`: `fabs`, `sin`, `cos`, `sqrt`, `pow`, `exp`, `log` and others.
+Raw declarations live in `std.c.math`: `fabs`, `sin`, `cos`, `sqrt`, `pow`, `exp`, `log` and others. Import them with `use std.c.math;`. `std.math` wraps the common ones in `Math` and the `Float` interface.
 
 ## Other headers
 `ctype` (`isalpha`, `isdigit` …), `errno` (`EPERM`, `ENOENT` …), `float` (`FLT_MAX` …), `limits` (`CHAR_MAX` …), `locale` (`setlocale`), `signal` (`SIGINT` …), `assert`, `stdbool` (`bool`), `stddef` (`NULL`), `time`.

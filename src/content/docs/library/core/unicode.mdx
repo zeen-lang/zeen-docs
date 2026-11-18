@@ -10,6 +10,20 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
 `char` holds one byte, so text stays `[]const char` in UTF-8. `Rune` holds a full code point and provides the Unicode helpers.
 
+`String` exposes the same decoding through `runes`, `push_rune` and friends. `Rune` works on plain slices as well:
+
+```zn
+fn main() {
+  const rune = Rune.from_u32(0x1F600).unwrap();
+  const text: String = String.from_rune(rune);
+  let out: [4]u8 = {0; 4};
+
+  const written = rune.encode_utf8(&out);
+
+  @println("{} {} {}", text, written, Rune.count(text.slice(..)));
+}
+```
+
 ## Structures
 
 <Card title="Rune">
@@ -150,19 +164,3 @@ import { Badge, Card } from '@astrojs/starlight/components';
   **Interfaces:**
   - `core.iter` : `Iterator` (`Item = Rune`)
 </Card>
-
-## Example
-
-`String` exposes the same decoding through `runes`, `push_rune` and friends. `Rune` works on plain slices as well:
-
-```zn
-fn main() {
-  const rune = Rune.from_u32(0x1F600).unwrap();
-  const text: String = String.from_rune(rune);
-  let out: [4]u8 = {0; 4};
-
-  const written = rune.encode_utf8(&out);
-
-  @println("{} {} {}", text, written, Rune.count(text.slice(..)));
-}
-```

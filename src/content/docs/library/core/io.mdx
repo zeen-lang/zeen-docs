@@ -51,25 +51,17 @@ import { Badge, Card } from '@astrojs/starlight/components';
 
   ----
 
-  **Fields:**
-  ```zn
-  // No Fields
-  ```
-  ----
-  **Methods:**
-  ```zn
-  // No Methods
-  ```
-
-  ----
-
   **Interfaces:**
   - `core.io` : `StrWriter`
 </Card>
 
-## Extern Functions
+## Functions
+<Card title="__zeen_stdout_write">
+  Compiler-provided writer that backs stdout. `OutStream` calls it.
 
-```zn
-// Compiler provided stdout writer function
-extern fn __zeen_stdout_write(ptr: [*]const char, len: usize) void;
-```
+  ----
+
+  ```zn
+  extern fn __zeen_stdout_write(ptr: [*]const char, len: usize) void;
+  ```
+</Card>
