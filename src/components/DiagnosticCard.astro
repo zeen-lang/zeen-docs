@@ -2,6 +2,7 @@
 import { Code } from '@astrojs/starlight/components';
 import type { Diagnostic } from '../data/diagnostics';
 import { renderInlineMarkdown } from '../lib/markdown';
+import Icon from './Icon.astro';
 
 interface Props {
   diagnostic: Diagnostic;
@@ -11,95 +12,167 @@ const { diagnostic } = Astro.props;
 const anchor = diagnostic.code.replaceAll('::', '-');
 const message = renderInlineMarkdown(diagnostic.message);
 const help = diagnostic.help ? renderInlineMarkdown(diagnostic.help) : null;
+const severity = diagnostic.severity === 'warning' ? 'Warning' : 'Error';
 ---
 
 <section class:list={['diag', diagnostic.severity]}>
-  <h4 id={anchor}>
-    <span class="severity">{diagnostic.severity}</span>{' '}
-    <a class="code" href={`#${anchor}`}><code>{diagnostic.code}</code></a>
+  <h4 id={anchor} class="diag__head">
+    <span class="diag__severity">{severity}</span>
+    <a class="diag__code" href={`#${anchor}`}><code>{diagnostic.code}</code></a>
   </h4>
 
-  <p set:html={message} />
+  <p class="diag__message" set:html={message} />
 
-  {diagnostic.example && <Code code={diagnostic.example} lang="zn" />}
+  {diagnostic.example && (
+    <div class="diag__example">
+      <Code code={diagnostic.example} lang="zn" />
+    </div>
+  )}
 
   {help && (
-    <p class="help"><span class="label">help:</span><span set:html={help} /></p>
+    <p class="diag__help">
+      <Icon name="lightbulb" size={16} class="diag__help-icon" />
+      <span set:html={help} />
+    </p>
   )}
 </section>
 
 <style>
   .diag {
-    min-width: 0;
-    margin-block: 1.5rem 2rem;
-    padding-inline-start: 1rem;
-    border-inline-start: 3px solid var(--sl-color-red);
+    margin-block: 16px;
+    padding: 16px 20px 18px;
+    border: 1px solid var(--zn-hairline);
+    border-radius: 14px;
+    background-color: var(--zn-surface);
   }
 
-  .diag.warning {
-    border-inline-start-color: var(--sl-color-orange);
-  }
-
-  h4 {
-    margin-block: 0 0.5rem;
+  .diag__head {
     display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin: 0;
     min-width: 0;
   }
 
-  h4 code {
-    font-size: var(--sl-text-base);
+  .diag__severity {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+    height: 22px;
+    padding: 0 9px;
+    border-radius: 999px;
+    font-family: var(--sl-font);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 500;
+    color: var(--sl-color-red);
+    background-color: color-mix(in srgb, var(--sl-color-red) 10%, transparent);
+  }
+
+  .diag__severity::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background-color: currentColor;
+  }
+
+  .warning .diag__severity {
+    color: var(--sl-color-orange);
+    background-color: color-mix(in srgb, var(--sl-color-orange) 10%, transparent);
+  }
+
+  .diag__code {
+    min-width: 0;
+    color: var(--sl-color-white);
+    text-decoration: none;
+  }
+
+  .diag__code code {
+    font-size: 14px;
+    line-height: 22px;
     background: none;
     padding: 0;
     white-space: normal;
     overflow-wrap: anywhere;
   }
 
-  .code {
-    color: inherit;
-    text-decoration: none;
-    min-width: 0;
+  .diag__code:hover code {
+    color: var(--zn-primary);
   }
 
-  .code:hover code {
-    text-decoration: underline;
+  .diag__code:focus-visible {
+    outline: 2px solid var(--zn-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
-  .severity {
-    font-size: var(--sl-text-xs);
-    text-transform: lowercase;
-    color: var(--sl-color-red);
-  }
-
-  .warning .severity {
-    color: var(--sl-color-orange);
-  }
-
-  p {
-    margin-block: 0.5rem;
+  .diag__message {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--sl-color-gray-2);
     overflow-wrap: anywhere;
   }
 
-  p code {
+  .diag__message code {
     white-space: normal;
     overflow-wrap: anywhere;
   }
 
-  .help {
-    margin-block: 0.9rem 0;
-    padding-block: 0.7rem 0.75rem;
-    border-block-start: 1px solid var(--sl-color-gray-5);
-    font-size: var(--sl-text-sm);
-    color: var(--sl-color-gray-2);
+  .diag__example {
+    margin-top: 12px;
   }
 
-  .label {
-    font-family: var(--__sl-font-mono);
-    font-size: var(--sl-text-sm);
-    font-weight: 600;
-    margin-inline-end: 0.5rem;
-    color: hsl(159deg 35% 32%);
+  .diag__example :global(.expressive-code) {
+    --ec-brdRad: 9px;
+    --ec-codeBg: var(--zn-surface-deep);
+  }
+
+  .diag__example :global(.expressive-code .copy button) {
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .diag__example :global(.expressive-code .copy button div) {
+    background-color: rgb(244 244 245 / 0.12);
+    opacity: 0;
+  }
+
+  .diag__example :global(.expressive-code .copy button::before) {
+    border-color: transparent;
+  }
+
+  .diag__example :global(.expressive-code .copy button:hover div) {
+    opacity: 1;
+  }
+
+  .diag__help {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background-color: color-mix(in srgb, var(--zn-primary) 9%, transparent);
+    font-size: 13px;
+    line-height: 21px;
+    color: var(--sl-color-gray-1);
+    overflow-wrap: anywhere;
+  }
+
+  .diag__help-icon {
+    margin-top: 2px;
+    color: var(--zn-primary);
+  }
+
+  .diag__help code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    background-color: rgb(244 244 245 / 0.07);
+    border: 0;
+    color: var(--sl-color-white);
   }
 </style>

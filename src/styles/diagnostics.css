@@ -1,0 +1,24 @@
+.zn-diag h2 {
+	scroll-margin-top: 6rem;
+}
+
+.zn-diag h3 {
+	margin-top: 2.25rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--zn-hairline);
+	font-size: 18px;
+	line-height: 26px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-gray-1);
+	scroll-margin-top: 6rem;
+}
+
+.zn-diag .expressive-code pre {
+	scrollbar-width: thin;
+	scrollbar-color: var(--sl-color-gray-4) transparent;
+}
+
+.zn-diag > :first-child {
+	margin-top: 0;
+}

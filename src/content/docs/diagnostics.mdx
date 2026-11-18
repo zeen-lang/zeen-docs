@@ -5,6 +5,9 @@ description: Compiler errors and warnings, grouped by pipeline stage, with examp
 
 import DiagnosticCard from '../../components/DiagnosticCard.astro';
 import { diagnostics } from '../../data/diagnostics';
+import '../../styles/diagnostics.css';
+
+<div class="zn-diag">
 
 ## Errors
 
@@ -45,3 +48,5 @@ import { diagnostics } from '../../data/diagnostics';
 ### MIR
 
 {diagnostics.filter((diagnostic) => diagnostic.stage === 'zeen-mir' && diagnostic.severity === 'warning').map((diagnostic) => <DiagnosticCard diagnostic={diagnostic} />)}
+
+</div>
