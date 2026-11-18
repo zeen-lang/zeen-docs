@@ -30,7 +30,7 @@ A plugin that starts but shows no diagnostics usually cannot find `zeen-lsp` on 
     <Steps>
     1. Add the plugin with the manager you already use.
 
-       lazy.nvim:
+       **lazy.nvim:**
        ```lua
        return {
          "zeen-lang/zeen-nvim",
@@ -51,7 +51,7 @@ A plugin that starts but shows no diagnostics usually cannot find `zeen-lsp` on 
        }
        ```
 
-       packer.nvim:
+       **packer.nvim:**
        ```lua
        use({
          "zeen-lang/zeen-nvim",
@@ -61,7 +61,7 @@ A plugin that starts but shows no diagnostics usually cannot find `zeen-lsp` on 
        })
        ```
 
-       vim-plug needs a Lua line after the `Plug` declaration, because `require` is Lua:
+       **vim-plug:**
        ```vim
        Plug 'zeen-lang/zeen-nvim'
 
@@ -72,8 +72,6 @@ A plugin that starts but shows no diagnostics usually cannot find `zeen-lsp` on 
 
     3. Open a `.zn` file. Hover, completion and diagnostics come from `zeen-lsp`.
     </Steps>
-
-    `root_markers` tells the server where a project starts. `.git` covers a plain checkout; `Zora.toml` and `Zora.lock` appear when a directory is a [package](/toolchain/package-manager/), and the server then resolves `use` paths from that root.
 </Card>
 
 <Card title="Syntax highlighting" icon="seti:config">
@@ -89,5 +87,3 @@ The server speaks standard LSP over stdin and stdout, so any client that accepts
   href="https://github.com/zeen-lang/zeen/tree/main/lsp"
   description="Language server source code on GitHub"
 />
-
-Point the client at `zeen-lsp` and open a `.zn` file. The server reads the same language as the compiler, and it looks for the standard library in `ZEEN_STD` and then `~/.zeen/std`. Those are the only two places it checks: a release install keeps std in `~/.local/share/zeen/std`, so export `ZEEN_STD` if diagnostics cannot find `use std.*` while the terminal build works.

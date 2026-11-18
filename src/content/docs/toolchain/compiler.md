@@ -1,32 +1,13 @@
 ---
 title: Compiler
-description: Command line flags, the build pipeline, modes and output kinds.
+description: Command line flags, modes and output kinds.
 ---
 
 ```bash
 zeen <source> <output>
 ```
 
-The source path picks the project root, the directory that `use` paths resolve against. The output path is a base name: the compiler appends the extension the target needs, `.exe` on Windows and `.wasm` on wasm, and nothing on Linux and macOS. Run `zeen` with no arguments to print the usage text.
-
-## What a build does
-
-`zeen main.zn output` runs the same sequence every time:
-
-1. The lexer turns the file into tokens.
-2. The parser builds the declaration tree.
-3. The preprocessor resolves `@os`, `@arch`, `@debug` and the other conditional blocks, so only one branch of each reaches later stages.
-4. The resolver loads `use` paths, injects `core`, runs the compile-time interpreter and builds the symbol table.
-5. The tree is lowered to HIR, an arena-free form that later stages can own.
-6. The typechecker assigns a type to every expression and checks interfaces, generic bounds and literals.
-7. MIR lowering turns the typed tree into a control-flow graph of basic blocks. MIR is the level where ownership is explicit: copies, moves and drops are separate instructions.
-8. The flow pass walks that graph, decides which operands move, inserts the drops at scope exits, and reports `use_after_move` and `uninitialized` errors. It also emits the unused-variable warnings.
-9. Code generation turns MIR into LLVM IR for the target triple, and LLVM compiles that to an object file.
-10. The linker turns the object file into the binary, adding the C runtime and any `--link` libraries.
-
-Steps 7 and 9 are the two forms you can inspect. `--emit MIR` prints the graph after the flow pass, with the moves and drops already chosen, so it answers "why was this value freed here". `--emit IR` prints the LLVM module, annotated with function names such as `multiply$i32` for monomorphized generics.
-
-Compilation and linking are separate failures. A type error stops before code generation; a linker error means the code compiled and the toolchain could not produce the binary. [Linking](/toolchain/linking/) covers the second case.
+The output path is a base name: the compiler appends the extension the target needs, `.exe` on Windows and `.wasm` on wasm, and nothing on Linux and macOS. Run `zeen` with no arguments to print the usage text.
 
 ## Flags
 
@@ -72,9 +53,12 @@ too big
 
 ## Output kinds
 
-`BIN` links a binary. `OBJ` writes the target object file, `.o` or `.obj`. `IR` writes LLVM IR to `<output>.ll`. `MIR` writes the lowered graph to `<output>.mir`.
+- `BIN` links a binary.
+- `OBJ` writes the target object file, `.o` or `.obj`.
+- `IR` writes LLVM IR to `<output>.ll`.
+- `MIR` writes the lowered graph to `<output>.mir`.
 
-`IR` and `MIR` skip linking, so they work on a machine with no C toolchain. `--check` stops after the flow pass: no code generation, no linker, and the fastest way to test a change.
+`IR` and `MIR` skip linking, so they work on a machine with no C toolchain. `--check` stops before code generation, with no linker, and is the fastest way to test a change.
 
 Every mode still looks for `fn main`, because it is the entry point of the program, with one exception: a wasm target with the `unknown` OS (`wasm32-unknown-unknown`) may build a library without `main`.
 
