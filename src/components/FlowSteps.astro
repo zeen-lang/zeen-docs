@@ -1,0 +1,131 @@
+---
+import { highlightZeen } from '../lib/highlight';
+
+const program = `use zaylib.core;
+
+use zaylib.enums;
+use zaylib.types;
+
+use zaylib.colors;
+use zaylib.text;
+use zaylib.shapes;
+
+fn main() {
+  // Application constants
+  const ScreenWidth = 800;
+  const ScreenHeight = 450;
+  const BallSpeed: f32 = 4.0;
+
+  // Ball state vector
+  let ballPosition: Vector2 = .{
+    .x = @as(f32, ScreenWidth / 2),
+    .y = @as(f32, ScreenHeight / 2),
+  };
+
+  // Window init
+  InitWindow(ScreenWidth, ScreenHeight, "Simple Application");
+  SetTargetFPS(60);
+  SetExitKey(KEY_ESCAPE);
+
+  // Application loop
+  while (!WindowShouldClose()) {
+    // Keys handling
+    if (IsKeyDown(KEY_RIGHT)) ballPosition.x += BallSpeed;
+    if (IsKeyDown(KEY_LEFT)) ballPosition.x -= BallSpeed;
+    if (IsKeyDown(KEY_UP)) ballPosition.y -= BallSpeed;
+    if (IsKeyDown(KEY_DOWN)) ballPosition.y += BallSpeed;
+
+    BeginDrawing();
+
+      // Circle
+      ClearBackground(RAYWHITE);
+      DrawCircleV(ballPosition, 20.0, MAROON);
+
+      // Text
+      DrawText("Move the ball with arrow keys", 10, 10, 20, DARKGRAY);
+      DrawText("Press \`Esc\` to quit", 10, 30, 20, DARKGRAY);
+
+    EndDrawing();
+  }
+
+  CloseWindow();
+}`;
+
+const lines = await highlightZeen(program);
+---
+
+<section class="zn-flow">
+	<h2 class="zn-flow__title">From a new project to a running window</h2>
+	<p class="zn-flow__lead">The package manager, Zora, takes a project from scaffold to a running binary.</p>
+
+	<ol class="zn-flow__steps">
+		<li class="zn-flow__step" data-reveal>
+			<span class="zn-flow__num">1</span>
+
+			<article class="zn-flow__card">
+				<h3 class="zn-flow__name">Start a project</h3>
+
+				<div class="zn-flow__panes">
+					<figure class="zn-window">
+						<pre class="zn-code zn-flow__term" tabindex="0"><code><span class="zn-flow__prompt">$</span> <span class="zn-flow__cmd">zora new example</span>
+<span class="zn-flow__ok">Creating</span> new lockfile Zora.lock
+<span class="zn-flow__ok">Created</span> new binary package example (in /home/mealet)</code></pre>
+					</figure>
+				</div>
+			</article>
+		</li>
+
+		<li class="zn-flow__step" data-reveal>
+			<span class="zn-flow__num">2</span>
+
+			<article class="zn-flow__card">
+				<h3 class="zn-flow__name">Add a dependency</h3>
+
+				<div class="zn-flow__panes">
+					<figure class="zn-window">
+						<pre class="zn-code zn-flow__term" tabindex="0"><code><span class="zn-flow__prompt">$</span> <span class="zn-flow__cmd">zora add https://github.com/mealet/zaylib</span>
+<span class="zn-flow__ok">Added</span> dependency zaylib v0.1.0 to the project</code></pre>
+					</figure>
+				</div>
+			</article>
+		</li>
+
+		<li class="zn-flow__step" data-reveal>
+			<span class="zn-flow__num">3</span>
+
+			<article class="zn-flow__card">
+				<h3 class="zn-flow__name">Write the program</h3>
+
+				<div class="zn-flow__panes">
+					<figure class="zn-window">
+						<div class="zn-window__bar"><span class="zn-flow__file">src/main.zn</span></div>
+						<pre class="zn-code" tabindex="0"><code>{lines.map((line) => (
+							<span class="l">{line.map((token) => (
+								token.style ? <span style={token.style}>{token.content}</span> : token.content
+							))}</span>
+						))}</code></pre>
+					</figure>
+				</div>
+			</article>
+		</li>
+
+		<li class="zn-flow__step" data-reveal>
+			<span class="zn-flow__num">4</span>
+
+			<article class="zn-flow__card">
+				<h3 class="zn-flow__name">Run it</h3>
+
+				<div class="zn-flow__panes">
+					<figure class="zn-window">
+						<pre class="zn-code zn-flow__term" tabindex="0"><code><span class="zn-flow__prompt">$</span> <span class="zn-flow__cmd">zora run --release</span></code></pre>
+					</figure>
+
+					<figure class="zn-window">
+						<div class="zn-window__bar"><span class="zn-flow__file">Simple Application — 800 × 450</span></div>
+						<div class="zn-flow__shot">demo.gif</div>
+					</figure>
+				</div>
+			</article>
+		</li>
+	</ol>
+</section>

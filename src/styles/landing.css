@@ -132,6 +132,18 @@
 	transition: height var(--zn-medium) var(--zn-ease);
 }
 
+/* Inner blocks round to the frame's inner radius, so their square background
+   never paints over the border at the corners. */
+[data-has-hero] .zn-window > :first-child {
+	border-start-start-radius: 9px;
+	border-start-end-radius: 9px;
+}
+
+[data-has-hero] .zn-window > :last-child {
+	border-end-start-radius: 9px;
+	border-end-end-radius: 9px;
+}
+
 [data-has-hero] .zn-window__bar {
 	display: flex;
 	align-items: center;
@@ -467,6 +479,146 @@
 	color: var(--sl-color-gray-2);
 }
 
+/* flow */
+
+[data-has-hero] .zn-flow {
+	padding-bottom: 64px;
+}
+
+[data-has-hero] .zn-flow__title {
+	margin: 0;
+	font-size: 28px;
+	line-height: 36px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white);
+}
+
+[data-has-hero] .zn-flow__lead {
+	margin: 12px 0 0;
+	max-width: 56ch;
+	font-size: 15px;
+	line-height: 24px;
+	color: var(--sl-color-gray-2);
+}
+
+[data-has-hero] .zn-flow__steps {
+	margin: 36px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-has-hero] .zn-flow__step {
+	position: relative;
+	display: grid;
+	grid-template-columns: 28px minmax(0, 1fr);
+	column-gap: 20px;
+	padding-bottom: 20px;
+}
+
+[data-has-hero] .zn-flow__step:last-child {
+	padding-bottom: 0;
+}
+
+/* The rail sits in its own column and the line runs behind the badges down to the next one. */
+[data-has-hero] .zn-flow__step::before {
+	content: '';
+	position: absolute;
+	top: 51px;
+	bottom: -23px;
+	left: 13px;
+	width: 1px;
+	background-color: var(--zn-hairline-strong);
+}
+
+[data-has-hero] .zn-flow__step:last-child::before {
+	content: none;
+}
+
+[data-has-hero] .zn-flow__num {
+	grid-column: 1;
+	margin-top: 23px;
+	width: 28px;
+	height: 28px;
+	border-radius: 999px;
+	background-color: var(--zn-primary-soft);
+	color: var(--zn-primary-high);
+	font-family: var(--zn-mono);
+	font-size: 12px;
+	line-height: 28px;
+	text-align: center;
+}
+
+[data-has-hero] .zn-flow__card {
+	min-width: 0;
+	padding: 24px;
+	background-color: var(--zn-surface);
+	border: 1px solid var(--zn-hairline);
+	border-radius: 20px;
+}
+
+[data-has-hero] .zn-flow__name {
+	margin: 0;
+	font-size: 18px;
+	line-height: 26px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white);
+}
+
+[data-has-hero] .zn-flow .zn-window {
+	border-color: var(--zn-hairline-strong);
+}
+
+[data-has-hero] .zn-flow__panes {
+	display: grid;
+	gap: 12px;
+	margin-top: 16px;
+}
+
+[data-has-hero] .zn-flow__term {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+[data-has-hero] .zn-flow .zn-code {
+	scrollbar-width: none;
+}
+
+[data-has-hero] .zn-flow .zn-code::-webkit-scrollbar {
+	display: none;
+}
+
+[data-has-hero] .zn-flow__file {
+	padding: 0 6px;
+	font-family: var(--zn-mono);
+	font-size: 12px;
+	line-height: 18px;
+	color: var(--sl-color-gray-3);
+}
+
+[data-has-hero] .zn-flow__prompt {
+	color: var(--sl-color-gray-4);
+	user-select: none;
+}
+
+[data-has-hero] .zn-flow__cmd {
+	color: var(--sl-color-gray-1);
+}
+
+[data-has-hero] .zn-flow__ok {
+	color: var(--zn-primary);
+}
+
+[data-has-hero] .zn-flow__shot {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 16 / 9;
+	font-family: var(--zn-mono);
+	font-size: 13px;
+	color: var(--sl-color-gray-4);
+}
+
 /* motion */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -477,6 +629,37 @@
 
 	[data-has-hero] .zn-install {
 		animation-delay: 80ms;
+	}
+
+	[data-has-hero].zn-reveal [data-reveal] {
+		opacity: 0;
+		transform: translateY(16px);
+		transition:
+			opacity 520ms var(--zn-ease),
+			transform 520ms var(--zn-ease);
+	}
+
+	/* The first row stays half-lit while hidden, so the fold is not an empty band. */
+	[data-has-hero].zn-reveal .zn-feature-grid > :nth-child(-n + 2) {
+		opacity: 0.5;
+	}
+
+	[data-has-hero].zn-reveal [data-reveal].is-revealed {
+		opacity: 1;
+		transform: none;
+	}
+
+	/* Delay sits on the revealed state, so cards come in staggered and leave together. */
+	[data-has-hero].zn-reveal .zn-feature-grid > :nth-child(2).is-revealed {
+		transition-delay: 60ms;
+	}
+
+	[data-has-hero].zn-reveal .zn-feature-grid > :nth-child(3).is-revealed {
+		transition-delay: 120ms;
+	}
+
+	[data-has-hero].zn-reveal .zn-feature-grid > :nth-child(4).is-revealed {
+		transition-delay: 180ms;
 	}
 }
 
@@ -577,6 +760,18 @@
 
 	[data-has-hero] .zn-features__title {
 		margin-bottom: 16px;
+	}
+
+	[data-has-hero] .zn-flow {
+		padding-bottom: 32px;
+	}
+
+	[data-has-hero] .zn-flow__steps {
+		margin-top: 28px;
+	}
+
+	[data-has-hero] .zn-flow__card {
+		padding: 20px;
 	}
 }
 

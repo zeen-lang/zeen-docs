@@ -1,0 +1,32 @@
+---
+// Fades and lifts [data-reveal] blocks in when they enter the viewport and back
+// out when they leave it. The hidden state lives behind the .zn-reveal class, so
+// without this script (or with reduced motion) everything stays visible.
+---
+
+<script>
+	const targets = document.querySelectorAll('[data-reveal]');
+
+	if (targets.length > 0 && 'IntersectionObserver' in window) {
+		// Mark what is already on screen first, so the first paint does not fade
+		// the visible part out and straight back in.
+		for (const target of targets) {
+			if (target.getBoundingClientRect().top < window.innerHeight) {
+				target.classList.add('is-revealed');
+			}
+		}
+
+		document.documentElement.classList.add('zn-reveal');
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					entry.target.classList.toggle('is-revealed', entry.isIntersecting);
+				}
+			},
+			{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+		);
+
+		targets.forEach((target) => observer.observe(target));
+	}
+</script>

@@ -245,7 +245,7 @@ starlight-toc a[aria-current='true'] {
 	color: var(--zn-primary);
 }
 
-.sl-markdown-content code:not(:where(.expressive-code *)) {
+.sl-markdown-content code:not(:where(.expressive-code *, pre *)) {
 	margin-block: 0;
 	padding: 1px 6px;
 	border: 1px solid var(--zn-hairline);
