@@ -101,33 +101,37 @@ Both version fields follow semver: `1.4.2` is major, minor and patch, and a care
 
 Each entry maps a package name to a git source: a bare URL or a `{ git, rev }` pair. `rev` may be a commit, tag or branch. Dependencies are resolved into `Zora.lock`, which pins every one to a commit.
 
+```toml
+[dependencies]
+sample = "https://..."
+another = { git = "https://...", rev = "12345678" }
+```
+
 ### Platform sections
 
-`[build]` accepts per-platform sub-tables. Selector values use the same vocabulary as the compiler directives (`@os`, `@arch`, `@env`, `@family`, `@target`):
+A `[build.<selector>.<value>]` sub-table overrides `[build]` on one platform. Selector values use the same vocabulary as [conditional compilation](/language-basics/conditional-compilation/) (`@os`, `@arch`, `@env`, `@family`, `@target`).
 
-- `[build.target.<triple>]`
-- `[build.arch.<value>]`
-- `[build.env.<value>]`
-- `[build.os.<value>]`
-- `[build.family.<value>]`
+| Section | Example |
+|---|---|
+| `build.target` | `[build.target.x86_64-unknown-linux-gnu]` |
+| `build.arch` | `[build.arch.aarch64]` |
+| `build.env` | `[build.env.musl]` |
+| `build.os` | `[build.os.linux]` |
+| `build.family` | `[build.family.unix]` |
 
-An override carries the same fields as `[build]`: `output`, `flags`, `link`, `link-dir`.
+The override takes the same fields as `[build]`: `output`, `flags`, `link`, `link-dir`. First match wins, in this order: `target`, `arch`, `env`, `os`, `family`.
 
-The override replaces the base `[build]` entirely, there is no merge. Repeat every field the platform needs, `link` included.
-
-Precedence, first match wins: `target`, `arch`, `env`, `os`, `family`.
-
-The example above links `raylib` twice on purpose: the base table carries it, and each platform override repeats it together with the platform libraries. A missing repeat would drop it, since Linux and Windows override sections replace the base table.
+An override replaces `[build]` whole, with no merge, so repeat every field the platform needs. The manifest example repeats `raylib` on purpose: leaving it out of the `linux` or `windows` table drops the library.
 
 ### Native dependencies
 
-Link directives from the package and its dependencies, transitively, are collected into `Zora.lock` and passed to the compiler at build time.
+Link directives are collected through the whole dependency tree into `Zora.lock` and passed to the compiler on every build.
 
-A consumer of a library that declares `link` (for example `zora add .../zaylib`) links it automatically, with no `[build]` section in the consumer manifest.
-
-A relative `link-dir` inside a dependency resolves against that dependency checkout.
-
-The lockfile records the build spec, platform sections included. When the manifest or the compiler version changes, the next `zora build` or `zora check` re-resolves it.
+| Case | Handling |
+|---|---|
+| Library declares `link` | consumers link it automatically, no `[build]` section needed |
+| Relative `link-dir` in a dependency | resolves against that dependency's checkout |
+| Lockfile | records the build spec, platform sections included; re-resolves after a manifest or compiler version change |
 
 ## Dependencies
 
@@ -137,21 +141,6 @@ zora add https://github.com/mealet/math --branch dev
 zora remove math
 zora update
 ```
-
-Resolved dependencies reach the compiler as `--pkg` arguments, with the package name mapped to its `src` directory:
-
-```bash
-zeen src/main.zn out --pkg greeting=/home/you/.zora/git/checkouts/1a2b3c/9f8e7d/src
-```
-
-After that, `use greeting;` works anywhere the compiler looks, and a module inside the package is `use greeting.<module>;`. `zora deps-map` prints the same mapping without building:
-
-```text
-greeting=/home/you/.zora/git/checkouts/1a2b3c/9f8e7d/src
-math=/home/you/.zora/git/checkouts/44ff01/0ac9be/src
-```
-
-The project itself is passed to the compiler the same way, under its `[package] name`. A project without dependencies prints nothing.
 
 ## Build output
 
@@ -164,11 +153,11 @@ zora build --release
 | `Debug` | `dist/debug/<name>` |
 | `Release` | `dist/release/<name>` |
 
-Passing `--target` adds the triple, `dist/<triple>/<mode>/<name>`, with a `.exe` suffix on Windows.
+```bash
+zora build --release
+```
 
-Builds are cached: when the inputs did not change, `zora build` skips the compiler and prints `<path> (cached)`.
-
-`ZORA_HOME` overrides the global cache and database directory, default `~/.zora`. It is used by `zora add`, `zora update` and `zora clean --global`.
+Builds are cached: unchanged inputs skip the compiler and print `<path> (cached)`. `ZORA_HOME` moves the global cache and database from `~/.zora`, and is read by `zora add`, `zora update` and `zora clean --global`.
 
 ### Libraries
 
@@ -179,7 +168,14 @@ Builds are cached: when the inputs did not change, `zora build` skips the compil
 
 ## Testing
 
-Test files live in `tests/`. Zora scans each file for two attributes, written as doc comments:
+Test files live in `tests/`, and two doc-comment attributes mark the tests inside:
+
+| Attribute | Effect |
+|---|---|
+| `/// @test` | the function below is a test, and it must be `pub` |
+| `/// @should-fail` | inverts the result, so a panic or a failed assertion passes |
+
+Zora reads the source as text and looks for those exact lines. The compiler sees ordinary doc comments and ignores them.
 
 ```zn
 use std.testing;
@@ -200,10 +196,6 @@ pub fn fail_test() {
 }
 ```
 
-`/// @test` marks the function that follows it as a test. The marker has to be a doc comment because it sits in ordinary Zeen source and the compiler ignores it, while Zora reads the file as text and finds the exact line. The function must be `pub`, or Zora stops with an error naming the file and line.
-
-`/// @should-fail` inverts the result: the test passes when the program exits with a non-zero code, which is what a panic or a failed `assert_eq` produces. It is the way to test that a panic happens, or that an error path is reached.
-
 `assert_eq` and the other assertions come from `std.testing`.
 
 ```bash
@@ -218,7 +210,7 @@ Tests from `tests/add.zn`:
 Tests 2 passed in 0.06s
 ```
 
-Each test compiles into its own binary, with the package root on the include path, so a test file imports project code by package name:
+Each test builds as its own binary with the package root on the include path, so a test imports project code by its package name:
 
 ```zn
 use std.testing;
@@ -230,4 +222,4 @@ pub fn triple_test() {
 }
 ```
 
-A single file cannot be selected: `zora test` runs every test in every file under `tests/`. Use `--manifest-path` to point at another project, or comment out tests while iterating. Compile errors are reported per test, with the compiler output under the failing line.
+`zora test` runs every file under `tests/` and cannot pick one, so comment tests out while iterating. A compile error prints per test, with the compiler output under the failing line. `--manifest-path` points at another project.
