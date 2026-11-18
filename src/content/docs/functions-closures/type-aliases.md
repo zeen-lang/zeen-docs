@@ -5,7 +5,7 @@ description: Naming existing types, generic aliases, bounds and recursive aliase
 
 ## Plain aliases
 
-`alias` gives an existing type a second name. The alias expands to its body during typechecking, so it is not a new type and costs nothing at runtime. `Meters` and `f64` interchange freely:
+`alias` gives an existing type a second name. The alias expands to its body during typechecking, so it creates no new type and costs nothing at runtime: `Meters` and `f64` are the same type as far as the compiler is concerned.
 
 ```zn
 alias Meters = f64;
@@ -26,7 +26,7 @@ fn main() {
 }
 ```
 
-A `pub` alias is visible to modules that import this one.
+A `pub` alias is visible to modules that import this one. [Imports and Visibility](/language-basics/imports-and-visibility/) covers the visibility rules.
 
 ## Generic aliases
 
@@ -49,7 +49,7 @@ The argument count is checked, so `Ptr` without an argument reports `zeen::typec
 
 ## Bounds
 
-A parameter can carry an interface bound. A concrete argument has to satisfy it:
+A parameter can carry an interface bound, and a concrete argument has to satisfy it:
 
 ```zn
 alias Printable[T: Display] = T;
@@ -75,7 +75,7 @@ fn main() {
 }
 ```
 
-A type without the interface reports `zeen::typechecker::generic_bound_not_satisfied`. A generic argument also needs the bound declared in the scope that mentions it.
+A type without the interface reports `zeen::typechecker::generic_bound_not_satisfied`. A generic argument also needs the bound declared in the scope that mentions it, so `Printable[T]` is valid inside `struct Box[T: Display]` and rejected inside `struct Box[T]`.
 
 ## Recursive aliases
 
@@ -88,4 +88,10 @@ alias B = A;
 fn main() {
   const value: A = 1;
 }
+```
+
+```text
+zeen::typecheck::infinite_recursive_type
+
+  × recursive type `alias `A`` is infinite
 ```

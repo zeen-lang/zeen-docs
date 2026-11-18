@@ -3,19 +3,26 @@ title: Interfaces
 description: Declaring interfaces, implementing them with inherent methods, bounding generics and implementing interfaces for builtin types.
 ---
 
+An interface names a behavior: a method signature that several types can provide. It is the contract; the method itself is written by each type that opts in.
+
 ## Declaration
 
-An interface declares a behavior shared by many types. Any struct or enum can promise it:
+An interface holds method signatures and, when the interface needs them, associated types:
 
 ```zn
 interface Pet {
   pub fn name(*const self) []const char;
 }
+
+fn main() {
+}
 ```
+
+Methods keep the `self` receivers of ordinary methods, so an interface can require a value or a pointer receiver.
 
 ## Implement
 
-A type opts in through an interface `implement` block. The block header names the interface first and the type after a colon, and the body holds the promised methods:
+A type opts in through an interface `implement` block. The header names the interface first and the type after a colon, and the body holds the promised methods:
 
 ```zn
 interface Pet {
@@ -38,8 +45,6 @@ fn main() {
   @println("{}", cat.name());
 }
 ```
-
-Methods keep the `self` receivers of ordinary methods, so an interface can require a value or a pointer receiver.
 
 ## Inherent methods
 
@@ -69,7 +74,7 @@ fn main() {
 }
 ```
 
-`implement Describe : Label {}` carries no methods and is valid because the inherent method already matches. This is the ordinary style: write the method once in the inherent block and declare the interface with an empty block.
+`implement Describe : Label {}` carries no methods and is valid because the inherent one already matches. This is the usual style: write the method once in the inherent block and declare the interface with an empty block. The method stays callable on the type even when no generic bound asks for it.
 
 ## Bounds
 
@@ -101,7 +106,7 @@ fn main() {
 }
 ```
 
-A type that does not implement the interface is rejected with `zeen::typechecker::generic_bound_not_satisfied`.
+A type that does not implement the interface is rejected with `zeen::typechecker::generic_bound_not_satisfied`. [Closures](/functions-closures/closures/) shows the same idea with callable bounds.
 
 ## Generic implementations
 
@@ -149,9 +154,9 @@ fn main() {
 }
 ```
 
-The target accepts the same scalar and container shapes as `implement builtin`, and the page on [builtin blocks](/functions-closures/implement-builtin/) covers them. An implementation on one concrete type does not extend to another: `f64` still reports `zeen::typechecker::unknown_method` until it gets its own block.
+The target accepts the same shapes as `implement builtin i32`, and the page on [builtin blocks](/functions-closures/implement-builtin/) covers them. An implementation on one concrete type does not extend to another: `f64` still reports `zeen::typechecker::unknown_method` until it gets its own block.
 
-When the interface requirement is already declared in an inherent `implement builtin` block, the interface block stays empty:
+When the method is already declared in an inherent `implement builtin` block, the interface block stays empty:
 
 ```zn
 interface Tag {
@@ -178,4 +183,4 @@ fn main() {
 }
 ```
 
-A second implementation for the same target is `zeen::typechecker::duplicate_impl`. Core interfaces such as `Add` or `Eq` already come with every builtin type, so implementing one reports `zeen::typechecker::core_interface_impl`.
+A second implementation for the same target is `zeen::typechecker::duplicate_impl`. Core interfaces such as `Add` and `Eq` already come with every builtin type, so implementing one reports `zeen::typechecker::core_interface_impl`.

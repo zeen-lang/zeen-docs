@@ -3,62 +3,76 @@ title: Closures
 description: Closure literals, capture semantics, type inference and fat Fn and FnOnce types.
 ---
 
+A closure is a function written where it is used. It has no name, it can capture the variables around it and its type comes from that capture.
+
 ## Literals
 
-A closure is an anonymous function written between pipes:
+Parameters sit between pipes and the body follows:
 
 ```zn
-const add = |x: i32| x + 1;
+fn main() {
+  const add = |x: i32| x + 1;
 
-@println("{}", add(4));
+  @println("{}", add(4));
+}
 ```
 
 `||` declares a closure without parameters. A block body returns with `->`:
 
 ```zn
-const double = |x: i32| -> i32 {
-  return x * 2;
-};
+fn main() {
+  const double = |x: i32| -> i32 {
+    return x * 2;
+  };
 
-@println("{}", double(4));
+  @println("{}", double(4));
+}
 ```
 
-A closure without captures is a basic `fn` pointer and is `Copy`.
+A closure that captures nothing is a basic `fn` pointer. It is `Copy` and fits any `fn(T...) R` annotation.
 
 ## Captures
 
 A closure can read values from the enclosing scope:
 
 ```zn
-const n: i32 = 5;
-const add = |x| x + n;
+fn main() {
+  const n: i32 = 5;
+  const add = |x| x + n;
 
-@println("{}", add(10));
+  @println("{}", add(10));
+}
 ```
 
 A closure that only reads a capture stays an `Fn` value and can be called many times, even when the captured value is move-only:
 
 ```zn
-const text = String.from("hello");
-const show = || @println("{}", text);
+fn main() {
+  const text = String.from("hello");
+  const show = || @println("{}", text);
 
-show();
-show();
+  show();
+  show();
+}
 ```
 
 A closure that moves a non-`Copy` capture out becomes `FnOnce` and can be called at most once:
 
 ```zn
-let text = String.from("hello");
-let consume = || text;
-let value = consume();
+fn main() {
+  let text = String.from("hello");
+  let consume = || text;
+  let value = consume();
 
-@println("{}", value);
+  @println("{}", value);
+}
 ```
+
+The capture is decided by the body, not by an annotation. Reading a `String` borrows it for the call; returning it moves the value into the result and leaves the closure empty.
 
 ## Type inference
 
-Closure parameters do not need annotations when the compiler can infer them. The type can come from an expected type, from the body, from a neighbouring parameter or from a call argument.
+Closure parameters do not need annotations when something else fixes their type. The hint can come from an expected type, from the body, from a neighbouring parameter or from a call argument:
 
 ```zn
 fn take(byte: u8) u8 {
@@ -80,24 +94,35 @@ fn main() {
 An expected type wins over the body:
 
 ```zn
-const typed: Fn(u8) u8 = |x| x * 2;
+fn main() {
+  const typed: Fn(u8) u8 = |x| x * 2;
 
-@println("{}", typed(2));
+  @println("{}", typed(2));
+}
 ```
 
 When nothing anchors a parameter, the compiler reports `zeen::typechecker::closure_param_type_needed`:
 
 ```zn
-const broken = |x, y| x + y;
+fn main() {
+  const broken = |x, y| x + y;
+}
 ```
 
-Annotate a parameter or store the closure in a typed binding to fix it.
+```text
+zeen::typechecker::closure_param_type_needed
+
+  × closure parameter type is unknown
+  help: annotate the parameter or store the closure in a typed binding
+```
+
+Annotating either parameter is usually enough, since the other one then has a neighbour to lean on.
 
 ## Fat types
 
-A capturing closure has a fat type: `Fn` or `FnOnce`. Both are move-only. A fat value stores a function pointer, a pointer to a heap block with the captures and a routine that drops them. The captures are released when the value is dropped.
+A capturing closure has a fat type: `Fn` or `FnOnce`. Both are move-only, and a fat value stores three things: the code pointer, a pointer to a heap block holding the captures and a routine that drops them. The block is released when the value is dropped.
 
-Calls dispatch through the stored pointer. An `Fn` value can be called many times, a `FnOnce` value once.
+An `Fn` value can be called many times and a `FnOnce` value once:
 
 ```zn
 fn apply(f: Fn(i32) i32, x: i32) i32 {
@@ -112,7 +137,7 @@ fn main() {
 }
 ```
 
-A function with a fat parameter is monomorphized per call site, so the concrete closure type stays known.
+A function with a fat parameter is monomorphized per call site, so the concrete closure type stays known and no dynamic dispatch survives into the binary.
 
 ## Coercions
 
@@ -121,7 +146,7 @@ A function with a fat parameter is monomorphized per call site, so the concrete 
 | `fn` | `Fn`, `FnOnce` |
 | `Fn` | `FnOnce` |
 
-`FnOnce` to `Fn` and fat to basic are forbidden.
+`FnOnce` to `Fn` and fat to basic are forbidden, because the first would allow a second call and the second would drop the environment.
 
 ```zn
 fn apply_once(f: FnOnce(i32) i32, x: i32) i32 {
@@ -137,15 +162,28 @@ fn main() {
 
 ## Callable bounds
 
-Most functions only need to call their argument. Prefer a callable bound in that case:
+Most functions only call their argument, so a callable bound describes the requirement better than a fat type:
 
 ```zn
 fn apply[F: Callable(i32) i32](f: F, x: i32) i32 {
   return f(x);
 }
+
+fn main() {
+  @println("{}", apply(|x| x + 1, 2));
+}
 ```
 
-`Callable` and `CallableOnce` describe what the function does with the closure. A named function stays a plain `fn` pointer and a zero capture closure stays a basic `fn` pointer, so neither is wrapped in a fat value. The bound also infers its own generic arguments from the argument:
+`Callable` and `CallableOnce` accept every callable shape instead of forcing the argument into an `Fn` or `FnOnce`:
+
+| Value | `Callable` | `CallableOnce` |
+|-------|------------|----------------|
+| basic `fn` | yes | yes |
+| zero capture closure | yes | yes |
+| `Fn` | yes | yes |
+| `FnOnce` | no | yes |
+
+A named function and a zero capture closure stay plain `fn` pointers under this bound, so neither gains an environment it does not need:
 
 ```zn
 fn keep[F: Callable(i32) i32](f: F) F {
@@ -164,16 +202,7 @@ fn main() {
 }
 ```
 
-`Callable(Args...) R` requires the return type. Leave it out when the closure returns `void`: `Callable(i32)`. `CallableOnce` accepts everything `Callable` accepts, plus `FnOnce`. A callable bound mixes with other bounds through `+`: `F: Callable(i32) i32 + Copy`.
-
-| Value | `Callable` | `CallableOnce` |
-|-------|------------|----------------|
-| basic `fn` | yes | yes |
-| zero capture closure | yes | yes |
-| `Fn` | yes | yes |
-| `FnOnce` | no | yes |
-
-A signature that does not match the bound reports `zeen::typechecker::generic_bound_not_satisfied`.
+`Callable(Args...) R` requires the return type. Leave it out when the closure returns `void`: `Callable(i32)`. `CallableOnce` accepts everything `Callable` accepts, plus `FnOnce`. A callable bound mixes with other bounds through `+`: `F: Callable(i32) i32 + Copy`. A signature that does not match reports `zeen::typechecker::generic_bound_not_satisfied`.
 
 ## Generics
 
@@ -195,7 +224,7 @@ A zero capture closure inside a generic function binds the enclosing generics to
 
 ## Globals
 
-Global initializers accept function values: a named function, an `fn` literal or a `Fn` / `FnOnce` returned by a call. The compiler routes them through a synthesized init function.
+A global initializer accepts a named function, an `fn` literal or an `Fn` / `FnOnce` returned by a call. The type annotation is required, like every global:
 
 ```zn
 fn double(x: i32) i32 {

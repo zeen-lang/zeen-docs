@@ -3,7 +3,9 @@ title: Builtin Implement Blocks
 description: Adding methods to builtin scalars, slices, many pointers and array shapes.
 ---
 
-A builtin type takes methods through an `implement builtin` block. The block target names the type or the container shape:
+A builtin type takes methods through an `implement builtin` block. The same method syntax works as on a struct, and the target names the builtin type or the container shape.
+
+## Targets
 
 ```zn
 implement builtin i32 {
@@ -19,11 +21,11 @@ fn main() {
 }
 ```
 
-The target is one of the integer types, `f32`, `f64`, `bool` or `char`. `void` and `never` are rejected, and so is any user type name: use an ordinary `implement` block for those.
+A scalar target is one of the integer types, `f32`, `f64`, `bool` or `char`. `void` and `never` are refused with ``not supported: `void` and `never` cannot have builtin implement blocks``, and a user type name in that position is a syntax error that asks for the block's generic parameters. A user type gets an ordinary `implement` block instead.
 
 ## Receivers
 
-The receiver works like a struct method. It is the first parameter when that parameter has no name:
+The receiver is the first parameter when it has no name:
 
 | Receiver | Mode |
 |----------|------|
@@ -56,6 +58,7 @@ fn main() {
   let a: i32 = 10;
 
   @println("{} {}", a.by_value(), a.by_const_value());
+
   @println("{} {}", a.by_mut_ref(), a);
 
   const p: *i32 = &a;
@@ -64,13 +67,19 @@ fn main() {
 }
 ```
 
-A method is reachable through a value and through a pointer to it. The compiler derefs the receiver, so `p.by_const_ref()` calls the `*const self` method on the pointee. A method that takes `*self` cannot be called through a `*const` pointer, and a value receiver gets a copy.
+```text
+11 12
+13 13
+17
+```
 
-Inside a pointer receiver the value is read through `(*self)`, because `self` holds the address, not the number.
+A value receiver gets a copy, while `*self` writes through to the binding. Method calls see through a pointer, so `p.by_const_ref()` reaches the `*const self` method on the pointee without a manual deref. A `*const` pointer cannot call a `*self` method, because that would write through a read-only view, and the compiler reports `zeen::typechecker::assign_to_const`.
+
+Inside a pointer receiver the value is read through `(*self)`, since `self` holds the address.
 
 ## Static methods
 
-A parameter with a name is an ordinary argument, so a method without `self` is static and is called on the type name:
+A named first parameter is an ordinary argument, so a method without `self` is static and is called on the type name:
 
 ```zn
 implement builtin i32 {
@@ -93,13 +102,11 @@ fn main() {
 }
 ```
 
-Calling a static method on a value is `zeen::typechecker::static_method_on_instance`, with a help that points to `Type.method(...)`.
+Calling one on a value reports `zeen::typechecker::static_method_on_instance` with the help `use `Type.method(...)` to call a static method`. `Self` is the target type and works in return types, annotations and static calls inside the block. A bare `Self` in a value position is `zeen::typechecker::type_name_as_value`, because a type name has no value.
 
-`Self` is the target type. It works in the return type, in annotations and as a name for static calls inside the block. A bare `Self` without a call or a type position is `zeen::typechecker::type_name_as_value`.
+## Method generics
 
-## Methods with generics
-
-A method can declare its own generics like a struct method:
+A method declares its own generics like a struct method:
 
 ```zn
 implement builtin i32 {
@@ -113,9 +120,9 @@ fn main() {
 }
 ```
 
-## Container targets
+## Containers
 
-Slices, many pointers and fixed-size arrays take methods through the same kind of block. When the target mentions a parameter, the block header declares it:
+Slices, many pointers and fixed arrays take methods through the same block. A shape that mentions a parameter declares it in the block header:
 
 ```zn
 implement builtin [4]u8 {
@@ -150,11 +157,9 @@ fn main() {
 }
 ```
 
-The accepted shapes are `[]T`, `[]const T`, `[*]T`, `[*]const T` and arrays with a literal length such as `[4]u8` or `[4]T`. `const` is part of the shape: a block on `[]T` does not match a `[]const T` receiver, and a block on `[]const T` does not match `[]T`. Declare both when both should work.
+The accepted shapes are `[]T`, `[]const T`, `[*]T`, `[*]const T` and an array with a positive literal length such as `[4]u8` or `[4]T`. Elements may themselves be shapes, so `[][3]T` and `[2][3]T` are valid targets. `const` is part of the shape: a block on `[]const T` does not match a `[]T` receiver, and the call reports the method as missing.
 
-The array length is an integer literal above zero. `[0]u8` and `[1 + 1]u8` are rejected, and a length parameter is not supported, so a generic array keeps its concrete length.
-
-A pointer target such as `implement builtin *i32` is rejected too. Pointer transparency already lets a value method be called through `*i32` and `*const i32`.
+The length has to be an integer literal above zero. `[0]u8`, `[1 + 1]u8` and a length parameter `[N]u8` all report a parser error that asks for a literal length, so a generic array keeps its concrete length. A pointer target such as `implement builtin *i32` is rejected too, since pointer transparency already lets a value method be called through `*i32`.
 
 ## Overloads
 
@@ -205,19 +210,24 @@ fn main() {
 }
 ```
 
-`i32` is `Copy` and `Payload` is not, so `numbers[..]` uses the bounded `kind` and `owned[..]` falls back to the unbounded one. `[4]u8` matches its own exact block while `[4]i32` uses the generic one.
+```text
+2 1
+3 1
+```
 
-The same name on two different targets is allowed, since the target is part of the symbol. The same name with the same signature twice on one target is `zeen::typechecker::duplicate_method`.
+`i32` is `Copy`, so `numbers[..]` takes the bounded block, while `Payload` falls back to the unbounded one. `[4]u8` matches its exact block and `[4]i32` uses the generic one.
+
+The same name on two targets is allowed, because the target belongs to the symbol. The same name with the same signature twice on one target reports `zeen::typechecker::duplicate_method`.
 
 ## Visibility
 
-A method is visible inside the module that declares it. `pub` makes it callable from other modules. The rest of the visibility rules match ordinary items.
+A method is visible in the module that declares it, and `pub` opens it to other modules. The rest matches ordinary items.
 
-An own method wins over a builtin interface method with the same name. A block may declare `hash` on `i32` and `n.hash()` then calls that method instead of the builtin `Hash::hash`.
+An own method wins over a core interface method with the same name. A block that declares `hash` on `i32` makes `n.hash()` call it instead of `Hash::hash`.
 
 ## Interfaces
 
-A builtin target implements a user interface through `implement Interface : builtin Target`:
+A builtin target implements a user interface through `implement Interface : builtin Target`. The target grammar matches the inherent block:
 
 ```zn
 interface Show {
@@ -237,6 +247,4 @@ fn main() {
 }
 ```
 
-The target grammar is the same as in an `implement builtin` block, and an empty interface block picks up a matching inherent method from one. [User Interfaces](/functions-closures/interfaces/) covers bounds, static interface methods and the `duplicate_impl` rule.
-
-Core interfaces such as `Add`, `Eq` or `Hash` are already provided for builtin types, so `implement Add : builtin i32` reports `zeen::typechecker::core_interface_impl`.
+An empty interface block picks up a matching method from an inherent `implement builtin` block. [Interfaces](/functions-closures/interfaces/) covers bounds, associated types and the `duplicate_impl` rule. Core interfaces such as `Add`, `Eq` and `Hash` already come with every builtin type, so `implement Add : builtin i32` reports `zeen::typechecker::core_interface_impl`.

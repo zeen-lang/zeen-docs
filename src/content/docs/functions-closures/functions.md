@@ -5,7 +5,7 @@ description: Declarations, main rules, nested functions, function values, generi
 
 ## Declarations
 
-A function declares a name, typed parameters and a return type. A function that returns nothing leaves the return type out. Functions are private by default, `pub` makes them visible outside the module.
+A function declares a name, typed parameters and a return type. A function that returns nothing leaves the type out. Functions are private by default, and `pub` opens one to other modules:
 
 ```zn
 fn add(a: i32, b: i32) i32 {
@@ -22,7 +22,7 @@ fn main() {
 }
 ```
 
-The last expression in a body is the return value, so `return` is optional there:
+The last expression of a body is its return value, so `return` is optional in that position:
 
 ```zn
 fn double(a: i32) i32 {
@@ -34,13 +34,11 @@ fn main() {
 }
 ```
 
-`extern fn` declares a symbol from another library. [Extern](/functions-closures/extern/) covers declarations, C ABI and linking.
+`extern fn` declares a symbol from another library, with no body. [Extern](/functions-closures/extern/) covers declarations, the C ABI and linking.
 
-## Main
+## `main`
 
-The program entry point is `fn main()`. It takes no parameters, has no generics and is not `extern`. The compiler takes it from the root module.
-
-The return type is free. An integer return becomes the process exit code, any other type exits with `0`.
+The entry point is `fn main()`. It takes no parameters, no generics and no `extern`, and the compiler takes it from the root module. Its return type is free:
 
 ```zn
 fn main() i32 {
@@ -48,11 +46,11 @@ fn main() i32 {
 }
 ```
 
-Only binary targets need `main`. Object and IR output skip the check.
+This program exits with code `7`. Any other return type, `void` and `bool` included, exits with `0`. A library build, meaning `--emit OBJ` or `--emit IR`, does not need `main` at all; [Compiler](/toolchain/compiler/) covers the output kinds.
 
 ## Nested functions
 
-A function can be declared inside another function. It is visible in that body only, and it cannot capture the outer variables:
+A function can be declared inside another function. It is visible in that body only and cannot capture the outer variables:
 
 ```zn
 fn main() {
@@ -68,7 +66,7 @@ Capturing needs a closure, covered on [Closures](/functions-closures/closures/).
 
 ## Function values
 
-A function name without a call is a value of the basic `fn(T...) R` type. Basic function values carry no environment and stay `Copy`.
+A function name without a call is a value of the basic `fn(T...) R` type. These values carry no environment, so they stay `Copy` and pass around freely:
 
 ```zn
 fn twice(x: i32) i32 {
@@ -105,7 +103,7 @@ Fat `Fn` and `FnOnce` values hold an environment and are move-only. [Closures](/
 
 ## Generics
 
-Generic parameters go in brackets after the name. A bound follows the parameter with `:`. Several parameters and generic return types work too:
+Generic parameters go in brackets after the name, and a bound follows each parameter after a colon:
 
 ```zn
 fn first[T](items: []T) T {
@@ -115,7 +113,7 @@ fn first[T](items: []T) T {
 fn smaller[T: Ord](a: T, b: T) T {
   if (a < b) {
     return a;
-  };
+  }
 
   return b;
 }
@@ -128,9 +126,9 @@ fn main() {
 }
 ```
 
-Arguments infer the type parameters. A type name in `#[...]` pins them by hand: `first#[i32](nums[..])`.
+The arguments infer the parameters. A type name in `#[...]` pins them by hand: `first#[i32](nums[..])`.
 
-A `where` clause goes on its own line after the return type. It holds constraints that would crowd the signature, such as associated types:
+A `where` clause goes on its own line after the return type and holds constraints that would crowd the signature, such as associated types:
 
 ```zn
 interface Source {
@@ -163,9 +161,13 @@ fn main() {
 }
 ```
 
-Several clauses put the keyword alone and indent each clause one level:
+Several constraints put the keyword alone and indent each clause one level:
 
 ```zn
+fn double(x: i32) i32 {
+  return x * 2;
+}
+
 fn apply[T, F](value: T, f: F) T
   where
     T: Copy,
@@ -173,11 +175,17 @@ fn apply[T, F](value: T, f: F) T
 {
   return f(value);
 }
+
+fn main() {
+  @println("{}", apply(21, double));
+}
 ```
+
+[Generic Types](/ownership-types/generic-types/) covers inference, monomorphization and the bounds in more depth.
 
 ## Never functions
 
-A function returning `never` gives no control back to the caller. The body has to end in a `never` expression, so a call followed by a semicolon returns `void` and does not fit:
+A function returning `never` gives no control back to the caller. Its body has to end in a `never` expression, so a call followed by a semicolon returns `void` and does not fit:
 
 ```zn
 extern fn exit(i32) never;
@@ -192,4 +200,4 @@ fn main() {
 }
 ```
 
-`@panic`, `@unreachable` and `@todo` also produce `never`. Statements after a `never` call are unreachable and report `zeen::dataflow::unreachable_code`. In Release a `never` function that does return is undefined behavior.
+`@panic`, `@unreachable` and `@todo` also produce `never`. A statement after a `never` call is unreachable and reports `zeen::dataflow::unreachable_code`. In Release a `never` function that does return is undefined behavior.

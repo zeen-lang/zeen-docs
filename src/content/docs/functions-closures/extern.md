@@ -3,15 +3,15 @@ title: Extern
 description: Native symbols, exported functions, varargs and C sources in the link step.
 ---
 
-`extern` connects Zeen code with native code. Imported symbols resolve at link time, and missing ones fail the link step.
+`extern` is the boundary with native code. It imports functions and globals that the linker takes from a C library, and it exports Zeen functions under plain C names.
 
 ## Imported functions
 
-`extern fn` without a body declares a symbol from another library. Calls use the C calling convention:
+`extern fn` without a body declares a symbol from another library. The call uses the C calling convention, and parameter names are for reading only, so `malloc(usize)` and `malloc(size: usize)` describe the same symbol:
 
 ```zn
-extern fn malloc(usize) *void;
-extern fn free(*void);
+extern fn malloc(size: usize) *void;
+extern fn free(ptr: *void);
 
 fn main() {
   const ptr: *i32 = @as(*i32, malloc(@sizeof(i32)));
@@ -24,11 +24,11 @@ fn main() {
 }
 ```
 
-The linker finds `malloc` and `free` in the C library. Use `--link <LIB>` and `--link-dir <PATH>` for other libraries, covered on [Linking](/toolchain/linking/).
+The C library comes with every target, so `malloc` and `free` need no extra flag. Any other library is passed to the linker with `--link` and `--link-dir`, covered under [Linking](/toolchain/linking/).
 
 ## Exported functions
 
-`extern fn` with a body defines a symbol under its own name, so native code can call it:
+An `extern fn` with a body defines the symbol under its own name, which is how native code calls into Zeen:
 
 ```zn
 extern fn zeen_answer() i32 {
@@ -40,25 +40,29 @@ fn main() {
 }
 ```
 
-The symbol keeps the plain name, without the module prefix. `nm binary | grep zeen_answer` shows it in the object.
+`nm binary | grep zeen_answer` shows `T zeen_answer`. A plain `pub fn` becomes a module-local symbol such as `main.plain_answer` with lowercase `t`, so an exported function needs the `extern` keyword even when it never leaves Zeen.
 
 ## Variadic functions
 
-`...` marks a C variadic parameter list. String arguments are passed as pointers:
+A trailing `...` marks a C variadic parameter list. Arguments after the fixed parameters are passed as they are, so an integer arrives as `i32` and a string literal as a pointer:
 
 ```zn
-extern fn printf([*]const char, ...) i32;
+extern fn printf(format: [*]const char, ...) i32;
 
 fn main() {
-  let _ = printf("value: %d %s\n", 42, "ok");
+  printf("value: %d %s\n", 42, "ok");
 }
 ```
 
-## Structs
+```text
+value: 42 ok
+```
 
-Struct arguments and returns follow the C ABI of the target, not the host. The compiler passes structs by value where the target requires it, uses the target register or memory rules for small returns and takes field layout from `zeen-layout`.
+A call statement drops the returned `i32`, so no `let _ =` is needed. `%d` and `%s` are C format specifiers and are not checked by the compiler; a mismatch reads the wrong argument silently.
 
-A matching C declaration makes the two sides agree. `helpers.c`:
+## Structures
+
+A struct crosses the boundary with the C ABI of the target, so field order and alignment follow the same rules as the C compiler. A matching C declaration makes both sides agree. `helpers.c`:
 
 ```c
 #include <math.h>
@@ -88,11 +92,17 @@ fn main() {
 }
 ```
 
+```text
+5.0
+```
+
+A struct return goes the other way: `extern fn make_pair(a: i32, b: i32) Pair;` with a C function returning `Pair` compiles and hands back both fields. The C side decides the layout, so write the Zeen struct in field order and use the same primitive widths.
+
+A Zeen struct is move-only by default, while C copies arguments freely. `implement Copy : Vec2 {}` makes a struct passable and readable in any order, which is usually what a C value type wants.
+
 ## Variables
 
-`extern let` declares a native global. Storage lives in native code and the declaration takes no initializer.
-
-Variables and functions combine in one C file. `helpers.c`:
+`extern let` declares a native global. Storage lives in native code, so the declaration takes no initializer:
 
 ```c
 int helper_count = 3;
@@ -103,18 +113,43 @@ int helper_add(int a, int b) {
 ```
 
 ```zn
-extern link "helpers.c";
+extern link "vars.c";
 
 extern let helper_count: i32;
-extern fn helper_add(i32, i32) i32;
+extern fn helper_add(a: i32, b: i32) i32;
 
 fn main() {
   @println("{} {}", helper_count, helper_add(2, 3));
 }
 ```
 
-## Link
+```text
+3 5
+```
 
-`extern link "path"` appends a native source file after the compiled object in the link step. Paths resolve relative to the declaring file. C sources compile with the detected toolchain.
+Reading `helper_count` reads the C variable itself, so a native function that changes it changes what Zeen sees.
 
-Object output skips `extern link` sources with a warning, since a toolchain that only links object files cannot use them. [Linking](/toolchain/linking/) covers library flags, linker selection and target toolchains.
+## C sources
+
+`extern link "path"` adds a C source to the link step. The path resolves relative to the file that declares it, and the file has to exist with a `.c` extension, otherwise the compiler reports `zeen::resolver::extern_link_error`:
+
+```text
+zeen::resolver::extern_link_error
+
+  × extern link error: file doesn't exists
+```
+
+The C source compiles with the toolchain for the target and joins the final link, which is how a small helper ships next to the Zeen code without a build script. Toolchains that only link object files, such as `wasm-ld`, skip the sources and print `skipped `extern link` sources: this toolchain only links object files`.
+
+`--link <LIB>` covers the other direction: a library that is already built, such as `raylib` or `m`. `--link-dir <PATH>` adds a search directory for it. [Linking](/toolchain/linking/) lists the flags and the toolchain detection.
+
+## Missing symbols
+
+An import that nothing defines fails the link step with the linker's message:
+
+```text
+undefined reference to `definitely_missing_symbol'
+collect2: error: ld returned 1 exit status
+```
+
+The compiler has already checked the call, so a symbol error here means the library was not linked, the name differs in C or the target expects another ABI.

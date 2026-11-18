@@ -1,43 +1,47 @@
 ---
 title: Structures and Methods
-description: Struct fields, construction, inherent implement blocks, overloads, receivers, Copy and Drop.
+description: Struct fields, construction, implement blocks, overloads, receivers, Copy and Drop.
 ---
 
 ## Structures
 
-A struct groups named values under one type. Each field has a name and a type. Fields are private by default: only methods of the type can read them. `pub` makes a field readable from outside the type.
+A struct groups named values under one type. Every field has a name and a type, and fields are private by default: only methods of the type read them. `pub` opens a field to the rest of the program:
 
 ```zn
 struct Person {
   pub age: u32,
   pub name: String,
 }
+
+fn main() {
+  const person = Person { .age = 26, .name = String.from("Ada") };
+
+  @println("{} {}", person.age, person.name);
+}
 ```
 
-Construction names every field:
+Construction names every field. When the type is already known from the annotation, the short form drops the name:
 
 ```zn
-const name = String.from("Ada");
-const person = Person { .age = 26, .name = name };
+struct Person {
+  pub age: u32,
+  pub name: String,
+}
+
+fn main() {
+  const person: Person = .{ .age = 26, .name = String.from("Ada") };
+
+  @println("{}", person.age);
+}
 ```
 
-When the type is already known, the short form drops the name:
+A missing field is `zeen::typechecker::missing_fields`, an unknown one is `zeen::typechecker::unknown_field` and a field written twice is `zeen::typechecker::duplicate_field`.
 
-```zn
-const person: Person = .{ .age = 26, .name = String.from("Ada") };
-```
+`.{ }` with no expected struct type is `void`. That is why `let marker: Marker = .{};` builds an empty struct while `let v: void = .{};` builds a void value.
 
-A missing field is `zeen::typechecker::missing_fields`, an unknown one is `zeen::typechecker::unknown_field`, and a field written twice is `zeen::typechecker::duplicate_field`. `.{ }` with no expected struct type is `void`, so `let marker: Marker = .{};` builds an empty struct and `let v: void = .{};` builds a void value.
+## Generic structures
 
-Fields read with a dot:
-
-```zn
-@println("{} {}", person.age, person.name);
-```
-
-## Generic Structures
-
-A struct takes generic parameters, with bounds if needed:
+A struct takes generic parameters, with bounds when the fields need them:
 
 ```zn
 struct Box[T] {
@@ -47,13 +51,19 @@ struct Box[T] {
 struct Sorted[T: Ord] {
   pub items: []T,
 }
+
+fn main() {
+  const boxed: Box[i32] = .{ .inner = 5 };
+
+  @println("{}", boxed.inner);
+}
 ```
 
-The type arguments go in brackets in a type position: `Box[i32]`, `Box[f64]`.
+Type arguments go in brackets in a type position: `Box[i32]`, `Box[f64]`. [Generic Types](/ownership-types/generic-types/) covers inference and monomorphization.
 
 ## Methods
 
-Methods can live inside the struct body or in a separate `implement` block. Both forms work the same way:
+Methods live inside the struct body or in an `implement` block. Both forms behave the same:
 
 ```zn
 struct Person {
@@ -68,6 +78,10 @@ implement Person {
   pub fn birthday(*self) {
     self.age += 1;
   }
+
+  pub fn get_age(*const self) u32 {
+    return self.age;
+  }
 }
 
 fn main() {
@@ -75,15 +89,13 @@ fn main() {
 
   person.birthday();
 
-  @println("{}", person.age);
+  @println("{}", person.get_age());
 }
 ```
 
-`Person.new(26)` is a static call on the type. `person.birthday()` is a method call on a value. `Self` is the owner type of the block.
+`Person.new(26)` is a static call on the type, `person.birthday()` is a method call on a value and `Self` is the type of the block. The position of the block in the file does not matter, and its methods are visible across the module. The same name with the same arguments and bounds in two places is `zeen::typechecker::duplicate_method`.
 
-Block position in the file does not matter, and the methods are visible across the whole module. The same name with the same arguments and bounds in two places is `zeen::typechecker::duplicate_method`.
-
-The receiver comes from the first parameter when that parameter has no name:
+The receiver comes from a first parameter that has no name:
 
 | Receiver | Mode |
 |----------|------|
@@ -92,7 +104,7 @@ The receiver comes from the first parameter when that parameter has no name:
 | `*self` | mutable borrow |
 | `*const self` | read only borrow |
 
-A parameter with a name is an ordinary argument, even when its type is `Self`. Such a method is static:
+`const self` still takes ownership, so a move-only struct that goes through such a method cannot be used afterwards. A named first parameter makes the function static, even when its type is `Self`:
 
 ```zn
 struct Person {
@@ -112,13 +124,11 @@ fn main() {
 }
 ```
 
-The standard library keeps methods of field-carrying types in `implement` blocks and methods of field-less helper types in the body. That is a convention, not a language rule.
+The standard library keeps methods of field-carrying types in `implement` blocks and methods of field-less helper types in the body. That is a convention, not a rule. Builtin types such as `i32` and `[]u8` take methods through `implement builtin`, covered on [Builtin Blocks](/functions-closures/implement-builtin/).
 
-Builtin types such as `i32` and `[]u8` take methods through `implement builtin`, covered on [Builtin Blocks](/functions-closures/implement-builtin/).
+## Overloads
 
-## Overloads and Specialization
-
-Two blocks can declare the same method name when they differ by block bounds or by concrete type arguments. The signatures must match.
+Two blocks can declare the same method name when they differ by block bounds or by concrete type arguments. The signatures have to match:
 
 ```zn
 struct Box[T] {
@@ -145,7 +155,7 @@ fn main() {
 }
 ```
 
-`i32` is `Copy`, so `number` uses the `Copy` block. `String` is `Clone`, so `text` uses the `Clone` block.
+`i32` is `Copy`, so `number` takes the first block; `String` is `Clone` and not `Copy`, so `text` takes the second.
 
 A block can also specialize on a concrete type argument:
 
@@ -160,21 +170,19 @@ implement Point[i32] {
     return .{ .x = 0, .y = 0 };
   }
 
-  pub fn tag_of(value: Point[i32]) u8 {
+  pub fn tag_of(value: *const Point[i32]) u8 {
     return @as(u8, value.x);
   }
 }
 
 fn main() {
   const point: Point[i32] = Point.zero();
-  const x = point.x;
-  const tag = Point.tag_of(point);
 
-  @println("{} {}", x, tag);
+  @println("{} {}", point.x, Point.tag_of(&point));
 }
 ```
 
-Selection ranks candidates in this order:
+Selection ranks the candidates in this order:
 
 1. a block specialized on the exact concrete type arguments,
 2. a block whose bounds hold,
@@ -182,11 +190,11 @@ Selection ranks candidates in this order:
 4. a method declared in the type body,
 5. a block whose bounds fail.
 
-Ties keep the block declared first. Overloads must share one signature and differ only in bounds or block type arguments. Header paths such as `implement foo.Bar` are not supported, and there is no ambiguity diagnostic.
+Ties keep the block declared first.
 
 ## Copy and Drop
 
-A struct is move-only by default, even when every field is `Copy`. `implement Copy : Foo {}` makes assignment and argument passing copy the fields:
+A struct is move-only by default, even when every field is `Copy`. `implement Copy : Pair {}` makes assignment and argument passing copy the fields:
 
 ```zn
 struct Pair {
@@ -207,20 +215,31 @@ fn main() {
 }
 ```
 
-The marker is not checked against the fields. A struct with a `String` field can become `Copy` as well, and every copy then owns the same buffer, so the buffer is freed more than once. Keep `Copy` on plain data without owned resources.
+The marker is not checked against the fields. A struct with a `String` field can become `Copy` too, and then every copy owns the same buffer, which frees it more than once. Keep `Copy` on plain data without owned resources. [Move Semantics](/ownership-types/move-semantics/) explains the ownership side.
 
-A struct with an explicit `Drop` runs its own cleanup at scope end:
+An explicit `Drop` runs its own cleanup at scope end:
 
 ```zn
-struct Tag {
-  pub name: String,
+struct Label {
+  pub text: String,
 }
 
-implement Drop : Tag {
+implement Drop : Label {
   fn drop(self) {
-    @println("drop {}", self.name);
+    @println("drop {}", self.text);
   }
+}
+
+fn main() {
+  const label = Label { .text = String.from("first") };
+
+  @println("{}", label.text);
 }
 ```
 
-Without an explicit `Drop`, the fields drop in reverse declaration order at scope end. Declaring both `Copy` and `Drop` on one type is `zeen::typechecker::copy_with_drop`.
+```text
+first
+drop first
+```
+
+Without an explicit `Drop`, the fields drop in reverse declaration order at scope end. Declaring both `Copy` and `Drop` on one type reports `zeen::typechecker::copy_with_drop`.
