@@ -295,7 +295,7 @@
 	position: relative;
 	display: block;
 	min-height: 1lh;
-	padding-left: 3.5ch;
+	padding-left: 3.9ch;
 	white-space: pre;
 	counter-increment: zn-line;
 }
