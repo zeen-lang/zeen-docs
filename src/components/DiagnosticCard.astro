@@ -129,26 +129,9 @@ const severity = diagnostic.severity === 'warning' ? 'Warning' : 'Error';
   }
 
   .diag__example :global(.expressive-code) {
-    --ec-brdRad: 9px;
     --ec-codeBg: var(--zn-surface-deep);
-  }
-
-  .diag__example :global(.expressive-code .copy button) {
-    border-radius: 999px;
-    background: transparent;
-  }
-
-  .diag__example :global(.expressive-code .copy button div) {
-    background-color: rgb(244 244 245 / 0.12);
-    opacity: 0;
-  }
-
-  .diag__example :global(.expressive-code .copy button::before) {
-    border-color: transparent;
-  }
-
-  .diag__example :global(.expressive-code .copy button:hover div) {
-    opacity: 1;
+    --ec-frm-edBg: var(--zn-surface-deep);
+    --ec-frm-trmBg: var(--zn-surface-deep);
   }
 
   .diag__help {

@@ -217,43 +217,6 @@ const isLatest = latest.id === release.id;
     color: var(--zn-primary);
   }
 
-  .zn-release-content code:not(:where(.expressive-code code)) {
-    padding: 1px 6px;
-    border: 1px solid var(--zn-hairline);
-    border-radius: 6px;
-    background-color: var(--zn-surface-raised);
-    font-family: var(--zn-mono);
-    font-size: 0.86em;
-    color: var(--sl-color-gray-1);
-  }
-
-  .zn-release-content .expressive-code {
-    --ec-brdRad: 9px;
-  }
-
-  .zn-release-content .expressive-code .copy button {
-    border-radius: 999px;
-    background: transparent;
-  }
-
-  .zn-release-content .expressive-code .copy button div {
-    background-color: rgb(244 244 245 / 0.12);
-    opacity: 0;
-  }
-
-  .zn-release-content .expressive-code .copy button::before {
-    border-color: transparent;
-  }
-
-  .zn-release-content .expressive-code .copy button:hover div {
-    opacity: 1;
-  }
-
-  .zn-release-content .expressive-code pre {
-    scrollbar-width: thin;
-    scrollbar-color: var(--sl-color-gray-4) transparent;
-  }
-
   @media (max-width: 50rem) {
     .zn-changelog {
       padding-top: 1rem;

@@ -39,6 +39,7 @@ export default defineConfig({
 			customCss: [
 				'./src/styles/custom.css',
 				'./src/styles/landing.css',
+				'./src/styles/docs.css',
 			],
 			components: {
 				Hero: './src/components/Hero.astro',
