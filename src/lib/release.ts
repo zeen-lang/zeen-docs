@@ -1,4 +1,4 @@
-const fallbackRelease = 'v0.4.0';
+const fallbackRelease = 'v0.5.0';
 
 const fetchLatestRelease = async () => {
 	try {
